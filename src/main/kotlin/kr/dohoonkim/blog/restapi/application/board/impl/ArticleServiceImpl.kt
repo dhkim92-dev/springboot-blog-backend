@@ -83,8 +83,8 @@ class ArticleServiceImpl(
     }
 
     @Transactional
-    override fun getListOfArticles(categoryName: String?, pageSize: Long, cursor: LocalDateTime?, direction: String?): List<ArticleSummaryDto> {
-        return articleRepository.findArticles(categoryName, cursor, direction, pageSize)
+    override fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, direction: String?, pageSize: Long): List<ArticleSummaryDto> {
+        return articleRepository.findArticles(categoryId, cursor, direction, pageSize)
     }
 
 }
