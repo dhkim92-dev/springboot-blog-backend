@@ -15,5 +15,4 @@ interface ArticleService {
     fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, direction: String?, pageSize: Long) : List<ArticleSummaryDto>
 
     fun getArticle(articleId : UUID) : ArticleDto
-
 }

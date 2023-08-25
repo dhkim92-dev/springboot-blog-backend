@@ -9,7 +9,7 @@ import org.springframework.context.annotation.FilterType
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @SpringBootApplication
-//@EnableCaching
+@EnableCaching
 class Application
 fun main(args: Array<String>) {
 	runApplication<Application>(*args)
