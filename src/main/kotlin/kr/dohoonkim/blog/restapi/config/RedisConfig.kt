@@ -15,22 +15,22 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.time.Duration
-//
-//@Configuration
-//class RedisCacheConfig(
-//    @Value("\${spring.redis.host}") private val host : String,
-//    @Value("\${spring.redis.port}") private val port : Int
-//){
-//    @Bean
-//    public fun cacheManager(connectionFactory : RedisConnectionFactory) : CacheManager {
-//        val redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-//            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()))
-//            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(GenericJackson2JsonRedisSerializer()))
-//            .entryTtl(Duration.ZERO)
-//
-//        return RedisCacheManager.RedisCacheManagerBuilder
-//            .fromConnectionFactory(connectionFactory)
-//            .cacheDefaults(redisCacheConfiguration)
-//            .build()
-//    }
-//}
+
+@Configuration
+class RedisCacheConfig(
+    @Value("\${spring.redis.host}") private val host : String,
+    @Value("\${spring.redis.port}") private val port : Int
+){
+    @Bean
+    public fun cacheManager(connectionFactory : RedisConnectionFactory) : CacheManager {
+        val redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()))
+            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(GenericJackson2JsonRedisSerializer()))
+            .entryTtl(Duration.ZERO)
+
+        return RedisCacheManager.RedisCacheManagerBuilder
+            .fromConnectionFactory(connectionFactory)
+            .cacheDefaults(redisCacheConfiguration)
+            .build()
+    }
+}

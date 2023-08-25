@@ -7,9 +7,13 @@ import java.util.*
 interface ArticleService {
 
     fun createArticle(articleCreateDto: ArticleCreateDto): ArticleDto
+
     fun modifyArticle(articleModifyDto: ArticleModifyDto): ArticleDto
+
     fun deleteArticle(articleId : UUID) : Unit
-    fun getListOfArticles(categoryName: String?, pageSize: Long, cursor: LocalDateTime?, direction: String?) : List<ArticleSummaryDto>
+
+    fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, direction: String?, pageSize: Long) : List<ArticleSummaryDto>
+
     fun getArticle(articleId : UUID) : ArticleDto
 
 }
