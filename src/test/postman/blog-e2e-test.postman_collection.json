@@ -186,7 +186,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    // \"refresh_token\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5ZDhjNjMzZS0zZjE5LTExZWUtOWEyNC0zZTE1YjkyNDFiMjMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODEiLCJleHAiOjE2OTI2MTExODgsImlhdCI6MTY5MjUyNDc4OH0.5ZcSiJoXVucWayt7RwVJ_EysO6DbJufWB6NlCkgQ9_LhrmbnYeVYOV4Ps2KKjHKgQg8CfsIjU0H_NjTjArZWWw\"\n    \"refresh_token\" : \"{{admin_refresh_token}}\"\n}",
+							"raw": "{\n    \"refresh_token\" : \"{{admin_refresh_token}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1466,26 +1466,6 @@
 			"value": ""
 		},
 		{
-			"key": "category_id",
-			"value": ""
-		},
-		{
-			"key": "admin_refresh_token",
-			"value": ""
-		},
-		{
-			"key": "admin_access_token",
-			"value": ""
-		},
-		{
-			"key": "member_refresh_token",
-			"value": ""
-		},
-		{
-			"key": "member_access_token",
-			"value": ""
-		},
-		{
 			"key": "article_id2",
 			"value": ""
 		},
@@ -1495,10 +1475,9 @@
 			"type": "string"
 		},
 		{
-			"key": "port",
-			"value": "8080",
-			"type": "string",
-			"disabled": true
+			"key": "category_id",
+			"value": "1",
+			"type": "string"
 		}
 	]
 }
