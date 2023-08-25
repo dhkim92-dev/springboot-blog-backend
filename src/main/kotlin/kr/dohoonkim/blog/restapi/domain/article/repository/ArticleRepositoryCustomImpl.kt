@@ -1,5 +1,6 @@
 package kr.dohoonkim.blog.restapi.domain.article.repository
 
+import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
@@ -54,12 +55,12 @@ class ArticleRepositoryCustomImpl (
     }
 
     override fun findArticles(
-        categoryName: String?,
+        categoryId: Long,
         createdAt: LocalDateTime?,
         cursorDirection: String?,
         pageSize: Long
     ) : List<ArticleSummaryDto> {
-        return queryFactory
+        val data = queryFactory
             .select(Projections.constructor(
                 ArticleSummaryDto::class.java,
                 article.id,
@@ -83,11 +84,20 @@ class ArticleRepositoryCustomImpl (
             .on(equalCategory())
             .leftJoin(member)
             .on(equalMember())
-            .where(eqCategoryName(categoryName),
-                orderByCursorDirection(createdAt, cursorDirection))
-            .orderBy(article.createdAt.desc())
+            .where(eqCategoryId(categoryId),
+                conditionForCursorDirection(createdAt, cursorDirection))
+            .orderBy(orderByCursorDirection(cursorDirection?:"next"))
             .limit(pageSize+1)
             .fetch()
+
+        data.sortBy { it.createdAt }
+        data.reverse()
+
+        return data
+    }
+
+    private fun eqCategoryId(categoryId : Long) : BooleanExpression? {
+        return if(categoryId==0L) return null else category.id.eq(categoryId)
     }
 
     private fun eqCategoryName(categoryName : String?) : BooleanExpression? {
@@ -110,7 +120,12 @@ class ArticleRepositoryCustomImpl (
         return article.author.id.eq(member.id)
     }
 
-    private fun orderByCursorDirection(createdAt: LocalDateTime?, direction : String?) : BooleanExpression? {
+    private fun orderByCursorDirection(direction : String) : OrderSpecifier<LocalDateTime?> {
+        return if(direction == "next") article.createdAt.desc()
+        else article.createdAt.asc()
+    }
+
+    private fun conditionForCursorDirection(createdAt: LocalDateTime?, direction : String?) : BooleanExpression? {
         if(createdAt == null) {
             return null
         }

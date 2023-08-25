@@ -14,5 +14,4 @@ interface CategoryService {
     fun getCategories() : List<CategoryDto>
 
     fun deleteCategory(categoryId : Long) : Unit
-
 }

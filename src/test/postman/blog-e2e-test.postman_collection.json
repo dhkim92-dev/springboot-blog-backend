@@ -1,0 +1,1504 @@
+{
+	"info": {
+		"_postman_id": "239951b2-ed5c-4e6d-9d7c-0bc47fce5718",
+		"name": "blog-e2e-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20431175"
+	},
+	"item": [
+		{
+			"name": "인증 서비스 테스트",
+			"item": [
+				{
+					"name": "\b어드민으로 로그인",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Admin login success', function () {",
+									"    var jsonData = pm.response.json()",
+									"    // pm.collectionVariables.set('admin_access_token', jsonData.data.access_token)",
+									"    // pm.collectionVariables.set('admin_refresh_token', jsonData.data.refresh_token)",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"admin@dohoon-kim.kr\",\n    \"password\" : \"test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/authentication",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"authentication"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "멤버로 로그인",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test('Member login success', function () {",
+									"    var jsonData = pm.response.json()",
+									"    // pm.collectionVariables.set('member_access_token', jsonData.data.access_token)",
+									"    // pm.collectionVariables.set('member_refresh_token', jsonData.data.refresh_token)",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"member@dohoon-kim.kr\",\n    \"password\" : \"test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/authentication",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"authentication"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "비활성 계정 로그인",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Inactive member login failed test success', function () {",
+									"    pm.response.to.have.status(401)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"inactivate_member@dohoon-kim.kr\",\n    \"password\" : \"test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/authentication",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"authentication"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Access Token 재발급",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Reissue Access token success', function () {",
+									"    pm.response.to.have.status(200)",
+									"    var jsonData = pm.response.json()",
+									"    console.log(jsonData)",
+									"    pm.expect(jsonData.data).to.have.keys([\"access_token\", \"type\"])",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_refresh_token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // \"refresh_token\" : \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5ZDhjNjMzZS0zZjE5LTExZWUtOWEyNC0zZTE1YjkyNDFiMjMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODEiLCJleHAiOjE2OTI2MTExODgsImlhdCI6MTY5MjUyNDc4OH0.5ZcSiJoXVucWayt7RwVJ_EysO6DbJufWB6NlCkgQ9_LhrmbnYeVYOV4Ps2KKjHKgQg8CfsIjU0H_NjTjArZWWw\"\n    \"refresh_token\" : \"{{admin_refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/authentication/reissue",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"authentication",
+								"reissue"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "멤버 서비스 테스트",
+			"item": [
+				{
+					"name": "어드민",
+					"item": [
+						{
+							"name": "어드민으로 회원 정보 수정",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"어드민의 회원 정보 수정 성공\", ()=>{",
+											"    const jsonData = pm.response.json()",
+											"    pm.response.to.have.status(200)",
+											"    pm.expect(jsonData.data.email).to.equals(\"inactivated@gmail.com\")",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_access_token}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"inactivated@gmail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/members/{{inactivate_member_id}}/email",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"members",
+										"{{inactivate_member_id}}",
+										"email"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{admin_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "멤버",
+					"item": [
+						{
+							"name": "일반 회원의 전체 멤버 목록 조회",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Not Admin member query request for members success\", function () {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{member_access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/api/v1/members",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"members"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "일반 회원의 다른 멤버 정보 수정",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"일반 회원의 다른 멤버 정보 수정 실패\", () => {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"fail-request@dohoon-kim.kr\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/members/{{inactivate_member_id}}/email",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"members",
+										"{{inactivate_member_id}}",
+										"email"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "일반 회원의 자신의 정보 수정",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"일반 회원의 자신의 정보 수정 성공\", () => {",
+											"    pm.response.to.have.status(200)",
+											"    const jsonData = pm.response.json()",
+											"    pm.expect(jsonData.data.nickname).have.to.equals(\"member-modified\")",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nickname\" : \"member-modified\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/members/{{member_id}}/nickname",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"members",
+										"{{member_id}}",
+										"nickname"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{member_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "회원가입",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Member create success', function () {",
+									"    var jsonData = pm.response.json()",
+									"    pm.response.to.have.status(201)",
+									"    pm.expect(jsonData.data).to.have.keys([\"id\", \"nickname\", \"email\", \"is_activated\"])",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.removeHeader('Authorization')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nickname\" : \"tester01\",\n    \"email\" : \"test@gmail.com\",\n    \"password\" : \"test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/members",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"members"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "게시물 서비스 테스트",
+			"item": [
+				{
+					"name": "\b어드민",
+					"item": [
+						{
+							"name": "어드민 게시물 작성",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"어드민 게시물 작성 성공\", () => {",
+											"    pm.response.to.have.status(201)",
+											"    const jsonData = pm.response.json()",
+											"    pm.variables.set(\"new_article_id\", jsonData.data.id)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"e2e-article-1\",\n    \"contents\" : \"e2e-contents-1\",\n    \"category\" : \"category_1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/articles",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"articles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "어드민 게시물 수정",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// pm.request.url = pm.request.url + pm.variables.get(\"article_id\")"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"어드민 게시물 수정 성공\", () => {",
+											"    pm.response.to.have.status(200)",
+											"    const jsonData = pm.response.json()",
+											"    pm.expect(jsonData.data.title).to.equals(\"modified-article-title\")",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"modified-article-title\",\n    \"contents\" : \"modified-article-contents\",\n    \"category\" : \"category_1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "어드민 게시물 삭제",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"어드민 게시물 삭제 성공\", ()=>{",
+											"    pm.response.to.have.status(204)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{admin_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "멤버",
+					"item": [
+						{
+							"name": "멤버 게시물 작성",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test((\"멤버 게시물 작성 실패\"), () => {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"new-article-title\",\n    \"contents\" : \"new-article-contents\",\n    \"category\" : \"category_1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/articles",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"articles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "멤버 게시물 수정",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// pm.request.url = pm.request.url + pm.collectionVariables.get(\"article_id\")"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"멤버 게시물 수정 실패\", () => {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\" : \"modified-article-title\",\n    \"contents\" : \"modified-article-contents\",\n    \"category\" : \"category_1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "멤버 게시물 삭제",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"멤버 게시물 삭제 실패\", () => {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"articles",
+										"{{article_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{member_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.request.addHeader(\"Authorization\", 'Bearer ' + pm.environment.get(\"member_access_token\"))"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "\b전체 게시물 목록 조회",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"전첵 게시물 목록 조회\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/articles",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"articles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "게시물 단건 조회",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"게시물 단건 조회 성공\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.remove(\"Authorization\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/articles/{{article_id2}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"articles",
+								"{{article_id2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "카테고리 게시물 목록 조회",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"카테고리 게시물 조회\", () => {",
+									"    const jsonData = pm.response.json()",
+									"    const expected = pm.collectionVariables.get(\"category_id\")",
+									"    for(item in jsonData.data) {",
+									"        pm.expect(item.category.id).to.equals(expected)",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/article-categories/{{category_id}}}/articles",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"article-categories",
+								"{{category_id}}}",
+								"articles"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "게시물 카테고리 서비스 테스트",
+			"item": [
+				{
+					"name": "어드민",
+					"item": [
+						{
+							"name": "\b어드민 카테고리 추가",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"어드민 게시물 카테고리 추가\", () => {",
+											"    pm.response.to.have.status(201)",
+											"    const jsonData = pm.response.json()",
+											"    pm.expect(jsonData.data.name).to.equals(\"new_category\") ",
+											"    // pm.variables.set(\"new_category_id\", jsonData.data.id)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{admin_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\" : \"new_category\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/article-categories",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"article-categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "어드민 카테고리 수정",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"어드민 카테고리 수정\", () => {",
+											"    pm.response.to.have.status(200)",
+											"    const jsonData = pm.response.json()",
+											"    pm.expect(jsonData.data.name).to.equals(\"modified_new_ca\")",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"new_name\" : \"modified_new_ca\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/article-categories/{{category_id}}/name",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"article-categories",
+										"{{category_id}}",
+										"name"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "어드민 카테고리 삭제",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"어드민 카테고리 삭제\", () => {",
+											"    pm.response.to.have.status(204)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/v1/article-categories/{{category_id}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"article-categories",
+										"{{category_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{admin_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.request.addHeader(\"Authorization\", \"Bearer \" + pm.environment.get(\"admin_access_token\"))"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "\b멤버",
+					"item": [
+						{
+							"name": "멤버 카테고리 추가",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"멤버 카테고리 추가\", () => {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\" : \"failed_request\"   \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/article-categories",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"article-categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "멤버 카테고리 수정",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"멤버 카테고리 수정\", () => {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"new_name\" : \"failed_request\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/v1/article-categories/{{category_id}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"article-categories",
+										"{{category_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "멤버 카테고리 삭제",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"멤버 카테고리 삭제\", () => {",
+											"    pm.response.to.have.status(403)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/v1/article-categories/{{category_id}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"article-categories",
+										"{{category_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{member_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.request.addHeader(\"Authorization\", \"Bearer \" + pm.environment.get(\"member_access_token\"))"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "\b카테고리 목록 조회",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"카테고리 목록 조회\", () => {",
+									"    const jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.data.data[0].name).to.equals(\"category_2\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/article-categories",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"article-categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// pm.collectionVariables.clear()",
+					"console.log(\"pre-request-script start!\")",
+					"pm.collectionVariables.set(\"member_id\", \"136b31a4-e67d-4ab8-98ce-e0d4bad6ac25\")",
+					"pm.collectionVariables.set(\"inactivate_member_id\", \"eb4ee0b9-8dd7-4348-93e4-4b965dd9fc3b\")",
+					"pm.collectionVariables.set(\"article_id\", \"f986fcad-a333-4381-a80d-7ed4709a9327\")",
+					"pm.collectionVariables.set(\"article_id2\", \"ce643373-82c2-4b70-80aa-1bec65345c05\")",
+					"pm.collectionVariables.set(\"category_id\", \"1\")",
+					"",
+					"const memberLoginRequest = {",
+					"    email : 'member@dohoon-kim.kr',",
+					"    password : 'test1234'",
+					"}",
+					"",
+					"const adminLoginRequest = {",
+					"    email : 'admin@dohoon-kim.kr',",
+					"    password : 'test1234'",
+					"}",
+					"",
+					"pm.sendRequest({",
+					"    url : pm.collectionVariables.get(\"host\") + \"/api/v1/authentication\",",
+					"    method : 'POST',",
+					"    header : {",
+					"        \"content-type\" : \"application/json\",",
+					"        \"accept\" : \"*\"",
+					"    },",
+					"    body: {",
+					"        mode: 'raw',",
+					"        raw: JSON.stringify(adminLoginRequest)",
+					"    }}, (err, res) => {",
+					"        const jsonData = res.json()",
+					"        console.log(jsonData)",
+					"        pm.collectionVariables.set('admin_refresh_token', jsonData.data.refresh_token)",
+					"        pm.collectionVariables.set('admin_access_token', jsonData.data.access_token)",
+					"    }",
+					")",
+					"",
+					"pm.sendRequest({",
+					"    url : pm.collectionVariables.get(\"host\") + \"/api/v1/authentication\",",
+					"    method : 'POST',",
+					"    header : {",
+					"        \"content-type\" : \"application/json\",",
+					"        \"accept\" : \"*\"",
+					"    },",
+					"    body: {",
+					"        mode : 'raw',",
+					"        raw : JSON.stringify(memberLoginRequest)",
+					"    }}, (err, res) => {",
+					"        const jsonData = res.json()",
+					"        console.log(jsonData)",
+					"        pm.collectionVariables.set('member_refresh_token', jsonData.data.refresh_token)",
+					"        pm.collectionVariables.set('member_access_token', jsonData.data.access_token)",
+					"    }",
+					")"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "member_id",
+			"value": ""
+		},
+		{
+			"key": "inactivate_member_id",
+			"value": ""
+		},
+		{
+			"key": "article_id",
+			"value": ""
+		},
+		{
+			"key": "category_id",
+			"value": ""
+		},
+		{
+			"key": "admin_refresh_token",
+			"value": ""
+		},
+		{
+			"key": "admin_access_token",
+			"value": ""
+		},
+		{
+			"key": "member_refresh_token",
+			"value": ""
+		},
+		{
+			"key": "member_access_token",
+			"value": ""
+		},
+		{
+			"key": "article_id2",
+			"value": ""
+		},
+		{
+			"key": "host",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "port",
+			"value": "8080",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}

@@ -2,6 +2,9 @@ package kr.dohoonkim.blog.restapi.application.board.impl
 
 import kr.dohoonkim.blog.restapi.application.board.ArticleService
 import kr.dohoonkim.blog.restapi.application.board.dto.*
+import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLES_CACHE_KEY
+import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLE_CACHE_KEY
+import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.CATEGORIES_CACHE_KEY
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
@@ -12,6 +15,10 @@ import kr.dohoonkim.blog.restapi.domain.article.repository.CategoryRepository
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -32,6 +39,13 @@ class ArticleServiceImpl(
      * 게시글은 관리자만 생성할 수 있기 때문에, Spring Security FilterChain에서 권한 체크를 해야한다.
      */
     @Transactional
+    @Caching(
+        evict = [
+            CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true),
+            CacheEvict(ARTICLES_CACHE_KEY, allEntries = true)
+        ],
+        put = [CachePut(ARTICLE_CACHE_KEY, key="#result.id")]
+    )
     override fun createArticle(articleCreateDto: ArticleCreateDto) : ArticleDto {
         val memberId = authenticationUtil.extractMemberId()
             ?: throw UnauthorizedException(ErrorCode.AUTHENTICATION_FAIL)
@@ -44,6 +58,15 @@ class ArticleServiceImpl(
     }
 
     @Transactional
+    @Caching(
+        evict = [
+            CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true),
+            CacheEvict(ARTICLES_CACHE_KEY, allEntries = true),
+        ],
+        put = [
+            CachePut(ARTICLE_CACHE_KEY, key = "#articleModifyDto.articleId.toString()")
+        ]
+    )
     override fun modifyArticle(articleModifyDto: ArticleModifyDto) : ArticleDto {
         val memberId = authenticationUtil.extractMemberId()
                 ?: throw UnauthorizedException(ErrorCode.AUTHENTICATION_FAIL)
@@ -65,6 +88,13 @@ class ArticleServiceImpl(
     }
 
     @Transactional
+    @Caching(
+        evict = [
+            CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true),
+            CacheEvict(ARTICLES_CACHE_KEY, allEntries = true),
+            CacheEvict(ARTICLE_CACHE_KEY, key="#articleId")
+        ]
+    )
     override fun deleteArticle(articleId : UUID) : Unit {
         val article = articleRepository.findByArticleId(articleId)
             ?: throw EntityNotFoundException(ErrorCode.ARTICLE_NOT_FOUND)
@@ -77,14 +107,15 @@ class ArticleServiceImpl(
     }
 
     @Transactional
+    @Cacheable(value=["article"])
     override fun getArticle(articleId: UUID): ArticleDto {
         return articleRepository.findByArticleId(articleId)
             ?: throw EntityNotFoundException(ErrorCode.ARTICLE_NOT_FOUND)
     }
 
     @Transactional
+    @Cacheable(value=["articles"], unless = "#result.isEmpty()")
     override fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, direction: String?, pageSize: Long): List<ArticleSummaryDto> {
         return articleRepository.findArticles(categoryId, cursor, direction, pageSize)
     }
-
 }

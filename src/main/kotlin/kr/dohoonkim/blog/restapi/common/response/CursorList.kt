@@ -17,7 +17,7 @@ data class CursorList<T>(val count : Int,
 
             var count : Int = if(pageSize + 1 <= data.size) pageSize.toInt() else data.size.toInt()
 
-            return CursorList<T>(count, data.subList(0, count), next, prev)
+            return CursorList<T>(count, data.subList(0, count), prev, next)
         }
     }
 }
