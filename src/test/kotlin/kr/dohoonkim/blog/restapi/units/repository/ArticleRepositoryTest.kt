@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
-import java.util.UUID
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -80,7 +79,7 @@ class ArticleRepositoryTest : BehaviorSpec() {
                     articleRepository.saveAll(articles)
 
                     val category1Articles = articleRepository.findArticles(
-                        category1.name,
+                        category1.id,
                         null,
                         null,
                         4L
