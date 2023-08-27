@@ -69,27 +69,12 @@ class ArticleController(private val articleService: ArticleService) {
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "P005 - 게시물 목록 조회 성공"),
     ])
-    @GetMapping("v1/article-categories/{categoryId}/articles")
-    fun getCategoryArticles(@PathVariable categoryId : Long,
+    @GetMapping("v1/articles")
+    fun getArticles(@RequestParam(required = false) categoryId : Long?,
                             @RequestParam(required = false) createdAt: LocalDateTime?,
                             @RequestParam(required = false) direction : String?)
     : ResponseEntity<ApiResult<CursorList<ArticleSummaryDto>>> {
-        val articles = articleService.getListOfArticles(categoryId, createdAt, direction, DEFAULT_PAGINATION_SIZE)
-        val data = CursorListBuilder.build(articles, listOf("createdAt"), DEFAULT_PAGINATION_SIZE)
-
-        return Ok(GET_ARTICLE_LIST_SUCCESS, data)
-    }
-
-
-    @Operation(summary = "전체 카테고리로 게시물 목록 조회", description = "전체 게시물 목록을 조회한다.")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "P005 - 게시물 목록 조회 성공"),
-    ])
-    @GetMapping("v1/articles")
-    fun getArticles(@RequestParam(required = false) createdAt : LocalDateTime?,
-                    @RequestParam(required = false) direction : String?)
-    : ResponseEntity<ApiResult<CursorList<ArticleSummaryDto>>> {
-        val articles = articleService.getListOfArticles(0L, createdAt, direction, DEFAULT_PAGINATION_SIZE)
+        val articles = articleService.getListOfArticles(categoryId?:0, createdAt, direction, DEFAULT_PAGINATION_SIZE)
         val data = CursorListBuilder.build(articles, listOf("createdAt"), DEFAULT_PAGINATION_SIZE)
 
         return Ok(GET_ARTICLE_LIST_SUCCESS, data)

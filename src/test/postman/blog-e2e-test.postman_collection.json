@@ -954,10 +954,16 @@
 									"pm.test(\"카테고리 게시물 조회\", () => {",
 									"    const jsonData = pm.response.json()",
 									"    const expected = pm.collectionVariables.get(\"category_id\")",
-									"    for(item in jsonData.data) {",
-									"        pm.expect(item.category.id).to.equals(expected)",
+									"    const array = jsonData.data.data",
+									"    console.log(`expected : ${expected}`)",
+									"    for (i in array) {",
+									"        console.log(`${array[i].category.id} == ${expected} result : ${array[i].category.id == expected}`)",
+									"        pm.expect(expected).to.equals(`${array[i].category.id}`)",
 									"    }",
-									"})"
+									"})",
+									"",
+									"",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -967,16 +973,20 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/api/v1/article-categories/{{category_id}}}/articles",
+							"raw": "{{host}}/api/v1/articles?categoryId={{category_id}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"article-categories",
-								"{{category_id}}}",
 								"articles"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "{{category_id}}"
+								}
 							]
 						}
 					},
@@ -1476,6 +1486,22 @@
 			"key": "category_id",
 			"value": "1",
 			"type": "string"
+		},
+		{
+			"key": "member_refresh_token",
+			"value": ""
+		},
+		{
+			"key": "member_access_token",
+			"value": ""
+		},
+		{
+			"key": "admin_refresh_token",
+			"value": ""
+		},
+		{
+			"key": "admin_access_token",
+			"value": ""
 		}
 	]
 }
