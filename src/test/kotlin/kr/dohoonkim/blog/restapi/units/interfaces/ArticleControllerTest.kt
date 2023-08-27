@@ -76,7 +76,7 @@ class ArticleControllerTest : AnnotationSpec() {
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
         every { articleService.getListOfArticles(any(), any(), any(), any()) } returns data
-        val result = articleController.getArticles(null, null).body!!
+        val result = articleController.getArticles(null, null, null).body!!
 
         result.status shouldBe OK.value()
         result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
@@ -93,7 +93,7 @@ class ArticleControllerTest : AnnotationSpec() {
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
         every { articleService.getListOfArticles(any(), any(), any(), any()) } returns data
-        val result = articleController.getCategoryArticles( category.id,null, "next").body!!
+        val result = articleController.getArticles( category.id,null, "next").body!!
 
         result.status shouldBe OK.value()
         result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
@@ -110,7 +110,7 @@ class ArticleControllerTest : AnnotationSpec() {
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
         every { articleService.getListOfArticles(any(), any(), any(), any()) } returns data
-        val result = articleController.getArticles(dummy[9].createdAt, "next").body!!
+        val result = articleController.getArticles(null, dummy[9].createdAt, "next").body!!
 
         result.status shouldBe OK.value()
         result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
