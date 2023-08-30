@@ -53,12 +53,12 @@ class ArticleServiceTest : BehaviorSpec({
 
 
         When("카테고리 목록이 주어졌을 때") {
-            every { articleRepository.findArticles(category.id, any(), any(), any()) } returns articleList.filter{
+            every { articleRepository.findArticles(category.id, any(), any()) } returns articleList.filter{
                 it.category.name == category.name
             }
 
             Then("해당 카테고리의 게시글 목록만 반환된다.") {
-                val ret = articleService.getListOfArticles(category.id, null, "next", 20)
+                val ret = articleService.getListOfArticles(category.id, null, 20)
 
                 ret.size shouldBe 21
                 ret.forEach{
@@ -68,10 +68,10 @@ class ArticleServiceTest : BehaviorSpec({
         }
 
         When("카테고리 목록이 주어지지 않을 때") {
-            every { articleRepository.findArticles(any(), any(), any(), any()) } returns articleList.subList(0, 20)
+            every { articleRepository.findArticles(any(), any(), any()) } returns articleList.subList(0, 20)
 
             Then("전체 카테고리에 대해 조회된다.") {
-                val ret = articleService.getListOfArticles(0L, null, null, 20)
+                val ret = articleService.getListOfArticles(0L, null, 20)
 
                 ret.size shouldBe 20
                 ret[0].category.name shouldBe category.name
@@ -84,12 +84,12 @@ class ArticleServiceTest : BehaviorSpec({
             articleList.sortBy { it.createdAt }
             articleList.reverse()
             val cursor = articleList[4].createdAt
-            every { articleRepository.findArticles(any(), any(), any(), any()) } returns articleList.filter {
+            every { articleRepository.findArticles(any(), any(), any()) } returns articleList.filter {
                 it.createdAt <= cursor
             }
 
             Then("커서 이전의 값들이 반환된다.") {
-                val ret = articleService.getListOfArticles(0L, cursor, direction = "next", 20)
+                val ret = articleService.getListOfArticles(0L, cursor, 20)
 
                 ret.forEach {
                     it.createdAt shouldBeLessThanOrEqualTo cursor

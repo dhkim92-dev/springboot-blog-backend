@@ -12,7 +12,6 @@ import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
 import kr.dohoonkim.blog.restapi.common.response.CursorList
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
-import kr.dohoonkim.blog.restapi.application.board.impl.CategoryServiceImpl
 import kr.dohoonkim.blog.restapi.application.board.dto.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -58,7 +57,7 @@ class CategoryController(
     @GetMapping("v1/article-categories")
     fun list(): ResponseEntity<ApiResult<CursorList<CategoryDto>>> {
         val categories = categoryService.getCategories()
-        val ret = CursorList<CategoryDto>(categories.size, categories, null, null)
+        val ret = CursorList<CategoryDto>(categories.size, categories, null)
 
         return Ok(ResultCode.GET_CATEGORIES_SUCCESS, ret)
     }

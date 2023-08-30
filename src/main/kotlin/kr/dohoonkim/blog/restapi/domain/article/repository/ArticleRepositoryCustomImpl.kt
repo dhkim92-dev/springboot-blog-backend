@@ -57,7 +57,6 @@ class ArticleRepositoryCustomImpl (
     override fun findArticles(
         categoryId: Long,
         createdAt: LocalDateTime?,
-        cursorDirection: String?,
         pageSize: Long
     ) : List<ArticleSummaryDto> {
         val data = queryFactory
@@ -85,13 +84,10 @@ class ArticleRepositoryCustomImpl (
             .leftJoin(member)
             .on(equalMember())
             .where(eqCategoryId(categoryId),
-                conditionForCursorDirection(createdAt, cursorDirection))
-            .orderBy(orderByCursorDirection(cursorDirection?:"next"))
+                ltOrEqCreatedAt(createdAt))
+            .orderBy(article.createdAt.desc())
             .limit(pageSize+1)
             .fetch()
-
-        data.sortBy { it.createdAt }
-        data.reverse()
 
         return data
     }
@@ -104,8 +100,8 @@ class ArticleRepositoryCustomImpl (
         return if( categoryName == null ) null else category.name.eq(categoryName)
     }
 
-    private fun ltCreatedAt(createdAt : LocalDateTime?) : BooleanExpression? {
-        return if( createdAt == null ) null else article.createdAt.lt(createdAt)
+    private fun ltOrEqCreatedAt(createdAt : LocalDateTime?) : BooleanExpression? {
+        return if( createdAt == null ) null else article.createdAt.loe(createdAt)
     }
 
     private fun gtCreatedAt(createdAt: LocalDateTime?) : BooleanExpression? {
@@ -131,7 +127,7 @@ class ArticleRepositoryCustomImpl (
         }
 
         if(direction == null || direction == "next") {
-            return ltCreatedAt(createdAt)
+            return ltOrEqCreatedAt(createdAt)
         }
 
         return gtCreatedAt(createdAt)

@@ -70,13 +70,13 @@ class ArticleControllerTest : AnnotationSpec() {
     fun `전체 게시물 목록을 조회한다`() {
         var data = dummy.map { it -> ArticleSummaryDto.fromEntity(it) }.subList(0, 11)
         println("data size : ${data.size}")
-        val cursorData = CursorListBuilder.build(data, listOf("createdAt"), 20, false)
+        val cursorData = CursorListBuilder.build(data, mapOf("createdAt" to "createdAt"), 20, false)
         val response = ApiResult.Ok(GET_ARTICLE_LIST_SUCCESS, cursorData)
 
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
-        every { articleService.getListOfArticles(any(), any(), any(), any()) } returns data
-        val result = articleController.getArticles(null, null, null).body!!
+        every { articleService.getListOfArticles(any(), any(), any()) } returns data
+        val result = articleController.getArticles(null, null).body!!
 
         result.status shouldBe OK.value()
         result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
@@ -87,13 +87,13 @@ class ArticleControllerTest : AnnotationSpec() {
     fun `특정 카테고리의 게시물을 조회한다`() {
         val data = dummy.filter { it.category == category }
             .map{ it -> ArticleSummaryDto.fromEntity(it) }
-        val cursorData = CursorListBuilder.build(data, listOf("createdAt"), 20L, false)
+        val cursorData = CursorListBuilder.build(data, mapOf("createdAt" to "createdAt"), 20L, false)
         val response = ApiResult.Ok(GET_ARTICLE_LIST_SUCCESS, cursorData)
 
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
-        every { articleService.getListOfArticles(any(), any(), any(), any()) } returns data
-        val result = articleController.getArticles( category.id,null, "next").body!!
+        every { articleService.getListOfArticles(any(), any(), any()) } returns data
+        val result = articleController.getArticles( category.id,null).body!!
 
         result.status shouldBe OK.value()
         result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
@@ -104,13 +104,13 @@ class ArticleControllerTest : AnnotationSpec() {
     fun `커서와 함께 조회한다`() {
         val data = dummy.subList(10, 19)
             .map{ it -> ArticleSummaryDto.fromEntity(it) }
-        val cursorData = CursorListBuilder.build(data, listOf("createdAt"),20L, false)
+        val cursorData = CursorListBuilder.build(data, mapOf("createdAt" to "createdAt"),20L, false)
         val response = ApiResult.Ok(GET_ARTICLE_LIST_SUCCESS, cursorData)
 
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
-        every { articleService.getListOfArticles(any(), any(), any(), any()) } returns data
-        val result = articleController.getArticles(null, dummy[9].createdAt, "next").body!!
+        every { articleService.getListOfArticles(any(), any(), any()) } returns data
+        val result = articleController.getArticles(null, dummy[9].createdAt).body!!
 
         result.status shouldBe OK.value()
         result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code

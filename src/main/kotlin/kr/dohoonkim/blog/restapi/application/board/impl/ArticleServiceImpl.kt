@@ -115,7 +115,7 @@ class ArticleServiceImpl(
 
     @Transactional
     @Cacheable(value=["articles"], unless = "#result.isEmpty()")
-    override fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, direction: String?, pageSize: Long): List<ArticleSummaryDto> {
-        return articleRepository.findArticles(categoryId, cursor, direction, pageSize)
+    override fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, pageSize: Long): List<ArticleSummaryDto> {
+        return articleRepository.findArticles(categoryId, cursor, pageSize)
     }
 }
