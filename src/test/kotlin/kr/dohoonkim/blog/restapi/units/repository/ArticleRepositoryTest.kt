@@ -81,7 +81,6 @@ class ArticleRepositoryTest : BehaviorSpec() {
                     val category1Articles = articleRepository.findArticles(
                         category1.id,
                         null,
-                        null,
                         4L
                     )
 

@@ -11,7 +11,6 @@ import kr.dohoonkim.blog.restapi.application.board.ArticleService
 import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
 import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
-import kr.dohoonkim.blog.restapi.common.response.ResultCode
 import kr.dohoonkim.blog.restapi.application.board.dto.*
 import kr.dohoonkim.blog.restapi.common.response.CursorList
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
@@ -71,11 +70,13 @@ class ArticleController(private val articleService: ArticleService) {
     ])
     @GetMapping("v1/articles")
     fun getArticles(@RequestParam(required = false) categoryId : Long?,
-                            @RequestParam(required = false) createdAt: LocalDateTime?,
-                            @RequestParam(required = false) direction : String?)
+                            @RequestParam(required = false) createdAt: LocalDateTime?)
     : ResponseEntity<ApiResult<CursorList<ArticleSummaryDto>>> {
-        val articles = articleService.getListOfArticles(categoryId?:0, createdAt, direction, DEFAULT_PAGINATION_SIZE)
-        val data = CursorListBuilder.build(articles, listOf("createdAt"), DEFAULT_PAGINATION_SIZE)
+        val articles = articleService.getListOfArticles(categoryId?:0, createdAt, DEFAULT_PAGINATION_SIZE)
+        val queryMap = mutableMapOf<String, String>("created_at" to "createdAt")
+        if(categoryId != null && categoryId != 0L) queryMap.put("category#id", "categoryId")
+
+        val data = CursorListBuilder.build(articles, queryMap, DEFAULT_PAGINATION_SIZE)
 
         return Ok(GET_ARTICLE_LIST_SUCCESS, data)
     }

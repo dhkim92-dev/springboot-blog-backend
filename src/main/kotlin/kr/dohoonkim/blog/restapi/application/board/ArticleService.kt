@@ -12,7 +12,7 @@ interface ArticleService {
 
     fun deleteArticle(articleId : UUID) : Unit
 
-    fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, direction: String?, pageSize: Long) : List<ArticleSummaryDto>
+    fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, pageSize: Long) : List<ArticleSummaryDto>
 
     fun getArticle(articleId : UUID) : ArticleDto
 }

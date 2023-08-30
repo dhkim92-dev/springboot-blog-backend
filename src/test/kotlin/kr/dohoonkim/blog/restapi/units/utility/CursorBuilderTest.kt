@@ -18,7 +18,7 @@ class CursorBuilderTest : BehaviorSpec({
             Then("createdAt, name, direction을 포함한 next 커서가 정상적으로 반환된다.") {
                 val cursor = CursorListBuilder.next(
                     data,
-                    listOf("createdAt", "name"),
+                    mapOf("createdAt" to "createdAt", "name" to "name"),
                     2L,
                     false
                 )
@@ -26,20 +26,6 @@ class CursorBuilderTest : BehaviorSpec({
                 println("next url : $cursor")
                 cursor!!.contains("createdAt") shouldBe true
                 cursor!!.contains(data[data.size-1].createdAt.toString()) shouldBe true
-                cursor!!.contains("name") shouldBe true
-            }
-        }
-
-        When("createdAt, name을 커서로하는 prev 커서를 생성하려 할 때") {
-            Then("createdAt, name, direction을 포함한 prev 커서가 정상적으로 반환된다.")  {
-                val cursor = CursorListBuilder.prev(data,
-                    listOf("createdAt", "name"),
-                    false
-                )
-
-                println("next url : $cursor")
-                cursor!!.contains("createdAt") shouldBe true
-                cursor!!.contains(data[0].createdAt.toString()) shouldBe true
                 cursor!!.contains("name") shouldBe true
             }
         }
