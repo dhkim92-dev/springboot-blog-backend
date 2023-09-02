@@ -17,17 +17,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.multipart.support.MissingServletRequestPartException
-
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
     private val log = LoggerFactory.getLogger(this::class.java)
 
     @ExceptionHandler
-    protected fun invalidJwtExceptionHandler(e : JWTVerificationException)
+    protected fun expiredJwtExceptionHandler(e : TokenExpiredException)
     : ResponseEntity<ErrorResponse>{
-        val response = ErrorResponse.of(ErrorCode.AUTHENTICATION_FAIL, e.message!!)
+        val response = ErrorResponse.of(ErrorCode.EXPIRED_TOKEN_EXCEPTION, e.message!!)
         return ResponseEntity(response, UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    protected fun invalidJwtExceptionHandler(e : JWTVerificationException) : ResponseEntity<ErrorResponse>{
+        val response = ErrorResponse.of(ErrorCode.INVALID_JWT_EXCEPTION, e.message!!)
+        return ResponseEntity(response, UNAUTHORIZED)
     }
 
     @ExceptionHandler
