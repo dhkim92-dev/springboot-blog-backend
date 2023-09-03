@@ -48,6 +48,7 @@ class SecurityConfig(
             "/api/v1/articles/**",
             "/api/v1/article-categories",
             "/api/v1/article-categories/**",
+            "/api/v1/files/**"
         )
         private val HTTP_COMMAND_METHODS = listOf(HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.POST, HttpMethod.DELETE)
     }
