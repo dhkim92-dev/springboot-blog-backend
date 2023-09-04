@@ -1,12 +1,9 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
 import org.springframework.stereotype.Component
-import java.awt.Graphics2D
+import java.awt.Image
 import java.awt.image.BufferedImage
-import java.awt.image.BufferedImageOp
-import java.io.File
 import java.io.InputStream
-import java.nio.Buffer
 import javax.imageio.ImageIO
 
 @Component
@@ -21,7 +18,7 @@ class ImageResizer {
 
     fun resize(inputStream : InputStream, width : Int, height : Int) : BufferedImage {
         val origin = ImageIO.read(inputStream)
-        return createGraphics2D(origin, width, height);
+        return createResizedBufferedImage(origin, width, height);
     }
 
     /**
@@ -37,19 +34,19 @@ class ImageResizer {
             return origin
         }
 
-        val ratio = origin.width / origin.height.toFloat();
-        val height = (ratio * width).toInt()
+        val ratio = origin.height.toFloat() / origin.width.toFloat();
+        val height = (ratio * width.toFloat()).toInt()
 
-        return createGraphics2D(origin, width, height)
+        return createResizedBufferedImage(origin, width, height)
     }
 
-    private fun createGraphics2D(origin : BufferedImage, width : Int, height : Int) : BufferedImage {
-        val resizedImage = BufferedImage(width, height, origin.type)
-        val graphics = resizedImage.createGraphics();
-        graphics.drawImage(origin, 0, 0, width, height, null);
-        graphics.dispose();
+    private fun createResizedBufferedImage(origin : BufferedImage, width : Int, height : Int) : BufferedImage {
 
-        return resizedImage
+        val resizedImage = origin.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        val outputBufferedImage = BufferedImage(width, height, origin.type);
+        outputBufferedImage.getGraphics().drawImage(resizedImage, 0, 0, null);
+
+        return outputBufferedImage
     }
 
 }

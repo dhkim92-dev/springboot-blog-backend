@@ -44,7 +44,7 @@ class CategoryController(
             content = [Content(schema = Schema(implementation=ErrorResponse::class))])
     ])
     @PostMapping("v1/article-categories")
-    fun create(@RequestBody @Valid request : CategoryCreateRequest) : ResponseEntity<ApiResult<CategoryDto>> {
+    fun createCategory(@RequestBody @Valid request : CategoryCreateRequest) : ResponseEntity<ApiResult<CategoryDto>> {
         val dto = CategoryCreateDto(name = request.name)
 
         return Ok(ResultCode.CREATE_CATEGORY_SUCCESS, categoryService.createCategory(dto))
@@ -55,7 +55,7 @@ class CategoryController(
         ApiResponse(responseCode = "200", description = "AC04 - 카테고리 목록을 조회하였습니다."),
     ])
     @GetMapping("v1/article-categories")
-    fun list(): ResponseEntity<ApiResult<CursorList<CategoryDto>>> {
+    fun getCategories(): ResponseEntity<ApiResult<CursorList<CategoryDto>>> {
         val categories = categoryService.getCategories()
         val ret = CursorList<CategoryDto>(categories.size, categories, null)
 
