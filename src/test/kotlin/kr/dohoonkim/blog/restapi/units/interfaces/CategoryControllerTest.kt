@@ -31,7 +31,7 @@ class CategoryControllerTest : AnnotationSpec() {
 
         every { categoryService.createCategory(any()) } returns data
 
-        val response = categoryController.create(request).body!!
+        val response = categoryController.createCategory(request).body!!
         response.status shouldBe CREATE_CATEGORY_SUCCESS.status.value()
         response.code shouldBe CREATE_CATEGORY_SUCCESS.code
         response.data shouldBe data
@@ -41,7 +41,7 @@ class CategoryControllerTest : AnnotationSpec() {
     fun `카테고리 목록을 받아온다`() {
         every { categoryService.getCategories() } returns data
 
-        val response = categoryController.list().body!!
+        val response = categoryController.getCategories().body!!
 
         response.status shouldBe GET_CATEGORIES_SUCCESS.status.value()
         response.code shouldBe  GET_CATEGORIES_SUCCESS.code
