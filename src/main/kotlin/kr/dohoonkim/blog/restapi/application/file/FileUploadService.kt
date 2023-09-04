@@ -36,7 +36,7 @@ class FileUploadService(
         }
 
         val ext = FilenameUtils.getExtension(file.originalFilename)
-        val resizedImage = imageResizer.resize(file.inputStream, 640)
+        val resizedImage = imageResizer.resize(file.inputStream, 1280)
         val filename = "${UUID.randomUUID().toString()}.$ext"
         val filePath = "images/${filename[0]}/$filename"
         val file = File("$basePath/${filePath}")
