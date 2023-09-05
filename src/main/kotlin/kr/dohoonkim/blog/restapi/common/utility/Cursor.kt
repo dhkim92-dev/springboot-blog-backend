@@ -1,5 +1,6 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
+import org.slf4j.LoggerFactory
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import java.time.LocalDateTime
@@ -7,6 +8,7 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class Cursor {
+    val log = LoggerFactory.getLogger(javaClass)
     val queries : MutableMap<String, String> = mutableMapOf()
 
     fun append(key : String, value : String) : Cursor {
@@ -43,7 +45,12 @@ class Cursor {
         val builder = StringBuilder()
 
         if(withUrl) {
-            val url = (RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes).request.requestURL
+            val request = (RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes).request
+            var url = request.requestURL.toString()
+            if(url.startsWith("http://") && url.indexOf("localhost") < 0) {
+                url = url.replace("http://", "https://")
+            }
+
             builder.append(url)
         }
 
