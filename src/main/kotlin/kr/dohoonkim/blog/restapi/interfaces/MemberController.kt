@@ -35,26 +35,25 @@ class MemberController(private val memberService: MemberService) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @GetMapping("v1/members")
-    fun getMembers(pageable: Pageable?) = Ok(GET_MEMBER_LIST_SUCCESS, this.memberService.getMembers(pageable))
+    fun getMembers(pageable: Pageable?) = Ok(GET_MEMBER_LIST_SUCCESS, memberService.getMembers(pageable))
 
     @PostMapping("v1/members")
     fun createMember(@RequestBody @Valid request: MemberJoinRequest): ResponseEntity<ApiResult<MemberDto>> {
-        log.info("Member join request : $request")
         val dto = MemberCreateDto(
             nickname = request.nickname,
             email = request.email,
             password = request.password
         )
-        return Ok(CREATE_MEMBER_SUCCESS, this.memberService.create(dto));
+        return Ok(CREATE_MEMBER_SUCCESS, memberService.create(dto));
     }
 
     @GetMapping("v1/members/email/exists")
     fun checkEmail(@RequestParam("value") @Valid @Email @NotBlank @NotEmpty email: String) =
-        Ok(AVAILABLE_EMAIL, this.memberService.checkEmailAvailable(email))
+        Ok(AVAILABLE_EMAIL, memberService.checkEmailAvailable(email))
 
     @GetMapping("v1/members/nickname/exists")
     fun checkNickname(@RequestParam("value") @Valid @Length(min = 4, max = 30) nickname: String) =
-        Ok(AVAILABLE_NICKNAME, this.memberService.checkNicknameAvailable(nickname))
+        Ok(AVAILABLE_NICKNAME, memberService.checkNicknameAvailable(nickname))
 
     @PatchMapping("v1/members/{resourceId}/nickname")
     fun changeNickname(
@@ -67,7 +66,7 @@ class MemberController(private val memberService: MemberService) {
             nickname = request.nickname
         )
 
-        return Ok(CHANGE_NICKNAME_SUCCESS, this.memberService.changeMemberNickname(memberId, dto))
+        return Ok(CHANGE_NICKNAME_SUCCESS, memberService.changeMemberNickname(memberId, dto))
     }
 
     @PatchMapping("v1/members/{resourceId}/email")
@@ -77,7 +76,7 @@ class MemberController(private val memberService: MemberService) {
         @MemberId memberId : UUID
     ): ResponseEntity<ApiResult<MemberDto>> {
         val dto = MemberEmailChangeDto(resourceId, request.email)
-        return Ok(CHANGE_EMAIL_SUCCESS, this.memberService.changeMemberEmail(memberId, dto))
+        return Ok(CHANGE_EMAIL_SUCCESS, memberService.changeMemberEmail(memberId, dto))
     }
 
     @PatchMapping("v1/members/{resourceId}/password")
@@ -92,11 +91,11 @@ class MemberController(private val memberService: MemberService) {
             newPassword = request.newPassword
         )
 
-        return Ok(CHANGE_PASSWORD_SUCCESS, this.memberService.changePassword(memberId, dto))
+        return Ok(CHANGE_PASSWORD_SUCCESS, memberService.changePassword(memberId, dto))
     }
 
     @DeleteMapping("v1/members/{resourceId}")
     fun withdrawal(@PathVariable resourceId: UUID, @MemberId memberId: UUID): ResponseEntity<ApiResult<Unit>> =
-        Ok(DELETE_MEMBER_SUCCESS, this.memberService.delete(memberId, resourceId));
+        Ok(DELETE_MEMBER_SUCCESS, memberService.delete(memberId, resourceId));
 
 }
