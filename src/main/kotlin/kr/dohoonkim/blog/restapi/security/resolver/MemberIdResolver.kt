@@ -2,6 +2,7 @@ package kr.dohoonkim.blog.restapi.security.resolver
 
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.common.utility.AuthenticationUtil
+import kr.dohoonkim.blog.restapi.security.annotations.MemberId
 import org.springframework.core.MethodParameter
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Component
@@ -30,6 +31,6 @@ class MemberIdResolver(private val authenticationUtil: AuthenticationUtil) : Han
     }
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return true;
+        return parameter.hasParameterAnnotation(MemberId::class.java)
     }
 }

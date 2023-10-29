@@ -37,7 +37,6 @@ class AuthenticationUtil(private val memberRepository: MemberRepository) {
 
     fun isAdmin(): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication.principal as JwtClaims
-
         return authentication.roles.contains(Role.ADMIN.rolename)
     }
 
