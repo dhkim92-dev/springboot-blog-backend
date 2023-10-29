@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.config.security
+package kr.dohoonkim.blog.restapi.security
 
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory

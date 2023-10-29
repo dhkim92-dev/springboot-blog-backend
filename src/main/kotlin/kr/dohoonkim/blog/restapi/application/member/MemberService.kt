@@ -21,10 +21,10 @@ import java.util.UUID
 @Service
 @Transactional(readOnly = true)
 class MemberService(
+
     private val memberRepository : MemberRepository,
     private val passwordEncoder: BCryptPasswordEncoder,
     private val authenticationUtil: AuthenticationUtil) {
-
     private val log : Logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional

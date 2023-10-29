@@ -39,6 +39,7 @@ enum class ErrorCode(val status : HttpStatus, val code : String, val message : S
     INVALID_PAYLOAD_EXCEPTION(HttpStatus.UNAUTHORIZED, "J001", "JWT 페이로드가 잘못되었습니다."),
     EXPIRED_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "J002", "만료된 토큰입니다."),
     INVALID_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "J003", "인증 헤더 정보가 잘못되었습니다."),
-    NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, "A002", "이메일 인증이 완료되지 않은 계정입니다.")
-
+    NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, "A002", "이메일 인증이 완료되지 않은 계정입니다."),
+    NOT_SUPPORTED_OAUTH2_PROVIDER(HttpStatus.BAD_REQUEST, "A003", "지원하지 않는 OAuth2 Provider 입니다."),
+    OAUTH2_NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, "A004", "이메일 인증이 완료되지 않은 소셜 계정입니다.")
 }

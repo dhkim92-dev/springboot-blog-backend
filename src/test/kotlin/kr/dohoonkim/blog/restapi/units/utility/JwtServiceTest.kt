@@ -2,8 +2,8 @@ package kr.dohoonkim.blog.restapi.units.utility
 
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
-import kr.dohoonkim.blog.restapi.config.security.jwt.JwtConfig
-import kr.dohoonkim.blog.restapi.config.security.jwt.JwtService
+import kr.dohoonkim.blog.restapi.security.jwt.JwtConfig
+import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
 import kr.dohoonkim.blog.restapi.domain.member.Role
 import org.springframework.security.core.authority.SimpleGrantedAuthority

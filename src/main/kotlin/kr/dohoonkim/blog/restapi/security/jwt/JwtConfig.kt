@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.config.security.jwt
+package kr.dohoonkim.blog.restapi.security.jwt
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration

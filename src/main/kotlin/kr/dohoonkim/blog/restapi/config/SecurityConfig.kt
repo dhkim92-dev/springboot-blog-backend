@@ -1,9 +1,16 @@
-package kr.dohoonkim.blog.restapi.config.security
+package kr.dohoonkim.blog.restapi.config
 
-import kr.dohoonkim.blog.restapi.config.security.filter.JwtAuthenticationFilter
-import kr.dohoonkim.blog.restapi.config.security.handler.*
+import kr.dohoonkim.blog.restapi.application.authentication.oauth2.CustomOAuth2UserService
+import kr.dohoonkim.blog.restapi.security.MethodPathRequestMatcher
+import kr.dohoonkim.blog.restapi.security.filter.JwtAuthenticationFilter
 import kr.dohoonkim.blog.restapi.config.security.jwt.*
-import kr.dohoonkim.blog.restapi.config.security.provider.JwtAuthenticationProvider
+import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
+import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationFailureHandler
+import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationSuccessHandler
+import kr.dohoonkim.blog.restapi.security.provider.JwtAuthenticationProvider
+import kr.dohoonkim.blog.restapi.security.handler.EntryPointUnauthorizedHandler
+import kr.dohoonkim.blog.restapi.security.handler.JwtAccessDeniedHandler
+import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,6 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -29,7 +37,11 @@ class SecurityConfig(
     private val jwtAuthenticationProvider: JwtAuthenticationProvider,
     private val jwtService : JwtService,
     private val authenticationConfiguration: AuthenticationConfiguration,
+    private val oAuth2AuthenticationSuccessHandler : CustomOAuth2AuthenticationSuccessHandler,
+    private val oAuth2AuthenticationFailureHandler : CustomOAuth2AuthenticationFailureHandler,
+    private val customOAuth2UserService: CustomOAuth2UserService
 ) {
+
     private val log = LoggerFactory.getLogger(this::class.java)
 
     companion object {
@@ -67,9 +79,10 @@ class SecurityConfig(
         matchers.add(HttpMethod.GET, ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS)
 
         val targets = arrayOf(*MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS,
-            *ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS, *ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS)
+            *ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS, *ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS
+        )
 
-        HTTP_COMMAND_METHODS.forEach {method ->
+        HTTP_COMMAND_METHODS.forEach { method ->
                 matchers.add(method, targets)
         }
         matchers.build()
@@ -105,9 +118,21 @@ class SecurityConfig(
                 }
                 customizer.anyRequest().permitAll()
             }
+            .oauth2Login { customizer ->
+                customizer.authorizationEndpoint { authorization ->
+                    authorization.baseUri("/api/v1/authentication/oauth2")
+                }
+                customizer.redirectionEndpoint {redirectEndpoint ->
+                    redirectEndpoint.baseUri("/api/v1/authentication/callback/*")
+                }
+                customizer.userInfoEndpoint {it
+                    it.userService(customOAuth2UserService)
+                }
+                customizer.successHandler(oAuth2AuthenticationSuccessHandler)
+                customizer.failureHandler(oAuth2AuthenticationFailureHandler)
+            }
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
-
         return http.build();
     }
 

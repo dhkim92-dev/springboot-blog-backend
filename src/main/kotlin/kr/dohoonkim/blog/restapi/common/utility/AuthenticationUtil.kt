@@ -1,7 +1,7 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
 import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
-import kr.dohoonkim.blog.restapi.config.security.authentication.JwtAuthentication
+import kr.dohoonkim.blog.restapi.security.authentication.JwtAuthentication
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.Role

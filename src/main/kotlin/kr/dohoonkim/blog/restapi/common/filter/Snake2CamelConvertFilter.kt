@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.config.filter
+package kr.dohoonkim.blog.restapi.common.filter
 
 import com.google.common.base.CaseFormat
 import jakarta.servlet.FilterChain

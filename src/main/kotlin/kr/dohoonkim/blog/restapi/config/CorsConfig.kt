@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.config.security
+package kr.dohoonkim.blog.restapi.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

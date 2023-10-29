@@ -1,6 +1,6 @@
 package kr.dohoonkim.blog.restapi.config.security.jwt
 
-import kr.dohoonkim.blog.restapi.config.security.authentication.JwtAuthentication
+import kr.dohoonkim.blog.restapi.security.authentication.JwtAuthentication
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import org.springframework.security.authentication.AbstractAuthenticationToken
 

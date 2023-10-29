@@ -1,12 +1,12 @@
-package kr.dohoonkim.blog.restapi.config.security.filter
+package kr.dohoonkim.blog.restapi.security.filter
 
 import jakarta.servlet.FilterChain
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kr.dohoonkim.blog.restapi.config.security.jwt.JwtAuthenticationToken
-import kr.dohoonkim.blog.restapi.config.security.jwt.JwtService
-import kr.dohoonkim.blog.restapi.config.security.provider.JwtAuthenticationProvider
+import kr.dohoonkim.blog.restapi.security.jwt.JwtService
+import kr.dohoonkim.blog.restapi.security.provider.JwtAuthenticationProvider
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.util.matcher.RequestMatcher
@@ -23,9 +23,10 @@ import org.springframework.web.filter.OncePerRequestFilter
  */
 
 class JwtAuthenticationFilter(
-        private val matcher : RequestMatcher,
-        private val jwtService : JwtService,
-        private val jwtAuthenticationProvider: JwtAuthenticationProvider) : OncePerRequestFilter(){
+    private val matcher : RequestMatcher,
+    private val jwtService : JwtService,
+    private val jwtAuthenticationProvider: JwtAuthenticationProvider
+) : OncePerRequestFilter(){
 
     private val log = LoggerFactory.getLogger(this::class.java)
 

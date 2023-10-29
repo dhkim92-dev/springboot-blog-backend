@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.config.security.handler
+package kr.dohoonkim.blog.restapi.security.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
