@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus.OK
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
-class AuthenticationControllerTest : AnnotationSpec(){
+class AuthenticationControllerTest : AnnotationSpec() {
 
     private val passwordEncoder = BCryptPasswordEncoder()
     private val user = createMember()
@@ -69,7 +69,7 @@ class AuthenticationControllerTest : AnnotationSpec(){
 
         val response = authenticationController.reissue(request).body!!
         response.status shouldBe REISSUE_TOKEN_SUCCESS.status.value()
-        response.code shouldBe  REISSUE_TOKEN_SUCCESS.code
+        response.code shouldBe REISSUE_TOKEN_SUCCESS.code
         response.data shouldBe reissueResult
     }
 

@@ -7,53 +7,53 @@ import org.apache.commons.lang3.builder.ToStringStyle
 import org.hibernate.annotations.ColumnDefault
 import java.util.*
 
-@Entity(name="member")
+@Entity(name = "member")
 class Member : UuidPrimaryKeyEntity {
     @Column(nullable = false, unique = true)
-    var nickname : String
+    var nickname: String
         protected set
 
     @Column(nullable = false, unique = true)
-    var email : String
+    var email: String
         protected set
 
     @Column(nullable = false)
-    var password : String
-        protected  set
+    var password: String
+        protected set
 
     @Column(nullable = false)
     @ColumnDefault("false")
-    var isActivated : Boolean
+    var isActivated: Boolean
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var role : Role = Role.MEMBER
+    var role: Role = Role.MEMBER
 
-    fun updateEmail(email : String) {
+    fun updateEmail(email: String) {
         this.email = email;
     }
 
-    fun updatePassword(password : String){
+    fun updatePassword(password: String) {
         this.password = password // passwordEncoder.encode(password);
     }
 
-    fun updateNickname(nickname : String) {
+    fun updateNickname(nickname: String) {
         this.nickname = nickname
     }
 
-    fun updateRole(role : Role) {
+    fun updateRole(role: Role) {
         this.role = role;
     }
 
-    constructor(id : UUID) {
+    constructor(id: UUID) {
         this.id = id
-        this.nickname=""
+        this.nickname = ""
         this.email = ""
         this.password = ""
         this.isActivated = false
     }
 
-    constructor(nickname : String, email : String, password : String, isActivated : Boolean?) {
+    constructor(nickname: String, email: String, password: String, isActivated: Boolean?) {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
@@ -62,7 +62,7 @@ class Member : UuidPrimaryKeyEntity {
 
     override fun toString(): String {
         return ToStringBuilder
-                .reflectionToString(this, ToStringStyle.JSON_STYLE)
+            .reflectionToString(this, ToStringStyle.JSON_STYLE)
     }
 
 }

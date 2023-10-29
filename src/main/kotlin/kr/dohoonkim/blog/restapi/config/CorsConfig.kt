@@ -10,12 +10,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 class CorsConfig(
-    @Value("\${cors.host}") private var host : String,
-    @Value("\${cors.frontend}") private var frontend : String
+    @Value("\${cors.host}") private var host: String,
+    @Value("\${cors.frontend}") private var frontend: String
 ) {
 
     @Bean
-    fun corsConfigurationSource() : CorsConfigurationSource {
+    fun corsConfigurationSource(): CorsConfigurationSource {
         val corsConfiguration = CorsConfiguration()
         corsConfiguration.allowCredentials = true
         corsConfiguration.allowedHeaders = listOf("Content-Type", "Authorization", "Cache-Control")

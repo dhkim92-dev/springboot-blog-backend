@@ -16,19 +16,19 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class JwtService(private val config : JwtConfig){
+class JwtService(private val config: JwtConfig) {
 
     private val log = LoggerFactory.getLogger(JwtService::class.java)
 
     private val accessTokenVerifier = JWT.require(Algorithm.HMAC512(config.accessSecret))
-            .withIssuer(config.issuer)
-            .build()
+        .withIssuer(config.issuer)
+        .build()
 
     private val refreshTokenVerifier = JWT.require(Algorithm.HMAC512(config.refreshSecret))
-            .withIssuer(config.issuer)
-            .build()
+        .withIssuer(config.issuer)
+        .build()
 
-    fun createAccessToken(jwtClaim: JwtClaims) : String {
+    fun createAccessToken(jwtClaim: JwtClaims): String {
         val now = Date()
 
         return JWT.create()
@@ -44,33 +44,33 @@ class JwtService(private val config : JwtConfig){
             .sign(Algorithm.HMAC512(config.accessSecret))
     }
 
-    fun createRefreshToken(jwtClaim : JwtClaims) : String {
+    fun createRefreshToken(jwtClaim: JwtClaims): String {
         val now = Date()
         return JWT.create()
-                .withIssuer(config.issuer)
-                .withSubject(jwtClaim.id.toString())
-                .withAudience(config.audience)
-                .withIssuedAt(now)
-                .withExpiresAt(Date(now.time + config.refreshExpiry))
-                .sign(Algorithm.HMAC512(config.refreshSecret))
+            .withIssuer(config.issuer)
+            .withSubject(jwtClaim.id.toString())
+            .withAudience(config.audience)
+            .withIssuedAt(now)
+            .withExpiresAt(Date(now.time + config.refreshExpiry))
+            .sign(Algorithm.HMAC512(config.refreshSecret))
     }
 
-    fun verifyAccessToken(token : String) : DecodedJWT {
+    fun verifyAccessToken(token: String): DecodedJWT {
         return this.accessTokenVerifier.verify(token);
     }
 
-    fun verifyRefreshToken(token : String) : DecodedJWT{
+    fun verifyRefreshToken(token: String): DecodedJWT {
         return refreshTokenVerifier.verify(token)
     }
 
-    fun extractBearerTokenFromHeader(request : HttpServletRequest) : String? {
-        var token : String? = request.getHeader(this.config.header)
+    fun extractBearerTokenFromHeader(request: HttpServletRequest): String? {
+        var token: String? = request.getHeader(this.config.header)
 
-        if(token == null) {
+        if (token == null) {
             return null
         }
 
-        if(!token.startsWith(config.type,true)) {
+        if (!token.startsWith(config.type, true)) {
             return null
         }
 
@@ -83,20 +83,20 @@ class JwtService(private val config : JwtConfig){
      * @return [JwtAuthentication]
      */
 
-    fun getAuthentication(token : String) : JwtAuthentication {
+    fun getAuthentication(token: String): JwtAuthentication {
         try {
-            val jwt : DecodedJWT = this.verifyAccessToken(token)
-            val memberId : UUID = UUID.fromString(jwt.subject)
-            val email : String = jwt.getClaim("email").asString()
-            val nickname : String = jwt.getClaim("nickname").asString()
-            val roles : MutableCollection<out GrantedAuthority> = jwt.getClaim("roles").asArray(String::class.java)
-                    .map{rolename -> SimpleGrantedAuthority(rolename)}
-                    .toMutableList()
+            val jwt: DecodedJWT = this.verifyAccessToken(token)
+            val memberId: UUID = UUID.fromString(jwt.subject)
+            val email: String = jwt.getClaim("email").asString()
+            val nickname: String = jwt.getClaim("nickname").asString()
+            val roles: MutableCollection<out GrantedAuthority> = jwt.getClaim("roles").asArray(String::class.java)
+                .map { rolename -> SimpleGrantedAuthority(rolename) }
+                .toMutableList()
             val isActivated = jwt.getClaim("isActivated").asBoolean()
             return JwtAuthentication(memberId, email, nickname, roles, isActivated)
-        } catch(e : TokenExpiredException) {
+        } catch (e: TokenExpiredException) {
             throw ExpiredTokenException()
-        } catch(e : Exception) {
+        } catch (e: Exception) {
             throw JwtInvalidException()
         }
     }

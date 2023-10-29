@@ -30,8 +30,8 @@ class CategoryServiceImpl(
 
     @Transactional
     @CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true)
-    override fun createCategory(dto : CategoryCreateDto) : CategoryDto {
-        if(this.categoryRepository.existsByName(dto.name)) {
+    override fun createCategory(dto: CategoryCreateDto): CategoryDto {
+        if (this.categoryRepository.existsByName(dto.name)) {
             throw ConflictException(ErrorCode.ALREADY_EXIST_CATEGORY)
         }
 
@@ -41,7 +41,7 @@ class CategoryServiceImpl(
 
     @Transactional
     @Cacheable(CATEGORIES_CACHE_KEY)
-    override fun getCategories() : List<CategoryDto> {
+    override fun getCategories(): List<CategoryDto> {
         return categoryRepository.findAllCategory()
     }
 
@@ -53,11 +53,11 @@ class CategoryServiceImpl(
             CacheEvict(ARTICLES_CACHE_KEY, allEntries = true)
         ]
     )
-    override fun modifyCategoryName(dto : CategoryModifyDto) : CategoryDto {
+    override fun modifyCategoryName(dto: CategoryModifyDto): CategoryDto {
         val category = categoryRepository.findById(dto.id)
-            .orElseThrow{ throw EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND) }
+            .orElseThrow { throw EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND) }
 
-        if(categoryRepository.existsByName(dto.newName)) {
+        if (categoryRepository.existsByName(dto.newName)) {
             throw ConflictException(ErrorCode.ALREADY_EXIST_CATEGORY)
         }
 
@@ -74,7 +74,7 @@ class CategoryServiceImpl(
             CacheEvict(ARTICLES_CACHE_KEY, allEntries = true)
         ]
     )
-    override fun deleteCategory(categoryId : Long) : Unit {
+    override fun deleteCategory(categoryId: Long): Unit {
         categoryRepository.deleteById(categoryId)
     }
 }

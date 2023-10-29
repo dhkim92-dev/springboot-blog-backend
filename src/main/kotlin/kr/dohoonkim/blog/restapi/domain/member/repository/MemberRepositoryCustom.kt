@@ -5,7 +5,7 @@ import java.util.*
 
 interface MemberRepositoryCustom {
 
-    fun findByMemberId(memberId : UUID) : Member?
+    fun findByMemberId(memberId : UUID) : Member
     fun existsByEmail(email : String) : Boolean
     fun existsByNickname(nickname : String) : Boolean
 

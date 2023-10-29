@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class CategoryNameChangeRequest(
-        @field : Length(min=1, max=16)
-        @field : NotBlank
-        val newName : String
+    @field : Length(min = 1, max = 16)
+    @field : NotBlank
+    val newName: String
 )

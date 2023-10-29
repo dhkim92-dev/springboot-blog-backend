@@ -10,18 +10,18 @@ import java.util.UUID
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class ArticleSummaryDto(
-    val id : UUID,
-    val author : MemberSummaryDto,
-    val category : CategorySummaryDto,
-    val title : String,
-    val createdAt : LocalDateTime,
-    val viewCount : Long,
-    val commentCount : Long
+    val id: UUID,
+    val author: MemberSummaryDto,
+    val category: CategorySummaryDto,
+    val title: String,
+    val createdAt: LocalDateTime,
+    val viewCount: Long,
+    val commentCount: Long
 ) {
     companion object {
-        fun fromEntity(article : Article) : ArticleSummaryDto {
+        fun fromEntity(article: Article): ArticleSummaryDto {
             return ArticleSummaryDto(
-                id=article.id,
+                id = article.id,
                 author = MemberSummaryDto.fromEntity(article.author),
                 title = article.title,
                 category = CategorySummaryDto(article.category.id, article.category.name),

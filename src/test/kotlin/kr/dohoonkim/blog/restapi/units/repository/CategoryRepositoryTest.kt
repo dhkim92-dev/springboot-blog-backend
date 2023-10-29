@@ -23,7 +23,7 @@ class CategoryRepositoryTest : BehaviorSpec() {
     override fun extensions() = listOf(SpringExtension)
 
     @Autowired
-    private lateinit var categoryRepository : CategoryRepository
+    private lateinit var categoryRepository: CategoryRepository
 
     @Autowired
     private lateinit var memberRepository: MemberRepository
@@ -97,7 +97,7 @@ class CategoryRepositoryTest : BehaviorSpec() {
         }
     }
 
-    private fun createArticle(member : Member, category : Category) : Article {
+    private fun createArticle(member: Member, category: Category): Article {
         return Article(
             title = "1234",
             contents = "1234",
@@ -106,9 +106,9 @@ class CategoryRepositoryTest : BehaviorSpec() {
         )
     }
 
-    lateinit var member : Member
-    lateinit var article1 : Article
-    lateinit var article2 : Article
-    lateinit var category1 : Category
-    lateinit var category2 : Category
+    lateinit var member: Member
+    lateinit var article1: Article
+    lateinit var article2: Article
+    lateinit var category1: Category
+    lateinit var category2: Category
 }

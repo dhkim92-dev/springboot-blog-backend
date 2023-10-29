@@ -11,8 +11,10 @@ import java.time.LocalDateTime
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 abstract class DatetimeEntity {
-    @CreatedDate val createdAt : LocalDateTime = LocalDateTime.now()
-    @LastModifiedDate var updatedAt : LocalDateTime = LocalDateTime.now()
+    @CreatedDate
+    val createdAt: LocalDateTime = LocalDateTime.now()
+    @LastModifiedDate
+    var updatedAt: LocalDateTime = LocalDateTime.now()
 
     @PreUpdate
     private fun beforeUpdate() {

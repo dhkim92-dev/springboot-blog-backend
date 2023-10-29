@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Length
 
 data class MemberCreateDto(
-    val nickname : String,
-    val email : String,
-    val password : String
+    val nickname: String,
+    val email: String,
+    val password: String
 ) {
 }

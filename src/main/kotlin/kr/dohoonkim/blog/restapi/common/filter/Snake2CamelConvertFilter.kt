@@ -13,11 +13,15 @@ import org.springframework.web.filter.OncePerRequestFilter
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class Snake2CamelConvertFilter : OncePerRequestFilter(){
+class Snake2CamelConvertFilter : OncePerRequestFilter() {
 
     val log: Logger = LoggerFactory.getLogger(javaClass)
 
-    override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         val formattedParams: MutableMap<String, Array<String>> = ConcurrentHashMap()
 
         for (param in request.parameterMap.keys) {
@@ -25,12 +29,12 @@ class Snake2CamelConvertFilter : OncePerRequestFilter(){
             formattedParams[formattedParam] = request.getParameterValues(param)
         }
 
-        if(request.contentType.isNullOrEmpty()) {
+        if (request.contentType.isNullOrEmpty()) {
             log.error("request content type is null!!")
             return filterChain.doFilter(request, response)
         }
 
-        if(request.contentType!!.startsWith(MediaType.MULTIPART_FORM_DATA_VALUE)) {
+        if (request.contentType!!.startsWith(MediaType.MULTIPART_FORM_DATA_VALUE)) {
             log.debug("Snake2CamelConvertFilter work here.")
             filterChain.doFilter(object : HttpServletRequestWrapper(request) {
                 override fun getParameter(name: String): String? {
@@ -49,7 +53,7 @@ class Snake2CamelConvertFilter : OncePerRequestFilter(){
                     return formattedParams
                 }
             }, response)
-        }else {
+        } else {
             filterChain.doFilter(request, response)
         }
     }

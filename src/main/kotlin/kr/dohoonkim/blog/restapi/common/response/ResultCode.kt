@@ -5,12 +5,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.*
 
 enum class ResultCode(
-    val status : HttpStatus,
-    val code : String,
-    val message : String
+    val status: HttpStatus,
+    val code: String,
+    val message: String
 ) {
     // GLOBAL
     HEALTH_CHECK_SUCCESS(OK, "G001", "서버 인스턴스 상태를 체크하였습니다."),
+
     // MEMBER
     CREATE_MEMBER_SUCCESS(CREATED, "M001", "회원 가입 완료했습니다."),
     GET_MEMBER_LIST_SUCCESS(OK, "M002", "회원 리스트를 조회하였습니다."),

@@ -16,7 +16,7 @@ class ImageResizer {
      * @param height - 높이
      */
 
-    fun resize(inputStream : InputStream, width : Int, height : Int) : BufferedImage {
+    fun resize(inputStream: InputStream, width: Int, height: Int): BufferedImage {
         val origin = ImageIO.read(inputStream)
         return createResizedBufferedImage(origin, width, height);
     }
@@ -27,10 +27,10 @@ class ImageResizer {
      * @param width : target width
      * @param ratio : target ratio
      */
-    fun resize(inputStream: InputStream, width : Int) : BufferedImage {
+    fun resize(inputStream: InputStream, width: Int): BufferedImage {
         val origin = ImageIO.read(inputStream)
 
-        if(origin.width <= width) {
+        if (origin.width <= width) {
             return origin
         }
 
@@ -40,7 +40,7 @@ class ImageResizer {
         return createResizedBufferedImage(origin, width, height)
     }
 
-    private fun createResizedBufferedImage(origin : BufferedImage, width : Int, height : Int) : BufferedImage {
+    private fun createResizedBufferedImage(origin: BufferedImage, width: Int, height: Int): BufferedImage {
 
         val resizedImage = origin.getScaledInstance(width, height, Image.SCALE_SMOOTH);
         val outputBufferedImage = BufferedImage(width, height, origin.type);

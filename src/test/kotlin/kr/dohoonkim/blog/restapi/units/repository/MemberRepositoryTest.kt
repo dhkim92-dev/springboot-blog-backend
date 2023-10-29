@@ -20,7 +20,7 @@ class MemberRepositoryTest : DescribeSpec() {
     override fun extensions() = listOf(SpringExtension)
 
     @Autowired
-    private lateinit var memberRepository : MemberRepository
+    private lateinit var memberRepository: MemberRepository
 
     init {
         println("MemberRepositoryTest")
@@ -41,13 +41,13 @@ class MemberRepositoryTest : DescribeSpec() {
         }
     }
 
-    companion object{
-        fun createMember() : Member {
+    companion object {
+        fun createMember(): Member {
             return Member(
-                    nickname = "tester",
-                    email = "tester@gmai.com",
-                    password = "password",
-                    isActivated = true
+                nickname = "tester",
+                email = "tester@gmai.com",
+                password = "password",
+                isActivated = true
             )
         }
     }

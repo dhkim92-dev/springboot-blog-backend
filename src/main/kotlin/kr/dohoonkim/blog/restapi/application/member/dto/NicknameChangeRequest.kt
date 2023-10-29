@@ -5,8 +5,9 @@ import jakarta.validation.constraints.NotEmpty
 import org.hibernate.validator.constraints.Length
 
 data class NicknameChangeRequest(
-        @field: NotEmpty
-        @field: Length(min=4, max=32)
-        val nickname : String) {
+    @field: NotEmpty
+    @field: Length(min = 4, max = 32)
+    val nickname: String
+) {
 
 }

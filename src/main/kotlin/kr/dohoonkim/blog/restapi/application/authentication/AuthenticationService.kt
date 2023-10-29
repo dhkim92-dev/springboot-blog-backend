@@ -28,36 +28,37 @@ class AuthenticationService(
     private val jwtService: JwtService,
     private val memberRepository: MemberRepository,
     private val userDetailService: CustomUserDetailService,
-    private val passwordEncoder : BCryptPasswordEncoder){
+    private val passwordEncoder: BCryptPasswordEncoder
+) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    fun login(request : LoginRequest) : LoginResult {
+    fun login(request: LoginRequest): LoginResult {
         val user = userDetailService.loadUserByUsername(request.email) as CustomUserDetails
 
-        if(!user.isEnabled) {
+        if (!user.isEnabled) {
             throw UnauthorizedException(ErrorCode.NOT_VERIFIED_EMAIL)
         }
 
-        if(!passwordEncoder.matches(request.password, user.password)) {
+        if (!passwordEncoder.matches(request.password, user.password)) {
             throw BadCredentialsException("email/password mismatched.");
         }
 
         val claims = JwtClaims.fromCustomUserDetails(user)
 
         return LoginResult(
-                refreshToken = jwtService.createRefreshToken(claims),
-                accessToken = jwtService.createAccessToken(claims)
+            refreshToken = jwtService.createRefreshToken(claims),
+            accessToken = jwtService.createAccessToken(claims)
         )
     }
 
     @Transactional
-    fun reIssueAccessToken(request : ReissueTokenRequest) : ReissueResult {
+    fun reIssueAccessToken(request: ReissueTokenRequest): ReissueResult {
         val jwt = jwtService.verifyRefreshToken(request.refreshToken)
         val memberId = UUID.fromString(jwt.subject)
-        val member : Member = memberRepository.findByMemberId(memberId)
-                ?: throw UnauthorizedException()
+        val member: Member = memberRepository.findByMemberId(memberId)
+            ?: throw UnauthorizedException()
         val userDetails = userDetailService.loadUserByUsername(member.email) as CustomUserDetails
         val token = jwtService.createAccessToken(JwtClaims.fromCustomUserDetails(userDetails))
 

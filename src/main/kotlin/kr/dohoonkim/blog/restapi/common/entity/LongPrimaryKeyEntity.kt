@@ -11,19 +11,19 @@ import java.util.UUID;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-abstract class LongPrimaryKeyEntity{
+abstract class LongPrimaryKeyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    var id : Long = 0
+    var id: Long = 0
 
     @CreatedDate
-    @Column(name="created_at", updatable = false, nullable = false)
-    var createdAt : LocalDateTime = LocalDateTime.now()
+    @Column(name = "created_at", updatable = false, nullable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    var updatedAt : LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDateTime = LocalDateTime.now()
         protected set;
 
     @PreUpdate

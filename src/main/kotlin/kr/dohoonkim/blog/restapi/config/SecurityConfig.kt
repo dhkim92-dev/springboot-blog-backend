@@ -3,8 +3,6 @@ package kr.dohoonkim.blog.restapi.config
 import kr.dohoonkim.blog.restapi.application.authentication.oauth2.CustomOAuth2UserService
 import kr.dohoonkim.blog.restapi.security.MethodPathRequestMatcher
 import kr.dohoonkim.blog.restapi.security.filter.JwtAuthenticationFilter
-import kr.dohoonkim.blog.restapi.config.security.jwt.*
-import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationFailureHandler
 import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationSuccessHandler
 import kr.dohoonkim.blog.restapi.security.provider.JwtAuthenticationProvider
@@ -23,7 +21,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -35,10 +32,10 @@ class SecurityConfig(
     private val entryPointUnauthorizedHandler: EntryPointUnauthorizedHandler,
     private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
     private val jwtAuthenticationProvider: JwtAuthenticationProvider,
-    private val jwtService : JwtService,
+    private val jwtService: JwtService,
     private val authenticationConfiguration: AuthenticationConfiguration,
-    private val oAuth2AuthenticationSuccessHandler : CustomOAuth2AuthenticationSuccessHandler,
-    private val oAuth2AuthenticationFailureHandler : CustomOAuth2AuthenticationFailureHandler,
+    private val oAuth2AuthenticationSuccessHandler: CustomOAuth2AuthenticationSuccessHandler,
+    private val oAuth2AuthenticationFailureHandler: CustomOAuth2AuthenticationFailureHandler,
     private val customOAuth2UserService: CustomOAuth2UserService
 ) {
 
@@ -46,7 +43,8 @@ class SecurityConfig(
 
     companion object {
         private val WHITELIST_STATIC = arrayOf("/static/css/**", "/static/js/**", "*.ico", "/error")
-        private val WHITELIST_SWAGGER = arrayOf("/swagger-ui", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs", "/api-docs", "/api-docs/**")
+        private val WHITELIST_SWAGGER =
+            arrayOf("/swagger-ui", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs", "/api-docs", "/api-docs/**")
         private val AUTHENTICATION_REQUEST_ENDPOINTS = arrayOf("/api/v1/authentication", "/api/v1/reissueToken")
         private val MEMBER_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS = arrayOf("/api/v1/members/**")
         private val MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS = arrayOf(
@@ -69,21 +67,22 @@ class SecurityConfig(
     fun passwordEncrypt() = BCryptPasswordEncoder(10);
 
     @Bean
-    fun authenticationManager() : AuthenticationManager {
+    fun authenticationManager(): AuthenticationManager {
         return authenticationConfiguration.authenticationManager
     }
 
-    fun jwtAuthenticationFilter() : JwtAuthenticationFilter {
+    fun jwtAuthenticationFilter(): JwtAuthenticationFilter {
         val matchers = MethodPathRequestMatcher()
         matchers.add(HttpMethod.GET, MEMBER_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS)
         matchers.add(HttpMethod.GET, ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS)
 
-        val targets = arrayOf(*MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS,
+        val targets = arrayOf(
+            *MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS,
             *ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS, *ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS
         )
 
         HTTP_COMMAND_METHODS.forEach { method ->
-                matchers.add(method, targets)
+            matchers.add(method, targets)
         }
         matchers.build()
 
@@ -91,30 +90,33 @@ class SecurityConfig(
     }
 
     @Bean
-    fun webSecurityCustomizer() :WebSecurityCustomizer {
+    fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer {
             it.ignoring().requestMatchers(*WHITELIST_STATIC, *WHITELIST_SWAGGER)
         }
     }
 
     @Bean
-    fun securityFilterChain(http : HttpSecurity) : SecurityFilterChain {
-        http.csrf{csrf -> csrf.disable()}
-            .cors{}
-            .formLogin{form->form.disable()}
-            .httpBasic{basic -> basic.disable()}
-            .httpBasic{basic->basic.disable()}
-            .sessionManagement{sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.csrf { csrf -> csrf.disable() }
+            .cors {}
+            .formLogin { form -> form.disable() }
+            .httpBasic { basic -> basic.disable() }
+            .httpBasic { basic -> basic.disable() }
+            .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .exceptionHandling { customizer -> customizer.authenticationEntryPoint(entryPointUnauthorizedHandler) }
             .exceptionHandling { customizer -> customizer.accessDeniedHandler(jwtAccessDeniedHandler) }
-            .authorizeHttpRequests { customizer->
+            .authorizeHttpRequests { customizer ->
                 customizer.requestMatchers(HttpMethod.POST, "/api/v1/members").permitAll()
-                customizer.requestMatchers(HttpMethod.GET, *MEMBER_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS).hasAnyRole("ADMIN", "MEMBER")
+                customizer.requestMatchers(HttpMethod.GET, *MEMBER_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS)
+                    .hasAnyRole("ADMIN", "MEMBER")
                 customizer.requestMatchers(HttpMethod.DELETE, "/api/v1/members/**").hasAnyRole("ADMIN", "MEMBER")
                 customizer.requestMatchers(HttpMethod.PATCH, "/api/v1/members/**").hasAnyRole("ADMIN", "MEMBER")
                 HTTP_COMMAND_METHODS.forEach { method ->
-                    customizer.requestMatchers(method, *MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS).hasAnyRole("MEMBER", "ADMIN")
-                    customizer.requestMatchers(method, *ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS).hasRole("ADMIN")
+                    customizer.requestMatchers(method, *MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS)
+                        .hasAnyRole("MEMBER", "ADMIN")
+                    customizer.requestMatchers(method, *ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS)
+                        .hasRole("ADMIN")
                 }
                 customizer.anyRequest().permitAll()
             }
@@ -122,10 +124,11 @@ class SecurityConfig(
                 customizer.authorizationEndpoint { authorization ->
                     authorization.baseUri("/api/v1/authentication/oauth2")
                 }
-                customizer.redirectionEndpoint {redirectEndpoint ->
+                customizer.redirectionEndpoint { redirectEndpoint ->
                     redirectEndpoint.baseUri("/api/v1/authentication/callback/*")
                 }
-                customizer.userInfoEndpoint {it
+                customizer.userInfoEndpoint {
+                    it
                     it.userService(customOAuth2UserService)
                 }
                 customizer.successHandler(oAuth2AuthenticationSuccessHandler)

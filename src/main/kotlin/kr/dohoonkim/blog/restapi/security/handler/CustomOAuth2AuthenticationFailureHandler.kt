@@ -12,8 +12,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.stereotype.Component
 
 @Component
-class CustomOAuth2AuthenticationFailureHandler(private val objectMapper: ObjectMapper)
-    : SimpleUrlAuthenticationFailureHandler() {
+class CustomOAuth2AuthenticationFailureHandler(private val objectMapper: ObjectMapper) :
+    SimpleUrlAuthenticationFailureHandler() {
 
     val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -27,9 +27,16 @@ class CustomOAuth2AuthenticationFailureHandler(private val objectMapper: ObjectM
         logger.debug("request params : ${request.queryString}")
         logger.error(exception.message)
         exception.printStackTrace()
-        response.status=ErrorCode.AUTHENTICATION_FAIL.status.value()
+        response.status = ErrorCode.AUTHENTICATION_FAIL.status.value()
         response.addHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-        response.writer.write(objectMapper.writeValueAsString(ErrorResponse.of(ErrorCode.AUTHENTICATION_FAIL, "OAuth2 로그인 실패")))
+        response.writer.write(
+            objectMapper.writeValueAsString(
+                ErrorResponse.of(
+                    ErrorCode.AUTHENTICATION_FAIL,
+                    "OAuth2 로그인 실패"
+                )
+            )
+        )
         response.writer.flush()
     }
 }

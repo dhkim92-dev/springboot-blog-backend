@@ -18,14 +18,15 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
-class CustomOAuth2UserService(private val memberRepository: MemberRepository)
-    : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+class CustomOAuth2UserService(private val memberRepository: MemberRepository) :
+    OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private val logger : Logger = LoggerFactory.getLogger(this::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     init {
         logger.debug("CustomOAUth2UserService created")
     }
+
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         logger.debug("CustomOAuth2UserService start loadUser.")
         val delegate = DefaultOAuth2UserService()
@@ -43,9 +44,9 @@ class CustomOAuth2UserService(private val memberRepository: MemberRepository)
     }
 
     @Transactional
-    private fun checkMemberProfile(memberProfile : MemberProfile) {
+    private fun checkMemberProfile(memberProfile: MemberProfile) {
         logger.debug("CustomOAuth2UserService : ${memberProfile.email}")
-        if(!memberRepository.existsByEmail(memberProfile.email)) {
+        if (!memberRepository.existsByEmail(memberProfile.email)) {
             val newMember = registerMember(memberProfile)
             memberProfile.nickname = newMember.nickname
         } else {
@@ -57,26 +58,28 @@ class CustomOAuth2UserService(private val memberRepository: MemberRepository)
     }
 
     @Transactional
-    private fun registerMember(memberProfile : MemberProfile) : Member{
+    private fun registerMember(memberProfile: MemberProfile): Member {
         val email = memberProfile.email
         var nickname = memberProfile.nickname
 
-        if(this.memberRepository.existsByNickname(nickname)) {
+        if (this.memberRepository.existsByNickname(nickname)) {
             nickname = "user:${UUID.randomUUID().toString()}"
         }
 
-        val member = memberRepository.save(Member(
-            nickname = nickname,
-            email = email,
-            password = UUID.randomUUID().toString(),
-            isActivated = true,
-        ))
+        val member = memberRepository.save(
+            Member(
+                nickname = nickname,
+                email = email,
+                password = UUID.randomUUID().toString(),
+                isActivated = true,
+            )
+        )
 
         return member;
     }
 
-    private fun createMemberProfileFactory(provider : String) : MemberProfileFactory {
-        when(provider.lowercase()) {
+    private fun createMemberProfileFactory(provider: String): MemberProfileFactory {
+        when (provider.lowercase()) {
             "google" -> return GoogleMemberProfileFactory();
             "github" -> return GithubMemberProfileFactory();
         }
