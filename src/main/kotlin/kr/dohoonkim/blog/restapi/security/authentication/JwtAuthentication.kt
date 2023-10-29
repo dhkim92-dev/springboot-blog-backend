@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.config.security.authentication
+package kr.dohoonkim.blog.restapi.security.authentication
 
 import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
 import org.springframework.security.core.Authentication

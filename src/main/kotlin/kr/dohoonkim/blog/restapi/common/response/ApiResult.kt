@@ -6,10 +6,10 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 
 class ApiResult<T>(
-    val status : Int,
-    val code : String,
-    val data : T,
-    val message : String
+    val status: Int,
+    val code: String,
+    val data: T,
+    val message: String
 ) {
 
   companion object {

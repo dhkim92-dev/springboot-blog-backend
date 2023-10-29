@@ -4,7 +4,7 @@ import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
 import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
 import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
-import kr.dohoonkim.blog.restapi.config.security.jwt.JwtService
+import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.units.utility.JwtServiceTest.Companion.jwtConfig

@@ -13,7 +13,7 @@ import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginRequest
 import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueResult
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueTokenRequest
-import kr.dohoonkim.blog.restapi.config.security.jwt.JwtService
+import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import kr.dohoonkim.blog.restapi.support.entity.createMember

@@ -3,7 +3,7 @@ package kr.dohoonkim.blog.restapi.application.authentication
 import kr.dohoonkim.blog.restapi.application.authentication.dto.*
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
-import kr.dohoonkim.blog.restapi.config.security.jwt.JwtService
+import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
@@ -31,6 +31,7 @@ class AuthenticationService(
     private val passwordEncoder : BCryptPasswordEncoder){
 
     private val log = LoggerFactory.getLogger(javaClass)
+
     @Transactional
     fun login(request : LoginRequest) : LoginResult {
         val user = userDetailService.loadUserByUsername(request.email) as CustomUserDetails

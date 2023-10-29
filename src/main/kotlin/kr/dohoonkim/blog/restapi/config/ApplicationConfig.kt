@@ -13,7 +13,7 @@ import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
 import jakarta.servlet.http.HttpServletResponse
-import kr.dohoonkim.blog.restapi.config.filter.Snake2CamelConvertFilter
+import kr.dohoonkim.blog.restapi.common.filter.Snake2CamelConvertFilter
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.config.security.jwt
+package kr.dohoonkim.blog.restapi.security.jwt
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -7,7 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import jakarta.servlet.http.HttpServletRequest
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ExpiredTokenException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.JwtInvalidException
-import kr.dohoonkim.blog.restapi.config.security.authentication.JwtAuthentication
+import kr.dohoonkim.blog.restapi.security.authentication.JwtAuthentication
 import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.GrantedAuthority

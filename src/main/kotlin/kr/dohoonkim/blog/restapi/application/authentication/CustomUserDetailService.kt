@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class CustomUserDetailService(private val memberRepository: MemberRepository) : UserDetailsService, UserDetailsPasswordService{
+
     private val log : Logger = LoggerFactory.getLogger(javaClass)
 
     override fun loadUserByUsername(email : String): UserDetails {

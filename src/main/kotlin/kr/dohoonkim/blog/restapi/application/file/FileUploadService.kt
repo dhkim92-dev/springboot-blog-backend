@@ -23,10 +23,8 @@ class FileUploadService(
     ) {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
     @Value("\${server.media.host}")
     private lateinit var host : String;
-
     @Value("\${server.media.storagePath}")
     private lateinit var basePath : String
 
