@@ -18,18 +18,20 @@ import javax.imageio.ImageIO
 
 @Service
 class FileUploadService(
-        private val imageTypeValidator : ImageTypeValidator,
-        private val imageResizer : ImageResizer
-    ) {
+    private val imageTypeValidator: ImageTypeValidator,
+    private val imageResizer: ImageResizer
+) {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    @Value("\${server.media.host}")
-    private lateinit var host : String;
-    @Value("\${server.media.storagePath}")
-    private lateinit var basePath : String
 
-    fun createImage(file : MultipartFile) : String {
-        if(!imageTypeValidator.isSupportFile(file)) {
+    @Value("\${server.media.host}")
+    private lateinit var host: String;
+
+    @Value("\${server.media.storagePath}")
+    private lateinit var basePath: String
+
+    fun createImage(file: MultipartFile): String {
+        if (!imageTypeValidator.isSupportFile(file)) {
             throw UnsupportedMediaTypeException(ErrorCode.NOT_SUPPORT_IMAGE_TYPE)
         }
 
@@ -38,6 +40,7 @@ class FileUploadService(
         val filename = "${UUID.randomUUID().toString()}.$ext"
         val filePath = "images/${filename[0]}/$filename"
         val file = File("$basePath/${filePath}")
+
         file.parentFile.mkdirs()
         ImageIO.write(resizedImage, ext, file)
 

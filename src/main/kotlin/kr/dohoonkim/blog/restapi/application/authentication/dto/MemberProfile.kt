@@ -11,9 +11,9 @@ import kotlin.collections.HashMap
  * MemberProfile class
  * OAuth2 인증 시 얻어온 사용자 정보로부터 사용할 field를 저장한다.
  */
-open class MemberProfile(val customAttributes : MutableMap<String, Any>) : OAuth2User{
-    var email : String = ""
-    var nickname : String = ""
+open class MemberProfile(val customAttributes: MutableMap<String, Any>) : OAuth2User {
+    var email: String = ""
+    var nickname: String = ""
     var customAuthorities = mutableListOf<GrantedAuthority>()
 
     override fun getAttributes(): MutableMap<String, Any> {

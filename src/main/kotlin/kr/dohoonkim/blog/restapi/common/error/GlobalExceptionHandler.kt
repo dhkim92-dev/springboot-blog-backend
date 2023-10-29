@@ -17,104 +17,105 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.multipart.support.MissingServletRequestPartException
+
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
     private val log = LoggerFactory.getLogger(this::class.java)
 
     @ExceptionHandler
-    protected fun expiredJwtExceptionHandler(e : TokenExpiredException)
-    : ResponseEntity<ErrorResponse>{
+    protected fun expiredJwtExceptionHandler(e: TokenExpiredException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.EXPIRED_TOKEN_EXCEPTION, e.message!!)
         return ResponseEntity(response, UNAUTHORIZED);
     }
 
     @ExceptionHandler
-    protected fun invalidJwtExceptionHandler(e : JWTVerificationException) : ResponseEntity<ErrorResponse>{
+    protected fun invalidJwtExceptionHandler(e: JWTVerificationException): ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.INVALID_JWT_EXCEPTION, e.message!!)
         return ResponseEntity(response, UNAUTHORIZED)
     }
 
     @ExceptionHandler
-    protected fun badCredentialsExceptionHandler(e : BadCredentialsException)
-    :ResponseEntity<ErrorResponse> {
+    protected fun badCredentialsExceptionHandler(e: BadCredentialsException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.AUTHENTICATION_FAIL)
         return ResponseEntity(response, UNAUTHORIZED)
     }
 
     @ExceptionHandler
-    protected fun businessExceptionHandler(e : BusinessException)
-    : ResponseEntity<ErrorResponse> {
-        this.log.error("business exception occured : {}, {}", e.message,e.errors)
+    protected fun businessExceptionHandler(e: BusinessException)
+            : ResponseEntity<ErrorResponse> {
+        this.log.error("business exception occured : {}, {}", e.message, e.errors)
         return makeResponse(e.errorCode)
     }
 
     @ExceptionHandler
-    protected fun methodArgumentTypeMismatchExceptionHandler(e : MethodArgumentTypeMismatchException)
+    protected fun methodArgumentTypeMismatchExceptionHandler(e: MethodArgumentTypeMismatchException)
             : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(e)
         return ResponseEntity(response, BAD_REQUEST)
     }
 
     @ExceptionHandler
-    protected fun methodArgumentNotValidExceptionHandler(e : MethodArgumentNotValidException)
-    : ResponseEntity<ErrorResponse> {
+    protected fun methodArgumentNotValidExceptionHandler(e: MethodArgumentNotValidException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.bindingResult)
         return ResponseEntity(response, BAD_REQUEST);
     }
 
     @ExceptionHandler
-    protected fun constraintViolationExceptionHandler(e : ConstraintViolationException)
-    : ResponseEntity<ErrorResponse>{
+    protected fun constraintViolationExceptionHandler(e: ConstraintViolationException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.constraintViolations);
         return ResponseEntity(response, BAD_REQUEST)
     }
 
     @ExceptionHandler
-    protected fun missingServletRequestParameterException(e : MissingServletRequestParameterException)
-    : ResponseEntity<ErrorResponse> {
+    protected fun missingServletRequestParameterException(e: MissingServletRequestParameterException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.parameterName)
         return ResponseEntity(response, BAD_REQUEST)
     }
 
     @ExceptionHandler
-    protected fun missingServletRequestPartExceptionHandler(e : MissingServletRequestPartException)
-    : ResponseEntity<ErrorResponse> {
+    protected fun missingServletRequestPartExceptionHandler(e: MissingServletRequestPartException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.requestPartName)
         return ResponseEntity(response, BAD_REQUEST)
     }
 
     @ExceptionHandler
-    protected fun missingServletRequestCookieExceptionHandler(e : MissingRequestCookieException)
-    : ResponseEntity<ErrorResponse> {
+    protected fun missingServletRequestCookieExceptionHandler(e: MissingRequestCookieException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.cookieName)
         return ResponseEntity(response, BAD_REQUEST)
     }
 
     @ExceptionHandler
-    protected fun httpRequestMethodNotSupportedException(e : HttpRequestMethodNotSupportedException)
-    : ResponseEntity<ErrorResponse> {
-        val errors : MutableList<ErrorResponse.FieldError> = mutableListOf()
+    protected fun httpRequestMethodNotSupportedException(e: HttpRequestMethodNotSupportedException)
+            : ResponseEntity<ErrorResponse> {
+        val errors: MutableList<ErrorResponse.FieldError> = mutableListOf()
         errors.add(ErrorResponse.FieldError("http method", e.method, ErrorCode.METHOD_NOT_ALLOWED.message))
         val response = ErrorResponse.of(ErrorCode.INVALID_HEADER, errors)
         return ResponseEntity(response, BAD_REQUEST)
     }
 
     @ExceptionHandler
-    protected fun httpMessageNotReadableExceptionHandler(e : HttpMessageNotReadableException)
-    : ResponseEntity<ErrorResponse> {
+    protected fun httpMessageNotReadableExceptionHandler(e: HttpMessageNotReadableException)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.HTTP_MESSAGE_NOT_READABLE)
         return ResponseEntity(response, BAD_REQUEST)
     }
 
     @ExceptionHandler
-    protected fun exceptionHandler(e : Exception)
-    : ResponseEntity<ErrorResponse> {
+    protected fun exceptionHandler(e: Exception)
+            : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR)
         return ResponseEntity(response, INTERNAL_SERVER_ERROR)
     }
 
-    private fun makeResponse(errorCode : ErrorCode) : ResponseEntity<ErrorResponse>{
+    private fun makeResponse(errorCode: ErrorCode): ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(errorCode);
         return ResponseEntity(response, errorCode.status)
     }

@@ -12,14 +12,26 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 
 @Component
-class EntryPointUnauthorizedHandler(private val objectMapper : ObjectMapper) : AuthenticationEntryPoint{
+class EntryPointUnauthorizedHandler(private val objectMapper: ObjectMapper) : AuthenticationEntryPoint {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun commence(request: HttpServletRequest, response: HttpServletResponse, authException: AuthenticationException) {
+    override fun commence(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        authException: AuthenticationException
+    ) {
 //        log.error("unauthorized exception : {}", request.getAttribute("exception"))
-        response.status= HttpStatus.UNAUTHORIZED.value()
+        response.status = HttpStatus.UNAUTHORIZED.value()
         response.addHeader("Content-Type", "application/json;charset=UTF-8")
-        response.writer.write(objectMapper.writeValueAsString( ErrorResponse.of(401, "인증 실패 ${request.getAttribute("exception").toString()}", ErrorCode.AUTHENTICATION_FAIL.code) ))
+        response.writer.write(
+            objectMapper.writeValueAsString(
+                ErrorResponse.of(
+                    401,
+                    "인증 실패 ${request.getAttribute("exception").toString()}",
+                    ErrorCode.AUTHENTICATION_FAIL.code
+                )
+            )
+        )
         response.writer.flush()
         response.writer.close()
     }

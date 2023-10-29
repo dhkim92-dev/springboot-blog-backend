@@ -12,21 +12,25 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 
 @Service
-class CustomUserDetailService(private val memberRepository: MemberRepository) : UserDetailsService, UserDetailsPasswordService{
+class CustomUserDetailService(private val memberRepository: MemberRepository) : UserDetailsService,
+    UserDetailsPasswordService {
 
-    private val log : Logger = LoggerFactory.getLogger(javaClass)
+    private val log: Logger = LoggerFactory.getLogger(javaClass)
 
-    override fun loadUserByUsername(email : String): UserDetails {
-        val member = this.memberRepository.findByEmail(email)
+    override fun loadUserByUsername(email: String): UserDetails {
+        val member = memberRepository.findByEmail(email)
 
-        return member?.let{ CustomUserDetails.from(member) }
-                ?: throw EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND)
+        return member?.let { CustomUserDetails.from(member) }
+            ?: throw EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND)
     }
 
-    override fun updatePassword(user: UserDetails, newPassword: String) : UserDetails {
-        val member = this.memberRepository.findByEmail(user.username)?:throw EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND)
+    override fun updatePassword(user: UserDetails, newPassword: String): UserDetails {
+        val member = memberRepository.findByEmail(user.username)
+            ?: throw EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND)
+
         member.updatePassword(newPassword)
-        this.memberRepository.save(member)
-        return member.let{ CustomUserDetails.from(member)}
+        memberRepository.save(member)
+
+        return member.let { CustomUserDetails.from(member) }
     }
 }

@@ -45,8 +45,8 @@ class ArticleControllerTest : AnnotationSpec() {
         val data = ArticleDto.fromEntity(article)
         val response = ApiResult.Ok(CREATE_ARTICLE_SUCCESS, data)
 
-        every { articleService.createArticle(any()) } returns data
-        val result = articleController.createArticle(request).body!!
+        every { articleService.createArticle(admin.id, any()) } returns data
+        val result = articleController.createArticle(request, admin.id).body!!
 
         result.status shouldBe CREATED.value()
         result.code shouldBe CREATE_ARTICLE_SUCCESS.code
@@ -123,8 +123,8 @@ class ArticleControllerTest : AnnotationSpec() {
         val request = ArticleModifyRequest(article.title, article.contents, article.category.name)
         val data = ArticleDto.fromEntity(article)
 
-        every { articleService.modifyArticle(any()) } returns data
-        val result = articleController.updateArticle(request, article.id)!!.body!!
+        every { articleService.modifyArticle(article.author.id, any()) } returns data
+        val result = articleController.updateArticle(request, article.id, article.author.id)!!.body!!
 
         result.status shouldBe OK.value()
     }
@@ -132,8 +132,8 @@ class ArticleControllerTest : AnnotationSpec() {
     @Test
     fun `게시물을 삭제한다`() {
 
-        every { articleService.deleteArticle(article.id) } returns Unit
-        val result = articleController.deleteArticle(article.id).body!!
+        every { articleService.deleteArticle(article.author.id, article.id) } returns Unit
+        val result = articleController.deleteArticle(article.id, article.author.id).body!!
 
         result.data shouldBe Unit
     }

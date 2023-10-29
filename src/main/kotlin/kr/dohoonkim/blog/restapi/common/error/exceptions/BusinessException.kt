@@ -6,19 +6,19 @@ import java.lang.RuntimeException
 
 
 open class BusinessException : RuntimeException {
-    var errorCode : ErrorCode
-    var errors : List<ErrorResponse.FieldError> = arrayListOf<ErrorResponse.FieldError>()
+    var errorCode: ErrorCode
+    var errors: List<ErrorResponse.FieldError> = arrayListOf<ErrorResponse.FieldError>()
 
-    public constructor(message : String, errorCode : ErrorCode) : super(message) {
+    public constructor(message: String, errorCode: ErrorCode) : super(message) {
         this.errorCode = errorCode
     }
 
-    public constructor(errorCode: ErrorCode) : super(errorCode.message){
+    public constructor(errorCode: ErrorCode) : super(errorCode.message) {
         this.errorCode = errorCode
     }
 
-    public constructor(errorCode : ErrorCode, errors : List<ErrorResponse.FieldError> )
-            : super(errorCode.message){
+    public constructor(errorCode: ErrorCode, errors: List<ErrorResponse.FieldError>)
+            : super(errorCode.message) {
         this.errors = errors;
         this.errorCode = errorCode;
     }

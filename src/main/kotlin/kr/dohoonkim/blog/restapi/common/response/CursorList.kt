@@ -11,12 +11,12 @@ data class CursorList<T>(
 ) {
     companion object {
         fun <T> of(data: List<T>, next: String?, pageSize: Long)
-        : CursorList<T> {
-            if(data.isEmpty()) {
+                : CursorList<T> {
+            if (data.isEmpty()) {
                 return CursorList<T>(0, emptyList(), null)
             }
 
-            var count : Int = if(pageSize + 1 <= data.size) pageSize.toInt() else data.size.toInt()
+            var count: Int = if (pageSize + 1 <= data.size) pageSize.toInt() else data.size.toInt()
 
             return CursorList<T>(count, data.subList(0, count), next)
         }

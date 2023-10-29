@@ -1,20 +1,21 @@
 package kr.dohoonkim.blog.restapi.domain.member.repository
 
 import com.querydsl.jpa.impl.JPAQueryFactory
+import kr.dohoonkim.blog.restapi.common.error.ErrorCode.MEMBER_NOT_FOUND
+import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.QMember.Companion.member
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Repository
 import java.util.*
 
 class MemberRepositoryCustomImpl(private val queryFactory : JPAQueryFactory
 ) : MemberRepositoryCustom {
 
-    override fun findByMemberId(memberId: UUID): Member? {
+    override fun findByMemberId(memberId: UUID): Member {
         return queryFactory
             .selectFrom(member)
             .where(member.id.eq(memberId))
             .fetchOne()
+            ?: throw EntityNotFoundException(MEMBER_NOT_FOUND)
     }
 
     override fun existsByNickname(nickname: String): Boolean {

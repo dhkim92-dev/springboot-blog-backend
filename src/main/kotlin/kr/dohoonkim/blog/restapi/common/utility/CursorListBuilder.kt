@@ -13,10 +13,13 @@ import java.time.format.DateTimeFormatter
  */
 class CursorListBuilder<T> {
     companion object {
-        val objectMapper = ObjectMapper().registerModule(JavaTimeModule().addSerializer(
-            LocalDateTimeSerializer(
-            DateTimeFormatter.ISO_DATE_TIME)
-        ))
+        val objectMapper = ObjectMapper().registerModule(
+            JavaTimeModule().addSerializer(
+                LocalDateTimeSerializer(
+                    DateTimeFormatter.ISO_DATE_TIME
+                )
+            )
+        )
 
         /**
          * 주어진 커서 쿼리 키들을 기반으로 next cursor url을 만든다.
@@ -41,20 +44,27 @@ class CursorListBuilder<T> {
                 .toString()
         }
 
-        fun <T> getQueries(target: T, queries: Map<String, String>, direction: String, withUrl: Boolean = true): String? {
+        fun <T> getQueries(
+            target: T,
+            queries: Map<String, String>,
+            direction: String,
+            withUrl: Boolean = true
+        ): String? {
             val cursor: Cursor = Cursor()
             val node = objectMapper.valueToTree<JsonNode>(target)
-            var keyMap = queries.map{entry -> {
-                entry.value to entry.key.split("#")
-            }}
+            var keyMap = queries.map { entry ->
+                {
+                    entry.value to entry.key.split("#")
+                }
+            }
 
             keyMap.forEach { entry ->
                 var targetNode = node
                 val fields = entry().second
                 var found = true
 
-                fields.forEach { field->
-                    if(!targetNode.has(field)) {
+                fields.forEach { field ->
+                    if (!targetNode.has(field)) {
 //                        println("  ${field} not exists on target")
                         found = false
                         return@forEach
@@ -71,7 +81,12 @@ class CursorListBuilder<T> {
             return cursor.build(withUrl = withUrl)
         }
 
-        fun <T> build(data: List<T>, queries: Map<String, String>, pageSize: Long, withUrl: Boolean = true): CursorList<T> {
+        fun <T> build(
+            data: List<T>,
+            queries: Map<String, String>,
+            pageSize: Long,
+            withUrl: Boolean = true
+        ): CursorList<T> {
             return CursorList.of(
                 data = data,
                 next = next(data, queries, pageSize, withUrl),

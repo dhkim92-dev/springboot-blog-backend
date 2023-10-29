@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kr.dohoonkim.blog.restapi.application.member.MemberService
 import kr.dohoonkim.blog.restapi.application.member.dto.*
+import kr.dohoonkim.blog.restapi.common.error.ErrorCode.RESOURCE_OWNERSHIP_VIOLATION
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ConflictException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
@@ -22,7 +23,7 @@ class MemberServiceTest : BehaviorSpec({
     val memberRepository = mockk<MemberRepository>()
     val authenticationUtils = mockk<AuthenticationUtil>()
     val passwordEncoder = mockk<BCryptPasswordEncoder>()
-    val memberService : MemberService = MemberService(memberRepository, passwordEncoder, authenticationUtils)
+    val memberService: MemberService = MemberService(memberRepository, passwordEncoder, authenticationUtils)
 
     val admin = createMember()
     val user = createMember()
@@ -76,31 +77,29 @@ class MemberServiceTest : BehaviorSpec({
 
         When("자기 자신을 삭제하려고 하면") {
             every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns true
+            every { authenticationUtils.checkPermission(any(), any()) } returns Unit
 
             Then("회원 탈퇴된다.") {
-                memberService.delete(user.id) shouldBe Unit
+                memberService.delete(user.id, user.id) shouldBe Unit
             }
         }
 
         When("관리자가 삭제를 시도하면") {
-//            every { authenticationUtils.extractAuthenticationMember() } returns admin
-            every { authenticationUtils.isAdmin() } returns true
-            every { authenticationUtils.isResourceOwner(any())} returns false
+            every { authenticationUtils.checkPermission(admin.id, user.id) } returns Unit
 
             Then("회원 탈퇴된다.") {
-                memberService.delete(user.id) shouldBe Unit
+                memberService.delete(admin.id, user.id) shouldBe Unit
             }
         }
 
         When("관리자가 아닌 사용자가 다른 사용자를 삭제하려하면") {
-            every { authenticationUtils.extractAuthenticationMember() } returns other
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns false
+            every { authenticationUtils.checkPermission(other.id, user.id) } throws ForbiddenException(
+                RESOURCE_OWNERSHIP_VIOLATION
+            )
 
             Then("에러가 발생한다.") {
                 shouldThrow<ForbiddenException> {
-                    memberService.delete(user.id)
+                    memberService.delete(other.id, user.id)
                 }
             }
         }
@@ -112,18 +111,17 @@ class MemberServiceTest : BehaviorSpec({
             user.password,
             "newPassword"
         )
-        every { passwordEncoder.encode(any() ) } returns ""
+        every { passwordEncoder.encode(any()) } returns ""
 
         When("자신의 패스워드를 변경하면") {
-            every { authenticationUtils.extractAuthenticationMember() } returns user
             every { memberRepository.save(any()) } returns user
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns true
             every { memberRepository.findByMemberId(any()) } returns user
+            every { authenticationUtils.checkPermission(user.id, dto.memberId) } returns Unit
 
             Then("현재 비밀번호가 일치하면 변경에 성공한다.") {
                 every { passwordEncoder.matches(any(), any()) } returns true
-                val memberDto = memberService.changePassword(dto)
+
+                val memberDto = memberService.changePassword(user.id, dto)
 
                 memberDto.id shouldBe user.id
             }
@@ -132,20 +130,20 @@ class MemberServiceTest : BehaviorSpec({
                 every { passwordEncoder.matches(any(), any()) } returns false
 
                 shouldThrow<UnauthorizedException> {
-                    memberService.changePassword(dto)
+                    memberService.changePassword(user.id, dto)
                 }
             }
         }
 
         When("다른 사람의 패스워드 변경을 시도하면") {
-            every { authenticationUtils.extractAuthenticationMember() } returns other
             every { passwordEncoder.matches(any(), any()) } returns true
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns false
+            every { authenticationUtils.checkPermission(other.id, dto.memberId) } throws ForbiddenException(
+                RESOURCE_OWNERSHIP_VIOLATION
+            )
 
             Then("에러가 발생한다.") {
                 shouldThrow<ForbiddenException> {
-                    memberService.changePassword(dto)
+                    memberService.changePassword(other.id, dto)
                 }
             }
         }
@@ -153,46 +151,44 @@ class MemberServiceTest : BehaviorSpec({
 
     Given("이메일을 변경한다.") {
         val emailChangeDto = MemberEmailChangeDto(user.id, "newEmail@gmail.com")
-        every { authenticationUtils.extractAuthenticationMember() } returns user
         every { memberRepository.save(any()) } returns user
 
         When("중복되지 않는 이메일로 자신의 이메일을 변경하면") {
             every { memberRepository.existsByEmail(any()) } returns false
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns true
+            every { authenticationUtils.checkPermission(user.id, emailChangeDto.memberId) } returns Unit
 
             Then("이메일이 변경된다.") {
-                val ret = memberService.changeMemberEmail(emailChangeDto)
-
+                val ret = memberService.changeMemberEmail(user.id, emailChangeDto)
                 ret.email shouldBe emailChangeDto.email
             }
         }
 
         When("이메일이 중복될 경우") {
             every { memberRepository.existsByEmail(any()) } returns true
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns true
+            every { authenticationUtils.checkPermission(any(), any()) } returns Unit
 
             Then("에러가 발생한다.") {
                 shouldThrow<ConflictException> {
-                    memberService.changeMemberEmail(emailChangeDto)
+                    memberService.changeMemberEmail(user.id, emailChangeDto)
                 }
             }
         }
 
         When("다른 사람의 이메일을 변경하면") {
             every { memberRepository.existsByEmail(any()) } returns false
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns false
+            every { authenticationUtils.checkPermission(user.id, any()) } throws ForbiddenException(
+                RESOURCE_OWNERSHIP_VIOLATION
+            )
 
             Then("에러가 발생한다.") {
                 val otherMemberEmailChangeDto = MemberEmailChangeDto(
                     other.id,
                     emailChangeDto.email
                 )
+                print("other id : ${other.id} dto memberId : ${otherMemberEmailChangeDto.memberId}")
 
                 shouldThrow<ForbiddenException> {
-                    memberService.changeMemberEmail(otherMemberEmailChangeDto)
+                    memberService.changeMemberEmail(user.id, otherMemberEmailChangeDto)
                 }
             }
         }
@@ -208,11 +204,10 @@ class MemberServiceTest : BehaviorSpec({
 
         When("중복되지 않는 닉네임으로 자기 자신의 닉네임을 변경하면") {
             every { memberRepository.existsByNickname(any()) } returns false
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns true
+            every { authenticationUtils.checkPermission(user.id, user.id) } returns Unit
 
             Then("이메일이 변경된다.") {
-                val ret = memberService.changeMemberNickname(dto)
+                val ret = memberService.changeMemberNickname(user.id, dto)
 
                 ret.nickname shouldBe dto.nickname
             }
@@ -220,27 +215,31 @@ class MemberServiceTest : BehaviorSpec({
 
         When("닉네임이 중복될 경우") {
             every { memberRepository.existsByNickname(any()) } returns true
-            every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns true
+            every { authenticationUtils.checkPermission(any(), any()) } returns Unit
 
             Then("에러가 발생한다.") {
                 shouldThrow<ConflictException> {
-                    memberService.changeMemberNickname(dto)
+                    memberService.changeMemberNickname(user.id, dto)
                 }
             }
         }
 
         When("다른 사람의 닉네임을 변경하면") {
+            every { memberRepository.existsByNickname(any()) } returns false
             every { authenticationUtils.isAdmin() } returns false
-            every { authenticationUtils.isResourceOwner(any())} returns false
+            every { authenticationUtils.checkPermission(any(), any()) } throws ForbiddenException(
+                RESOURCE_OWNERSHIP_VIOLATION
+            )
+
             Then("에러가 발생한다.") {
                 val otherMemberNicknameChangeDto = MemberNicknameChangeDto(
                     memberId = other.id,
                     nickname = "newNickname"
                 )
+                print("other id : ${user.id} dto memberId : ${otherMemberNicknameChangeDto.memberId}")
 
                 shouldThrow<ForbiddenException> {
-                    memberService.changeMemberNickname(otherMemberNicknameChangeDto)
+                    memberService.changeMemberNickname(user.id, otherMemberNicknameChangeDto)
                 }
             }
         }

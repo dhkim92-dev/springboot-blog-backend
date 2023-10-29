@@ -10,22 +10,22 @@ import java.util.UUID;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-abstract class UuidPrimaryKeyEntity{
-  @Id
-  var id : UUID = UUID.randomUUID()
+abstract class UuidPrimaryKeyEntity {
+    @Id
+    var id: UUID = UUID.randomUUID()
 
-  @CreatedDate
-  @Column(name="created_at", updatable = false, nullable = false)
-  var createdAt : LocalDateTime = LocalDateTime.now()
+    @CreatedDate
+    @Column(name = "created_at", updatable = false, nullable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now()
 
-  @LastModifiedDate
-  @Column(name = "updated_at")
-  var updatedAt : LocalDateTime = LocalDateTime.now()
-    protected set;
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    var updatedAt: LocalDateTime = LocalDateTime.now()
+        protected set;
 
-  @PreUpdate
-  fun updateLastModifiedDate() {
-    this.updatedAt = LocalDateTime.now();
-  }
+    @PreUpdate
+    fun updateLastModifiedDate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }

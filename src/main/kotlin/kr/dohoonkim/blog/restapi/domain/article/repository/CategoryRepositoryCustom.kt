@@ -4,10 +4,10 @@ import kr.dohoonkim.blog.restapi.application.board.dto.CategoryDto
 
 interface CategoryRepositoryCustom {
 
-    fun existsByName(name : String) : Boolean
+    fun existsByName(name: String): Boolean
 
-    fun existsByCategoryId(id : Long) : Boolean
+    fun existsByCategoryId(id: Long): Boolean
 
-    fun findAllCategory() : List<CategoryDto>
+    fun findAllCategory(): List<CategoryDto>
 
 }

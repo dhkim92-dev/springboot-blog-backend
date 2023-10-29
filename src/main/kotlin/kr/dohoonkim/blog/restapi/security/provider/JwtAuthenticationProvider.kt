@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class JwtAuthenticationProvider(
-    private val jwtConfig : JwtConfig,
-    private val jwtService : JwtService
+    private val jwtConfig: JwtConfig,
+    private val jwtService: JwtService
 ) : AuthenticationProvider {
 
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -20,7 +20,7 @@ class JwtAuthenticationProvider(
      * @param authentication : [JwtAuthentication]
      */
     override fun authenticate(authentication: Authentication): Authentication {
-        val jwt : String = authentication.principal as String // authentication
+        val jwt: String = authentication.principal as String // authentication
         return jwtService.getAuthentication(jwt)
     }
 

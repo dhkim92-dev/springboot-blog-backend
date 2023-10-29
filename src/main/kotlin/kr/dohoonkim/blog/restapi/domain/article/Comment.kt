@@ -11,29 +11,29 @@ import jakarta.persistence.OneToOne
 import kr.dohoonkim.blog.restapi.common.entity.LongPrimaryKeyEntity
 import kr.dohoonkim.blog.restapi.domain.member.Member
 
-@Entity(name="article_comment")
-class Comment (parent : Comment?, contents : String, author : Member, article : Article) : LongPrimaryKeyEntity() {
+@Entity(name = "article_comment")
+class Comment(parent: Comment?, contents: String, author: Member, article: Article) : LongPrimaryKeyEntity() {
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    var contents : String = contents
+    var contents: String = contents
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    var author : Member = author
+    var author: Member = author
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
-    var article : Article = article
+    var article: Article = article
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
-    var childrens : MutableList<Comment> = mutableListOf()
+    var childrens: MutableList<Comment> = mutableListOf()
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="parent_id")
-    var parent : Comment? = null
+    @JoinColumn(name = "parent_id")
+    var parent: Comment? = null
 
     fun updateContents(contents: String) {
-        this.contents=contents
+        this.contents = contents
     }
 
 }

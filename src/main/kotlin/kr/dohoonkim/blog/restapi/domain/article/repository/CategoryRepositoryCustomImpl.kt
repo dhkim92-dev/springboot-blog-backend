@@ -7,7 +7,7 @@ import kr.dohoonkim.blog.restapi.application.board.dto.CategoryDto
 import kr.dohoonkim.blog.restapi.domain.article.QCategory.Companion.category
 import kr.dohoonkim.blog.restapi.domain.article.QArticle.Companion.article
 
-class CategoryRepositoryCustomImpl(private val queryFactory : JPAQueryFactory) : CategoryRepositoryCustom {
+class CategoryRepositoryCustomImpl(private val queryFactory: JPAQueryFactory) : CategoryRepositoryCustom {
 
     override fun existsByName(name: String): Boolean {
         val result = queryFactory
@@ -31,12 +31,14 @@ class CategoryRepositoryCustomImpl(private val queryFactory : JPAQueryFactory) :
 
     override fun findAllCategory(): List<CategoryDto> {
         val ret = queryFactory
-            .select(Projections.constructor(
-                CategoryDto::class.java,
-                category.id,
-                category.name,
-                article.count()
-            ))
+            .select(
+                Projections.constructor(
+                    CategoryDto::class.java,
+                    category.id,
+                    category.name,
+                    article.count()
+                )
+            )
             .from(category)
             .leftJoin(article)
             .on(category.id.eq(article.category.id))
@@ -49,11 +51,11 @@ class CategoryRepositoryCustomImpl(private val queryFactory : JPAQueryFactory) :
         return ret
     }
 
-    private fun eqName(name : String) : BooleanExpression {
+    private fun eqName(name: String): BooleanExpression {
         return category.name.eq(name)
     }
 
-    private fun eqId(id : Long) : BooleanExpression {
+    private fun eqId(id: Long): BooleanExpression {
         return category.id.eq(id)
     }
 

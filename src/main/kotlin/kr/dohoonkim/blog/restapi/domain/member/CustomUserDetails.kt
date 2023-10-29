@@ -6,24 +6,24 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.util.UUID
 
 class CustomUserDetails
-    private constructor(
-        var memberId : UUID,
-        var email : String,
-        var nickname : String,
-        private var password : String,
-        var role : Role,
-        var isActivated : Boolean
-    ) : UserDetails {
+private constructor(
+    var memberId: UUID,
+    var email: String,
+    var nickname: String,
+    private var password: String,
+    var role: Role,
+    var isActivated: Boolean
+) : UserDetails {
 
     companion object {
-        fun from(member : Member) : CustomUserDetails {
+        fun from(member: Member): CustomUserDetails {
             return CustomUserDetails(
-                    member.id,
-                    member.email,
-                    member.nickname,
-                    member.password,
-                    member.role,
-                    member.isActivated
+                member.id,
+                member.email,
+                member.nickname,
+                member.password,
+                member.role,
+                member.isActivated
             )
         }
     }

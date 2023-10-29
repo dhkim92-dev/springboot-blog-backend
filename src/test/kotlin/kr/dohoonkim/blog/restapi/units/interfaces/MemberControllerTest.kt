@@ -89,10 +89,9 @@ class MemberControllerTest : AnnotationSpec() {
             role = user.role.rolename,
             isActivated = true
         )
-        every { memberService.changeMemberNickname(any()) } returns data
+        every { memberService.changeMemberNickname(user.id, any()) } returns data
 
-        val response = memberController.changeNickname(user.id, request).body!!
-
+        val response = memberController.changeNickname(user.id, request, user.id).body!!
         response.status shouldBe CHANGE_NICKNAME_SUCCESS.status.value()
         response.code shouldBe CHANGE_NICKNAME_SUCCESS.code
         response.data shouldBe data
@@ -107,10 +106,9 @@ class MemberControllerTest : AnnotationSpec() {
             role = user.role.name,
             isActivated = true)
 
-        every { memberService.changeMemberEmail(any()) } returns data
+        every { memberService.changeMemberEmail(user.id, any()) } returns data
 
-        val response = memberController.changeEmail(user.id, request).body!!
-
+        val response = memberController.changeEmail(user.id, request, user.id).body!!
         response.status shouldBe CHANGE_EMAIL_SUCCESS.status.value()
         response.code shouldBe CHANGE_EMAIL_SUCCESS.code
         response.data shouldBe data
@@ -122,9 +120,9 @@ class MemberControllerTest : AnnotationSpec() {
         user.updatePassword(request.newPassword)
         val data = MemberDto.fromEntity(user)
 
-        every { memberService.changePassword(any()) } returns data
+        every { memberService.changePassword(user.id, any()) } returns data
 
-        val response = memberController.changePassword(user.id, request).body!!
+        val response = memberController.changePassword(user.id, request, user.id).body!!
         response.status shouldBe CHANGE_PASSWORD_SUCCESS.status.value()
         response.code shouldBe CHANGE_PASSWORD_SUCCESS.code
         response.data shouldBe data
@@ -132,9 +130,9 @@ class MemberControllerTest : AnnotationSpec() {
 
     @Test
     fun `회원탈퇴를 한다`() {
-        every { memberService.delete(user.id) } returns Unit
+        every { memberService.delete(user.id, user.id) } returns Unit
 
-        val response = memberController.withdrawal(user.id).body!!
+        val response = memberController.withdrawal(user.id, user.id).body!!
 
         response.status shouldBe DELETE_MEMBER_SUCCESS.status.value()
         response.data shouldBe Unit

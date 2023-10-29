@@ -19,12 +19,9 @@ import java.util.*
 class CategoryServiceTest : BehaviorSpec() {
 
     private val categoryRepository = mockk<CategoryRepository>()
-
     private val categoryService = CategoryServiceImpl(categoryRepository)
-
-    private lateinit var category1 : Category
-
-    private lateinit var category2 : Category
+    private lateinit var category1: Category
+    private lateinit var category2: Category
 
     init {
 
@@ -34,19 +31,19 @@ class CategoryServiceTest : BehaviorSpec() {
         }
 
         Given("새로운 카테고리를 추가하려한다.") {
-            every {categoryRepository.save(any())} returns category1
+            every { categoryRepository.save(any()) } returns category1
             When("신규 카테고리를 생성하여 저장하면") {
-                every {categoryRepository.existsByName(any()) } returns false
+                every { categoryRepository.existsByName(any()) } returns false
                 Then("정상적으로 저장되어야한다.") {
                     val dto = CategoryCreateDto("test-category-1")
                     val ret = categoryService.createCategory(dto)
-                    ret.name shouldBe  "test-category-1"
+                    ret.name shouldBe "test-category-1"
                     ret.count shouldBe 0L
                 }
             }
 
             When("중복된 카테고리를 저장하려하면") {
-                every {categoryRepository.existsByName(any()) } returns true
+                every { categoryRepository.existsByName(any()) } returns true
                 Then("에러가 발생해야한다.") {
                     shouldThrow<ConflictException> {
                         val dto = CategoryCreateDto("test-category-1")
@@ -59,9 +56,9 @@ class CategoryServiceTest : BehaviorSpec() {
         Given("카테고리 명을 수정한다.") {
 
             When("수정하려는 카테고리 이름이 존재하지 않는다면") {
-                every {categoryRepository.findById(any())} returns Optional.of(category1)
-                every {categoryRepository.existsByName(any())} returns false
-                every {categoryRepository.save(any())} returns Category(name="test-category-3")
+                every { categoryRepository.findById(any()) } returns Optional.of(category1)
+                every { categoryRepository.existsByName(any()) } returns false
+                every { categoryRepository.save(any()) } returns Category(name = "test-category-3")
                 Then("정상적으로 수정된다.") {
                     val dto = CategoryModifyDto(
                         id = 0L,
@@ -74,19 +71,19 @@ class CategoryServiceTest : BehaviorSpec() {
             }
 
             When("수정하려는 카테고리 이름이 존재한다면") {
-                every {categoryRepository.findById(any())} returns Optional.of(category1)
-                every {categoryRepository.existsByName(any())} returns true
-                every {categoryRepository.save(any())} returns Category("test-category-3")
+                every { categoryRepository.findById(any()) } returns Optional.of(category1)
+                every { categoryRepository.existsByName(any()) } returns true
+                every { categoryRepository.save(any()) } returns Category("test-category-3")
 
                 Then("에러가 발생한다.") {
                     shouldThrow<ConflictException> {
-                        categoryService.modifyCategoryName(CategoryModifyDto(id=0L, newName="test-category-3"))
+                        categoryService.modifyCategoryName(CategoryModifyDto(id = 0L, newName = "test-category-3"))
                     }
                 }
             }
 
             When("존재하지 않는 카테고리의 이름을 수정하려 한다면") {
-                every {categoryRepository.findById(any())} throws EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND)
+                every { categoryRepository.findById(any()) } throws EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND)
                 Then("에러가 발생한다.") {
                     shouldThrow<EntityNotFoundException> {
                         categoryService.modifyCategoryName(CategoryModifyDto(id = 0L, newName = "test-category-3"))
@@ -97,7 +94,7 @@ class CategoryServiceTest : BehaviorSpec() {
 
         Given("카테고리를 삭제한다.") {
             When("카테고리를 삭제하면") {
-                every{categoryRepository.deleteById(0L)} returns Unit
+                every { categoryRepository.deleteById(0L) } returns Unit
                 Then("카테고리가 삭제된다.") {
                     shouldNotThrowAny {
                         categoryService.deleteCategory(0L)
@@ -108,7 +105,7 @@ class CategoryServiceTest : BehaviorSpec() {
 
         Given("카테고리 목록을 조회한다.") {
             When("세개의 카테고리와 가각 1개, 3개, 0개의 게시글이 있을 때") {
-                every {categoryRepository.findAllCategory()} returns listOf(
+                every { categoryRepository.findAllCategory() } returns listOf(
                     CategoryDto(category1.id!!, category1.name, 1),
                     CategoryDto(category2.id!!, category2.name, 3),
                     CategoryDto(3L, "test-category-3", 0)

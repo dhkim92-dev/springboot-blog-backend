@@ -17,18 +17,18 @@ import java.time.Duration
 
 @Configuration
 class RedisConfig(
-    @Value("\${spring.redis.host}") private val host : String,
-    @Value("\${spring.redis.port}") private val port : Int,
+    @Value("\${spring.redis.host}") private val host: String,
+    @Value("\${spring.redis.port}") private val port: Int,
     private val objectMapper: ObjectMapper
-){
+) {
 
     @Bean
-    fun redisConnectionFactory() : RedisConnectionFactory {
+    fun redisConnectionFactory(): RedisConnectionFactory {
         return LettuceConnectionFactory(host, port)
     }
 
     @Bean
-    fun redisTemplate() : RedisTemplate<String, Any> {
+    fun redisTemplate(): RedisTemplate<String, Any> {
         val redisTemplate = RedisTemplate<String, Any>()
         redisTemplate.connectionFactory = redisConnectionFactory()
         redisTemplate.keySerializer = StringRedisSerializer()

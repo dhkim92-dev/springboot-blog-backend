@@ -11,16 +11,16 @@ import java.util.UUID
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class ArticleDto(
-    val id : UUID,
-    val title : String,
-    val contents : String,
-    val author : MemberSummaryDto,
-    val category : CategorySummaryDto,
-    val createdAt : LocalDateTime,
-    val viewCount : Long,
+    val id: UUID,
+    val title: String,
+    val contents: String,
+    val author: MemberSummaryDto,
+    val category: CategorySummaryDto,
+    val createdAt: LocalDateTime,
+    val viewCount: Long,
 ) {
     companion object {
-        fun fromEntity(article : Article) : ArticleDto {
+        fun fromEntity(article: Article): ArticleDto {
             return ArticleDto(
                 id = article.id,
                 title = article.title,

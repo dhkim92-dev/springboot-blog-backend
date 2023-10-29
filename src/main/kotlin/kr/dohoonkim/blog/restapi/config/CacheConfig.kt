@@ -20,14 +20,16 @@ import java.time.Duration
 
 @EnableCaching
 @Configuration
-class CacheConfig(private val redisConnectionFactory : RedisConnectionFactory) {
+class CacheConfig(private val redisConnectionFactory: RedisConnectionFactory) {
 
-    private fun defaultCacheConfiguration() : RedisCacheConfiguration {
+    private fun defaultCacheConfiguration(): RedisCacheConfiguration {
         val objectMapper = ObjectMapper()
             .registerKotlinModule()
             .registerModule(JavaTimeModule())
-            .activateDefaultTyping(BasicPolymorphicTypeValidator.builder()
-                .allowIfBaseType(Any::class.java).build(), ObjectMapper.DefaultTyping.EVERYTHING)
+            .activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder()
+                    .allowIfBaseType(Any::class.java).build(), ObjectMapper.DefaultTyping.EVERYTHING
+            )
 
         return RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofSeconds(3600L))
@@ -36,14 +38,14 @@ class CacheConfig(private val redisConnectionFactory : RedisConnectionFactory) {
             .serializeValuesWith(fromSerializer(GenericJackson2JsonRedisSerializer(objectMapper)))
     }
 
-    private fun customConfigurationMap() : HashMap<String, RedisCacheConfiguration>{
-        return hashMapOf<String, RedisCacheConfiguration> (
+    private fun customConfigurationMap(): HashMap<String, RedisCacheConfiguration> {
+        return hashMapOf<String, RedisCacheConfiguration>(
             CacheKey.CATEGORIES_CACHE_KEY to defaultCacheConfiguration().entryTtl(Duration.ZERO),
         )
     }
 
     @Bean
-    fun cacheManager() : RedisCacheManager {
+    fun cacheManager(): RedisCacheManager {
         return RedisCacheManager.RedisCacheManagerBuilder
             .fromConnectionFactory(redisConnectionFactory)
             .cacheDefaults(defaultCacheConfiguration())

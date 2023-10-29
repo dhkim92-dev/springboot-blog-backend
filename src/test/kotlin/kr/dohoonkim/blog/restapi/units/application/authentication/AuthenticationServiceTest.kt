@@ -27,7 +27,8 @@ class AuthenticationServiceTest : BehaviorSpec({
     val passwordEncoder = BCryptPasswordEncoder()
     val memberRepository = mockk<MemberRepository>()
     val userDetailService = mockk<CustomUserDetailService>()
-    val authenticationService = AuthenticationService(jwtService,
+    val authenticationService = AuthenticationService(
+        jwtService,
         memberRepository,
         userDetailService,
         passwordEncoder
@@ -88,6 +89,6 @@ class AuthenticationServiceTest : BehaviorSpec({
         }
     }
 
-    afterSpec{ clearAllMocks() }
+    afterSpec { clearAllMocks() }
 
 })

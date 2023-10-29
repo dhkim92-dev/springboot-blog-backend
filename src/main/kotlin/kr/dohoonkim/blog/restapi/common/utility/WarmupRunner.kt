@@ -10,10 +10,11 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class WarmupRunner(private val articleController: ArticleController,
-                   private val categoryController: CategoryController,
-                   private val authenticationController: AuthenticationController)
-    : ApplicationRunner {
+class WarmupRunner(
+    private val articleController: ArticleController,
+    private val categoryController: CategoryController,
+    private val authenticationController: AuthenticationController
+) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments?) {
         warmupCategoryController()
@@ -24,8 +25,8 @@ class WarmupRunner(private val articleController: ArticleController,
     private fun warmUpArticleController() {
         try {
             articleController.getArticles(0L, null)
-        }catch(e : Exception) {
-          // nothing to do
+        } catch (e: Exception) {
+            // nothing to do
         }
     }
 
@@ -33,7 +34,7 @@ class WarmupRunner(private val articleController: ArticleController,
         try {
             val authenticationDto = LoginRequest(email = "test@gmail.com", password = "testpassword")
             authenticationController.login(authenticationDto)
-        }catch(e : Exception) {
+        } catch (e: Exception) {
             // nothing to do
         }
     }
@@ -41,7 +42,7 @@ class WarmupRunner(private val articleController: ArticleController,
     private fun warmupCategoryController() {
         try {
             categoryController.getCategories()
-        }catch(e : Exception) {
+        } catch (e: Exception) {
             // nothing to do
         }
     }

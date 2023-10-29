@@ -10,10 +10,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
 @EnableJpaAuditing
-class QueryDslConfig(@PersistenceContext val em : EntityManager){
+class QueryDslConfig(@PersistenceContext val em: EntityManager) {
 
     @Bean
-    fun jpaQueryFactory() : JPAQueryFactory {
+    fun jpaQueryFactory(): JPAQueryFactory {
         return JPAQueryFactory(em)
     }
 

@@ -44,7 +44,7 @@ class CategoryControllerTest : AnnotationSpec() {
         val response = categoryController.getCategories().body!!
 
         response.status shouldBe GET_CATEGORIES_SUCCESS.status.value()
-        response.code shouldBe  GET_CATEGORIES_SUCCESS.code
+        response.code shouldBe GET_CATEGORIES_SUCCESS.code
         response.data.data shouldBe data
         response.data.count shouldBe data.size
     }

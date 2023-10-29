@@ -25,15 +25,18 @@ import org.springframework.context.annotation.Import
 class ArticleRepositoryTest : BehaviorSpec() {
 
     override fun extensions() = listOf(SpringExtension)
+
     @Autowired
-    private lateinit var categoryRepository : CategoryRepository
+    private lateinit var categoryRepository: CategoryRepository
+
     @Autowired
     private lateinit var memberRepository: MemberRepository
+
     @Autowired
     private lateinit var articleRepository: ArticleRepository
-    lateinit var member : Member
-    lateinit var category1 : Category
-    lateinit var category2 : Category
+    lateinit var member: Member
+    lateinit var category1: Category
+    lateinit var category2: Category
 
     init {
         beforeEach {
@@ -70,7 +73,7 @@ class ArticleRepositoryTest : BehaviorSpec() {
                     memberRepository.save(member)
                     categoryRepository.saveAll(listOf(category1, category2))
 
-                    for(i in 0 .. 4) {
+                    for (i in 0..4) {
                         articles.add(createArticle(member, category1))
                         articles.add(createArticle(member, category2))
                         Thread.sleep(50)

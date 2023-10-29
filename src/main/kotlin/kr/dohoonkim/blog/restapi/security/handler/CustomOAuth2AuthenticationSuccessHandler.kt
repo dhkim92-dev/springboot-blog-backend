@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder
 @Component
 class CustomOAuth2AuthenticationSuccessHandler(
     @Value("\${oauth2.redirect-uri.on-success}")
-    private val redirectUri : String,
+    private val redirectUri: String,
     private val jwtService: JwtService,
     private val customUserDetailService: CustomUserDetailService
 ) : SimpleUrlAuthenticationSuccessHandler() {
@@ -47,10 +47,10 @@ class CustomOAuth2AuthenticationSuccessHandler(
         val accessToken = jwtService.createAccessToken(claims)
         val refreshToken = jwtService.createRefreshToken(claims)
 
-       redirectStrategy.sendRedirect(request, response, getRedirectUrl(accessToken, refreshToken))
+        redirectStrategy.sendRedirect(request, response, getRedirectUrl(accessToken, refreshToken))
     }
 
-    private fun getRedirectUrl(accessToken : String, refreshToken : String) : String {
+    private fun getRedirectUrl(accessToken: String, refreshToken: String): String {
         return UriComponentsBuilder.fromUriString(redirectUri)
             .queryParam("refresh-token", refreshToken)
             .queryParam("access-token", accessToken)

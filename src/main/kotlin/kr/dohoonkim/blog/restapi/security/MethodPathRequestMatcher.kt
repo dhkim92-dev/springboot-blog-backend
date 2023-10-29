@@ -9,32 +9,31 @@ import org.springframework.security.web.util.matcher.RequestMatcher
 
 class MethodPathRequestMatcher() : RequestMatcher {
     private val log = LoggerFactory.getLogger(this::class.java)
-    private val methodPath : MutableMap<String, MutableSet<String>> = mutableMapOf()
-    private val matchers : MutableMap<String, OrRequestMatcher> = mutableMapOf()
+    private val methodPath: MutableMap<String, MutableSet<String>> = mutableMapOf()
+    private val matchers: MutableMap<String, OrRequestMatcher> = mutableMapOf()
 
-    fun add(method : HttpMethod , endpoints : Array<String>) {
-        if(!methodPath.keys.contains(method.name())){
+    fun add(method: HttpMethod, endpoints: Array<String>) {
+        if (!methodPath.keys.contains(method.name())) {
             methodPath.put(method.name(), mutableSetOf(*endpoints));
-        }else{
+        } else {
             methodPath["${method.name()}"]!!.addAll(endpoints)
         }
     }
 
     fun build() {
-        methodPath.forEach{
-            k, v ->
-            val antMatchers = v.map{
-                path -> AntPathRequestMatcher(path)
+        methodPath.forEach { k, v ->
+            val antMatchers = v.map { path ->
+                AntPathRequestMatcher(path)
             }.toList()
 
-            matchers.put(k,OrRequestMatcher(antMatchers))
+            matchers.put(k, OrRequestMatcher(antMatchers))
         }
     }
 
     override fun matches(request: HttpServletRequest): Boolean {
         log.debug("request uri : ${request.requestURI}")
         println("request url : ${request.requestURI}")
-        if(!matchers.keys.contains(request.method)) {
+        if (!matchers.keys.contains(request.method)) {
             log.debug("method not supported.")
             println("method not supported.")
             return false;

@@ -5,5 +5,5 @@ import java.time.LocalDateTime
 
 data class DatetimeCursor(
     @JsonProperty("created_at")
-    val createdAt : LocalDateTime?
+    val createdAt: LocalDateTime?
 )
