@@ -12,18 +12,10 @@ import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueResult
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueTokenRequest
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
-import kr.dohoonkim.blog.restapi.common.error.exceptions.JwtInvalidException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
-import kr.dohoonkim.blog.restapi.common.response.ApiResult
-import kr.dohoonkim.blog.restapi.common.response.ResultCode
-import kr.dohoonkim.blog.restapi.common.response.ResultCode.AUTHENTICATION_SUCCESS
-import kr.dohoonkim.blog.restapi.common.response.ResultCode.REISSUE_TOKEN_SUCCESS
 import kr.dohoonkim.blog.restapi.interfaces.AuthenticationController
 import kr.dohoonkim.blog.restapi.support.web.createLoginResult
-import kr.dohoonkim.blog.restapi.support.web.createLoginResultResponse
 import kr.dohoonkim.blog.restapi.support.entity.createMember
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.OK
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
@@ -41,10 +33,8 @@ class AuthenticationControllerTest : AnnotationSpec() {
 
         every { authenticationService.login(any()) } returns loginResult
 
-        val response = authenticationController.login(request).body!!
-        response.status shouldBe OK.value()
-        response.code shouldBe AUTHENTICATION_SUCCESS.code
-        response.data shouldBe loginResult
+        val response = authenticationController.login(request)
+        response shouldBe loginResult
     }
 
     @Test
@@ -67,10 +57,8 @@ class AuthenticationControllerTest : AnnotationSpec() {
 
         every { authenticationService.reIssueAccessToken(any()) } returns reissueResult
 
-        val response = authenticationController.reissue(request).body!!
-        response.status shouldBe REISSUE_TOKEN_SUCCESS.status.value()
-        response.code shouldBe REISSUE_TOKEN_SUCCESS.code
-        response.data shouldBe reissueResult
+        val response = authenticationController.reissue(request)
+        response shouldBe reissueResult
     }
 
     @Test
@@ -81,7 +69,7 @@ class AuthenticationControllerTest : AnnotationSpec() {
         every { authenticationService.reIssueAccessToken(any()) } throws UnauthorizedException()
 
         shouldThrow<UnauthorizedException> {
-            authenticationController.reissue(request).body!!
+            authenticationController.reissue(request)
         }
     }
 

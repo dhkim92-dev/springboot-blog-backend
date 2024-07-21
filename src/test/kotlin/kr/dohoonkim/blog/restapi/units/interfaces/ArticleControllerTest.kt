@@ -19,7 +19,6 @@ import kr.dohoonkim.blog.restapi.support.entity.createArticle
 import kr.dohoonkim.blog.restapi.support.entity.createCategory
 import kr.dohoonkim.blog.restapi.support.entity.createDummyArticles
 import kr.dohoonkim.blog.restapi.support.entity.createMember
-import org.springframework.http.HttpStatus.*
 
 class ArticleControllerTest : AnnotationSpec() {
     private val articleService : ArticleService = mockk()
@@ -46,11 +45,9 @@ class ArticleControllerTest : AnnotationSpec() {
         val response = ApiResult.Ok(CREATE_ARTICLE_SUCCESS, data)
 
         every { articleService.createArticle(admin.id, any()) } returns data
-        val result = articleController.createArticle(request, admin.id).body!!
+        val result = articleController.createArticle(request, admin.id)
 
-        result.status shouldBe CREATED.value()
-        result.code shouldBe CREATE_ARTICLE_SUCCESS.code
-        result.data shouldBe data
+        result shouldBe data
     }
 
     @Test
@@ -59,28 +56,25 @@ class ArticleControllerTest : AnnotationSpec() {
         val response = ApiResult.Ok(GET_ARTICLE_SUCCESS, data)
 
         every { articleService.getArticle(any()) } returns data
-        val result = articleController.getArticle(data.id).body!!
 
-        result.status shouldBe OK.value()
-        result.code shouldBe GET_ARTICLE_SUCCESS.code
-        result.data shouldBe data
+        val result = articleController.getArticle(data.id)
+        result shouldBe data
     }
 
     @Test
     fun `전체 게시물 목록을 조회한다`() {
         var data = dummy.map { it -> ArticleSummaryDto.fromEntity(it) }.subList(0, 11)
-        println("data size : ${data.size}")
         val cursorData = CursorListBuilder.build(data, mapOf("createdAt" to "createdAt"), 20, false)
-        val response = ApiResult.Ok(GET_ARTICLE_LIST_SUCCESS, cursorData)
 
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
         every { articleService.getListOfArticles(any(), any(), any()) } returns data
-        val result = articleController.getArticles(null, null).body!!
+        val result = articleController.getArticles(null, null)
 
-        result.status shouldBe OK.value()
-        result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
-        result.data.count shouldBe 11
+        result.count shouldBe 11
+        for(i in 0 until result.count) {
+            result.data[i] shouldBe data[i]
+        }
     }
 
     @Test
@@ -93,11 +87,13 @@ class ArticleControllerTest : AnnotationSpec() {
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
         every { articleService.getListOfArticles(any(), any(), any()) } returns data
-        val result = articleController.getArticles( category.id,null).body!!
+        val result = articleController.getArticles( category.id,null)
 
-        result.status shouldBe OK.value()
-        result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
-        result.data.count shouldBe cursorData.count
+        result.count shouldBe cursorData.count
+
+        for(i in 0 until result.count) {
+            result.data[i] shouldBe data[i]
+        }
     }
 
     @Test
@@ -110,11 +106,12 @@ class ArticleControllerTest : AnnotationSpec() {
         mockkObject(CursorListBuilder)
         every { CursorListBuilder.build(data, any(), any(), any()) } returns cursorData
         every { articleService.getListOfArticles(any(), any(), any()) } returns data
-        val result = articleController.getArticles(null, dummy[9].createdAt).body!!
+        val result = articleController.getArticles(null, dummy[9].createdAt)
 
-        result.status shouldBe OK.value()
-        result.code shouldBe GET_ARTICLE_LIST_SUCCESS.code
-        result.data.count shouldBe data.size
+        result.count shouldBe data.size
+        for(i in 0 until result.count) {
+            result.data[i] shouldBe data[i]
+        }
     }
 
     @Test
@@ -124,18 +121,16 @@ class ArticleControllerTest : AnnotationSpec() {
         val data = ArticleDto.fromEntity(article)
 
         every { articleService.modifyArticle(article.author.id, any()) } returns data
-        val result = articleController.updateArticle(request, article.id, article.author.id)!!.body!!
+        val result = articleController.updateArticle(request, article.id, article.author.id)
 
-        result.status shouldBe OK.value()
+        result shouldBe data
     }
 
     @Test
     fun `게시물을 삭제한다`() {
-
         every { articleService.deleteArticle(article.author.id, article.id) } returns Unit
-        val result = articleController.deleteArticle(article.id, article.author.id).body!!
-
-        result.data shouldBe Unit
+        val result = articleController.deleteArticle(article.id, article.author.id)
+        result shouldBe Unit
     }
 
 }
