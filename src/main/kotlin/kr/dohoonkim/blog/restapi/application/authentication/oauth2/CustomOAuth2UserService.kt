@@ -28,13 +28,10 @@ class CustomOAuth2UserService(private val memberRepository: MemberRepository) :
     }
 
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
-        logger.debug("CustomOAuth2UserService start loadUser.")
         val delegate = DefaultOAuth2UserService()
         val oAuth2User = delegate.loadUser(userRequest)
-        logger.debug("CustomOAuth2UserService ${oAuth2User.attributes}");
         val attributes = oAuth2User.attributes
         val provider = userRequest.clientRegistration.registrationId
-        logger.debug("CustomOAuth2UserService provider : ${provider}")
         val factory = createMemberProfileFactory(provider)
         val memberProfile = factory.build(attributes);
 
@@ -45,7 +42,6 @@ class CustomOAuth2UserService(private val memberRepository: MemberRepository) :
 
     @Transactional
     private fun checkMemberProfile(memberProfile: MemberProfile) {
-        logger.debug("CustomOAuth2UserService : ${memberProfile.email}")
         if (!memberRepository.existsByEmail(memberProfile.email)) {
             val newMember = registerMember(memberProfile)
             memberProfile.nickname = newMember.nickname

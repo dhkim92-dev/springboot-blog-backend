@@ -37,23 +37,14 @@ class CustomOAuth2AuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication
     ) {
-        logger.debug("request values : ${request.requestURI}")
-        logger.debug("request url : ${request.requestURL}")
-        logger.debug("request params : ${request.queryString}")
         val oAuth2User = authentication.principal as MemberProfile
-//        logger.debug("oAuth2User name : ${oAuth2User.name}")
-//        logger.debug("oAuth2User real name : ${oAuth2User.attributes["name"]}")
-//        logger.debug("oAuth2User email address : ${oAuth2User.attributes["email"]}")
-        logger.debug("oAuth2User email verified: ${oAuth2User.attributes["email_verified"]}")
-        logger.debug("oAuth2User token : ${oAuth2User.attributes["access_token"]}")
-        logger.debug("oAuth2User attributes : ${oAuth2User.attributes.toString()}")
-
         val userDetail = customUserDetailService.loadUserByUsername(oAuth2User.email) as CustomUserDetails
         val claims = JwtClaims.fromCustomUserDetails(userDetail)
         val accessToken = jwtService.createAccessToken(claims)
         val refreshToken = jwtService.createRefreshToken(claims)
         val body = ApiResult.Ok(ResultCode.AUTHENTICATION_SUCCESS, LoginResult(refreshToken=refreshToken, accessToken = accessToken))
         //redirectStrategy.sendRedirect(request, response, getRedirectUrl(accessToken, refreshToken))
+
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.status = 200
         response.writer.write(objectMapper.writeValueAsString(body))
