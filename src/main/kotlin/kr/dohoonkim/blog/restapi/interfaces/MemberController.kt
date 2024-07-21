@@ -11,6 +11,7 @@ import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ApiResult.*
 import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
+import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
 import kr.dohoonkim.blog.restapi.security.annotations.MemberId
 import org.hibernate.validator.constraints.Length
 import org.slf4j.LoggerFactory
@@ -35,67 +36,74 @@ class MemberController(private val memberService: MemberService) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @GetMapping("v1/members")
-    fun getMembers(pageable: Pageable?) = Ok(GET_MEMBER_LIST_SUCCESS, memberService.getMembers(pageable))
+    @ApplicationCode(GET_MEMBER_LIST_SUCCESS)
+    fun getMembers(pageable: Pageable?) = memberService.getMembers(pageable)
 
     @PostMapping("v1/members")
-    fun createMember(@RequestBody @Valid request: MemberJoinRequest): ResponseEntity<ApiResult<MemberDto>> {
+    @ApplicationCode(CREATE_MEMBER_SUCCESS)
+    fun createMember(@RequestBody @Valid request: MemberJoinRequest): MemberDto {
         val dto = MemberCreateDto(
             nickname = request.nickname,
             email = request.email,
             password = request.password
         )
-        return Ok(CREATE_MEMBER_SUCCESS, memberService.create(dto));
+        return memberService.create(dto)
     }
 
     @GetMapping("v1/members/email/exists")
-    fun checkEmail(@RequestParam("value") @Valid @Email @NotBlank @NotEmpty email: String) =
-        Ok(AVAILABLE_EMAIL, memberService.checkEmailAvailable(email))
+    @ApplicationCode(AVAILABLE_EMAIL)
+    fun checkEmail(@RequestParam("value") @Valid @Email @NotBlank @NotEmpty email: String)
+    = memberService.checkEmailAvailable(email)
 
     @GetMapping("v1/members/nickname/exists")
+    @ApplicationCode(AVAILABLE_NICKNAME)
     fun checkNickname(@RequestParam("value") @Valid @Length(min = 4, max = 30) nickname: String) =
-        Ok(AVAILABLE_NICKNAME, memberService.checkNicknameAvailable(nickname))
+        memberService.checkNicknameAvailable(nickname)
 
     @PatchMapping("v1/members/{resourceId}/nickname")
+    @ApplicationCode(CHANGE_NICKNAME_SUCCESS)
     fun changeNickname(
         @PathVariable resourceId: UUID,
         @RequestBody @Valid request: NicknameChangeRequest,
         @MemberId memberId: UUID
-    ): ResponseEntity<ApiResult<MemberDto>> {
+    ): MemberDto{
         val dto = MemberNicknameChangeDto(
             memberId = resourceId,
             nickname = request.nickname
         )
 
-        return Ok(CHANGE_NICKNAME_SUCCESS, memberService.changeMemberNickname(memberId, dto))
+        return memberService.changeMemberNickname(memberId, dto)
     }
 
     @PatchMapping("v1/members/{resourceId}/email")
+    @ApplicationCode(CHANGE_EMAIL_SUCCESS)
     fun changeEmail(
         @PathVariable resourceId: UUID,
         @RequestBody @Valid request: EmailChangeRequest,
         @MemberId memberId : UUID
-    ): ResponseEntity<ApiResult<MemberDto>> {
+    ): MemberDto {
         val dto = MemberEmailChangeDto(resourceId, request.email)
-        return Ok(CHANGE_EMAIL_SUCCESS, memberService.changeMemberEmail(memberId, dto))
+        return memberService.changeMemberEmail(memberId, dto)
     }
 
     @PatchMapping("v1/members/{resourceId}/password")
+    @ApplicationCode(CHANGE_PASSWORD_SUCCESS)
     fun changePassword(
         @PathVariable resourceId: UUID,
         @RequestBody @Valid request: PasswordChangeRequest,
         @MemberId memberId: UUID
-    ): ResponseEntity<ApiResult<MemberDto>> {
+    ): MemberDto {
         val dto = MemberPasswordChangeDto(
             memberId = resourceId,
             currentPassword = request.currentPassword,
             newPassword = request.newPassword
         )
 
-        return Ok(CHANGE_PASSWORD_SUCCESS, memberService.changePassword(memberId, dto))
+        return memberService.changePassword(memberId, dto)
     }
 
     @DeleteMapping("v1/members/{resourceId}")
-    fun withdrawal(@PathVariable resourceId: UUID, @MemberId memberId: UUID): ResponseEntity<ApiResult<Unit>> =
-        Ok(DELETE_MEMBER_SUCCESS, memberService.delete(memberId, resourceId));
-
+    @ApplicationCode(DELETE_MEMBER_SUCCESS)
+    fun withdrawal(@PathVariable resourceId: UUID, @MemberId memberId: UUID)
+    = memberService.delete(memberId, resourceId)
 }

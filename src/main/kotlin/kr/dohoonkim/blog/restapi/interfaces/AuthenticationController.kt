@@ -17,10 +17,16 @@ import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginRequest
 import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueResult
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueTokenRequest
+import kr.dohoonkim.blog.restapi.common.response.ResultCode.AUTHENTICATION_SUCCESS
+import kr.dohoonkim.blog.restapi.common.response.ResultCode.REISSUE_TOKEN_SUCCESS
+import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -41,8 +47,9 @@ class AuthenticationController(
             )
         ]
     )
-    fun login(@RequestBody @Valid request: LoginRequest): ResponseEntity<ApiResult<LoginResult>> {
-        return Ok(ResultCode.AUTHENTICATION_SUCCESS, this.authenticationService.login(request))
+    @ApplicationCode(AUTHENTICATION_SUCCESS)
+    fun login(@RequestBody @Valid request: LoginRequest): LoginResult {
+        return this.authenticationService.login(request)
     }
 
     @PostMapping("v1/authentication/reissue")
@@ -55,7 +62,9 @@ class AuthenticationController(
             )
         ]
     )
-    fun reissue(@RequestBody request: ReissueTokenRequest): ResponseEntity<ApiResult<ReissueResult>> =
-        Ok(ResultCode.REISSUE_TOKEN_SUCCESS, this.authenticationService.reIssueAccessToken(request))
-
+    @ResponseStatus(CREATED)
+    @ApplicationCode(REISSUE_TOKEN_SUCCESS)
+    fun reissue(@RequestBody request: ReissueTokenRequest): ReissueResult {
+        return this.authenticationService.reIssueAccessToken(request)
+    }
 }

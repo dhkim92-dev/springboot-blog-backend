@@ -14,9 +14,13 @@ import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
 import kr.dohoonkim.blog.restapi.application.board.dto.*
 import kr.dohoonkim.blog.restapi.security.annotations.MemberId
 import kr.dohoonkim.blog.restapi.common.response.CursorList
+import kr.dohoonkim.blog.restapi.common.response.ResultCode
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
+import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
 import kr.dohoonkim.blog.restapi.common.utility.CursorListBuilder
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
@@ -40,6 +44,7 @@ import java.util.*
 class ArticleController(private val articleService: ArticleService) {
 
     private val DEFAULT_PAGINATION_SIZE = 20L
+
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Operation(summary = "게시물 등록", description = "게시물을 등록한다.")
@@ -49,18 +54,19 @@ class ArticleController(private val articleService: ArticleService) {
         ]
     )
     @PostMapping("v1/articles")
+    @ResponseStatus(CREATED)
+    @ApplicationCode(CREATE_ARTICLE_SUCCESS)
     fun createArticle(
         @RequestBody @Valid request: ArticleCreateRequest,
         @MemberId memberId: UUID
-    )
-            : ResponseEntity<ApiResult<ArticleDto>> {
+    ): ArticleDto {
         val dto = ArticleCreateDto(
             title = request.title,
             contents = request.contents,
             category = request.category
         )
 
-        return Ok(CREATE_ARTICLE_SUCCESS, articleService.createArticle(memberId, dto))
+        return articleService.createArticle(memberId, dto)
     }
 
     @Operation(summary = "게시물 조회", description = "게시물의 내용을 조회한다.")
@@ -74,9 +80,9 @@ class ArticleController(private val articleService: ArticleService) {
         ]
     )
     @GetMapping("v1/articles/{articleId}")
-    fun getArticle(@PathVariable articleId: UUID)
-            : ResponseEntity<ApiResult<ArticleDto>> {
-        return Ok(GET_ARTICLE_SUCCESS, articleService.getArticle(articleId))
+    @ApplicationCode(GET_ARTICLE_SUCCESS)
+    fun getArticle(@PathVariable articleId: UUID): ArticleDto {
+        return articleService.getArticle(articleId)
     }
 
     @Operation(summary = "카테고리별 게시물 목록 조회", description = "카테고리의 게시물 목록을 조회한다.")
@@ -86,18 +92,16 @@ class ArticleController(private val articleService: ArticleService) {
         ]
     )
     @GetMapping("v1/articles")
+    @ApplicationCode(GET_ARTICLE_LIST_SUCCESS)
     fun getArticles(
         @RequestParam(required = false) categoryId: Long?,
         @RequestParam(required = false) createdAt: LocalDateTime?
-    )
-            : ResponseEntity<ApiResult<CursorList<ArticleSummaryDto>>> {
+    ) : CursorList<ArticleSummaryDto> {
         val articles = articleService.getListOfArticles(categoryId ?: 0, createdAt, DEFAULT_PAGINATION_SIZE)
         val queryMap = mutableMapOf<String, String>("created_at" to "createdAt")
         if (categoryId != null && categoryId != 0L) queryMap.put("category#id", "categoryId")
 
-        val data = CursorListBuilder.build(articles, queryMap, DEFAULT_PAGINATION_SIZE)
-
-        return Ok(GET_ARTICLE_LIST_SUCCESS, data)
+        return CursorListBuilder.build(articles, queryMap, DEFAULT_PAGINATION_SIZE)
     }
 
     @Operation(summary = "게시물 수정", description = "게시물의 제목, 본문, 카테고리등을 수정한다.")
@@ -111,12 +115,12 @@ class ArticleController(private val articleService: ArticleService) {
         ]
     )
     @PatchMapping("v1/articles/{articleId}")
+    @ApplicationCode(MODIFY_ARTICLE_SUCCESS)
     fun updateArticle(
         @RequestBody @Valid request: ArticleModifyRequest,
         @PathVariable articleId: UUID,
         @MemberId memberId: UUID
-    )
-            : ResponseEntity<ApiResult<ArticleDto>> {
+    ): ArticleDto {
         val dto = ArticleModifyDto(
             articleId = articleId,
             title = request.title,
@@ -124,7 +128,7 @@ class ArticleController(private val articleService: ArticleService) {
             category = request.category
         )
 
-        return Ok(MODIFY_ARTICLE_SUCCESS, articleService.modifyArticle(memberId, dto))
+        return articleService.modifyArticle(memberId, dto)
     }
 
     @Operation(summary = "게시물 삭제", description = "P003 - 게시물을 삭제합니다.")
@@ -138,9 +142,11 @@ class ArticleController(private val articleService: ArticleService) {
         ]
     )
     @DeleteMapping("v1/articles/{articleId}")
+    @ApplicationCode(DELETE_ARTICLE_SUCCESS)
     fun deleteArticle(
         @PathVariable articleId: UUID,
         @MemberId memberId: UUID
-    ) = Ok(DELETE_ARTICLE_SUCCESS, articleService.deleteArticle(memberId, articleId))
-
+    ) {
+        articleService.deleteArticle(memberId, articleId)
+    }
 }

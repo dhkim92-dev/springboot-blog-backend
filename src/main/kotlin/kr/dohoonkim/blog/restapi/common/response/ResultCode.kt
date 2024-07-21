@@ -48,10 +48,10 @@ enum class ResultCode(
     DELETE_ARTICLE_LIKE_SUCCESS(NO_CONTENT, "AC03", "게시물 좋아요를 삭제하였습니다."),
 
     // AUTHENTICATION
-    AUTHENTICATION_SUCCESS(OK, "A001", "회원 인증에 성공하였습니다."),
-    REISSUE_TOKEN_SUCCESS(OK, "A002", "토큰을 재발급하였습니다."),
+    AUTHENTICATION_SUCCESS(CREATED, "A001", "회원 인증에 성공하였습니다."),
+    REISSUE_TOKEN_SUCCESS(CREATED, "A002", "토큰을 재발급하였습니다."),
     TEMPOLARY_LOGIN_SUCCESS(OK, "A003", "임시 코드로 로그인하였습니다."),
 
     // FILE UPLOAD
-    IMAGE_UPLOAD_SUCCESS(OK, "FI01", "이미지를 업로드 했습니다."),
+    IMAGE_UPLOAD_SUCCESS(CREATED, "FI01", "이미지를 업로드 했습니다."),
 }

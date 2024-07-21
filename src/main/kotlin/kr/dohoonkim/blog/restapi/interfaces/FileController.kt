@@ -5,12 +5,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import kr.dohoonkim.blog.restapi.application.file.FileUploadService
 import kr.dohoonkim.blog.restapi.application.file.dto.ImageUploadResponse
-import kr.dohoonkim.blog.restapi.common.response.ApiResult
-import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
+import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -40,10 +38,8 @@ class FileController(private val fileUploadService: FileUploadService) {
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun uploadImage(@RequestBody(required = true) file: MultipartFile): ResponseEntity<ApiResult<ImageUploadResponse>> {
-        log.debug("image upload request filename : ${file.originalFilename}")
-        val url = fileUploadService.createImage(file)
-
-        return Ok(ResultCode.IMAGE_UPLOAD_SUCCESS, ImageUploadResponse(url))
+    @ApplicationCode(ResultCode.IMAGE_UPLOAD_SUCCESS)
+    fun uploadImage(@RequestBody(required = true) file: MultipartFile): ImageUploadResponse {
+        return ImageUploadResponse(fileUploadService.createImage(file))
     }
 }

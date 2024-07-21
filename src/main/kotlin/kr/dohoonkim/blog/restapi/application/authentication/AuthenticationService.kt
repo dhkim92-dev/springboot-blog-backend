@@ -58,11 +58,11 @@ class AuthenticationService(
         val jwt = jwtService.verifyRefreshToken(request.refreshToken)
         val memberId = UUID.fromString(jwt.subject)
         val member: Member = memberRepository.findByMemberId(memberId)
-            ?: throw UnauthorizedException()
         val userDetails = userDetailService.loadUserByUsername(member.email) as CustomUserDetails
-        val token = jwtService.createAccessToken(JwtClaims.fromCustomUserDetails(userDetails))
 
-        return ReissueResult(accessToken = token)
+        return ReissueResult(
+            accessToken =  jwtService.createAccessToken(JwtClaims.fromCustomUserDetails(userDetails))
+        )
     }
 
 }
