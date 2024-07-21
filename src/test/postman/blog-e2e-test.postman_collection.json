@@ -20,10 +20,11 @@
 									"    var jsonData = pm.response.json()",
 									"    // pm.collectionVariables.set('admin_access_token', jsonData.data.access_token)",
 									"    // pm.collectionVariables.set('admin_refresh_token', jsonData.data.refresh_token)",
-									"    pm.response.to.have.status(200)",
+									"    pm.response.to.have.status(201)",
 									"})"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -72,10 +73,11 @@
 									"    var jsonData = pm.response.json()",
 									"    // pm.collectionVariables.set('member_access_token', jsonData.data.access_token)",
 									"    // pm.collectionVariables.set('member_refresh_token', jsonData.data.refresh_token)",
-									"    pm.response.to.have.status(200)",
+									"    pm.response.to.have.status(201)",
 									"})"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -154,13 +156,14 @@
 							"script": {
 								"exec": [
 									"pm.test('Reissue Access token success', function () {",
-									"    pm.response.to.have.status(200)",
+									"    pm.response.to.have.status(201)",
 									"    var jsonData = pm.response.json()",
 									"    console.log(jsonData)",
 									"    pm.expect(jsonData.data).to.have.keys([\"access_token\", \"type\"])",
 									"})"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
