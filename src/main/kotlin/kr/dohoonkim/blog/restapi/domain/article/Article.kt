@@ -3,7 +3,6 @@ package kr.dohoonkim.blog.restapi.domain.article
 import jakarta.persistence.*
 import kr.dohoonkim.blog.restapi.common.entity.UuidPrimaryKeyEntity
 import kr.dohoonkim.blog.restapi.domain.member.Member
-import org.hibernate.annotations.ColumnDefault
 
 @Entity(name = "article")
 class Article(title: String, contents: String, author: Member, category: Category, viewCount: Long = 0) :

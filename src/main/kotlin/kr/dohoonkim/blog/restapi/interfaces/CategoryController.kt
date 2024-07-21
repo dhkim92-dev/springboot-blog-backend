@@ -8,12 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import kr.dohoonkim.blog.restapi.application.board.CategoryService
 import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
-import kr.dohoonkim.blog.restapi.common.response.ApiResult
-import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
 import kr.dohoonkim.blog.restapi.common.response.CursorList
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
 import kr.dohoonkim.blog.restapi.application.board.dto.*
-import org.springframework.http.ResponseEntity
+import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -41,8 +39,6 @@ class CategoryController(
     private val categoryService: CategoryService
 ) {
 
-    private val DEFAULT_PAGINATION_SIZE = 100L
-
     @Operation(summary = "카테고리 추가", description = "게시글 카테고리를 추가합니다.")
     @ApiResponses(
         value = [
@@ -54,10 +50,9 @@ class CategoryController(
         ]
     )
     @PostMapping("v1/article-categories")
-    fun createCategory(@RequestBody @Valid request: CategoryCreateRequest): ResponseEntity<ApiResult<CategoryDto>> {
-        val dto = CategoryCreateDto(name = request.name)
-
-        return Ok(ResultCode.CREATE_CATEGORY_SUCCESS, categoryService.createCategory(dto))
+    @ApplicationCode(ResultCode.CREATE_CATEGORY_SUCCESS)
+    fun createCategory(@RequestBody @Valid request: CategoryCreateRequest): CategoryDto {
+        return categoryService.createCategory(CategoryCreateDto(name=request.name))
     }
 
     @Operation(summary = "카테고리 목록 조회", description = "전체 게시글 카테고리를 조회합니다.")
@@ -67,11 +62,10 @@ class CategoryController(
         ]
     )
     @GetMapping("v1/article-categories")
-    fun getCategories(): ResponseEntity<ApiResult<CursorList<CategoryDto>>> {
+    @ApplicationCode(ResultCode.GET_CATEGORIES_SUCCESS)
+    fun getCategories(): CursorList<CategoryDto> {
         val categories = categoryService.getCategories()
-        val ret = CursorList<CategoryDto>(categories.size, categories, null)
-
-        return Ok(ResultCode.GET_CATEGORIES_SUCCESS, ret)
+        return CursorList(categories.size, categories, null)
     }
 
     @Operation(summary = "카테고리명 수정", description = "카테고리 이름을 수정합니다.")
@@ -85,13 +79,12 @@ class CategoryController(
         ]
     )
     @PatchMapping("v1/article-categories/{categoryId}/name")
+    @ApplicationCode(ResultCode.MODIFY_CATEGORY_NAME_SUCCESS)
     fun updateName(
         @PathVariable categoryId: Long,
         @RequestBody @Valid request: CategoryNameChangeRequest
-    ): ResponseEntity<ApiResult<CategoryDto>> {
-        val dto = CategoryModifyDto(id = categoryId, newName = request.newName)
-
-        return Ok(ResultCode.MODIFY_CATEGORY_NAME_SUCCESS, categoryService.modifyCategoryName(dto))
+    ): CategoryDto {
+        return categoryService.modifyCategoryName(CategoryModifyDto(id = categoryId, newName = request.newName))
     }
 
     @Operation(summary = "카테고리명 삭제", description = "카테고리를 삭제합니다")
@@ -101,8 +94,8 @@ class CategoryController(
         ]
     )
     @DeleteMapping("v1/article-categories/{categoryId}")
-    fun delete(@PathVariable categoryId: Long) =
-        Ok(ResultCode.DELETE_CATEGORY_SUCCESS, categoryService.deleteCategory(categoryId))
-
-
+    @ApplicationCode(ResultCode.DELETE_CATEGORY_SUCCESS)
+    fun delete(@PathVariable categoryId: Long) {
+        categoryService.deleteCategory(categoryId)
+    }
 }

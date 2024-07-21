@@ -1,5 +1,6 @@
 package kr.dohoonkim.blog.restapi.units.interfaces
 
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
@@ -9,7 +10,6 @@ import kr.dohoonkim.blog.restapi.application.board.CategoryService
 import kr.dohoonkim.blog.restapi.application.board.dto.CategoryCreateRequest
 import kr.dohoonkim.blog.restapi.application.board.dto.CategoryDto
 import kr.dohoonkim.blog.restapi.application.board.dto.CategoryNameChangeRequest
-import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
 import kr.dohoonkim.blog.restapi.interfaces.CategoryController
 import kr.dohoonkim.blog.restapi.support.entity.createCategory
 
@@ -31,22 +31,21 @@ class CategoryControllerTest : AnnotationSpec() {
 
         every { categoryService.createCategory(any()) } returns data
 
-        val response = categoryController.createCategory(request).body!!
-        response.status shouldBe CREATE_CATEGORY_SUCCESS.status.value()
-        response.code shouldBe CREATE_CATEGORY_SUCCESS.code
-        response.data shouldBe data
+        val response = categoryController.createCategory(request)
+
+        response shouldBe data
     }
 
     @Test
     fun `카테고리 목록을 받아온다`() {
         every { categoryService.getCategories() } returns data
 
-        val response = categoryController.getCategories().body!!
+        val response = categoryController.getCategories()
 
-        response.status shouldBe GET_CATEGORIES_SUCCESS.status.value()
-        response.code shouldBe GET_CATEGORIES_SUCCESS.code
-        response.data.data shouldBe data
-        response.data.count shouldBe data.size
+        response.count shouldBe data.size
+        for(i in 0 until data.size) {
+            response.data[i] shouldBe data[i]
+        }
     }
 
     @Test
@@ -57,24 +56,21 @@ class CategoryControllerTest : AnnotationSpec() {
 
         every { categoryService.modifyCategoryName(any()) } returns data
 
-        val response = categoryController.updateName(category.id, request).body!!
-        response.status shouldBe MODIFY_CATEGORY_NAME_SUCCESS.status.value()
-        response.code shouldBe MODIFY_CATEGORY_NAME_SUCCESS.code
-        response.data shouldBe data
+        val response = categoryController.updateName(category.id, request)
+        response shouldBe data
     }
 
     @Test
     fun `카테고리를 삭제한다`() {
         every { categoryService.deleteCategory(category.id) } returns Unit
 
-        val response = categoryController.delete(category.id).body!!
-
-        response.status shouldBe DELETE_CATEGORY_SUCCESS.status.value()
-        response.code shouldBe DELETE_CATEGORY_SUCCESS.code
+        shouldNotThrowAny {
+            val response = categoryController.delete(category.id)
+        }
     }
 
     @AfterEach
-    fun `clearMockks`() {
+    fun `clearMocks`() {
         clearAllMocks()
     }
 

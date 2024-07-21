@@ -128,7 +128,6 @@ class SecurityConfig(
                     redirectEndpoint.baseUri("/api/v1/authentication/callback/*")
                 }
                 customizer.userInfoEndpoint {
-                    it
                     it.userService(customOAuth2UserService)
                 }
                 customizer.successHandler(oAuth2AuthenticationSuccessHandler)
