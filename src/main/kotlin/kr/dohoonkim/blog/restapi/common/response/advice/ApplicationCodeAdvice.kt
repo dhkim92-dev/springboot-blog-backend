@@ -2,6 +2,7 @@ package kr.dohoonkim.blog.restapi.common.response.advice
 
 import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
+import org.slf4j.LoggerFactory
 import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -14,6 +15,8 @@ import java.io.InvalidClassException
 
 @ControllerAdvice
 class ApplicationCodeAdvice : ResponseBodyAdvice<Any> {
+
+    val logger = LoggerFactory.getLogger(javaClass)
 
     override fun beforeBodyWrite(
         body: Any?,
