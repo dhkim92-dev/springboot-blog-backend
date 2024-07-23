@@ -16,12 +16,8 @@ class ApiResult<T>(
         private val _headers = hashMapOf<String, String>("Content-Type" to "application/json;charset=utf-8")
         private val headers = HttpHeaders(LinkedMultiValueMap<String, String>().apply { setAll(_headers) })
 
-        fun <T> Ok(resultCode: ResultCode, data: T): ResponseEntity<ApiResult<T>> {
-            return ResponseEntity(
-                ApiResult(resultCode.status.value(), resultCode.code, data, resultCode.message),
-                headers,
-                resultCode.status
-            )
+        fun <T> Ok(resultCode: ResultCode, data: T): ApiResult<T> {
+            return ApiResult(resultCode.status.value(), resultCode.code, data, resultCode.message)
         }
     }
 }
