@@ -1,13 +1,12 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
-import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginRequest
-import kr.dohoonkim.blog.restapi.interfaces.ArticleController
-import kr.dohoonkim.blog.restapi.interfaces.AuthenticationController
-import kr.dohoonkim.blog.restapi.interfaces.CategoryController
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.LoginRequest
+import kr.dohoonkim.blog.restapi.interfaces.board.ArticleController
+import kr.dohoonkim.blog.restapi.interfaces.authentication.AuthenticationController
+import kr.dohoonkim.blog.restapi.interfaces.board.CategoryController
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class WarmupRunner(

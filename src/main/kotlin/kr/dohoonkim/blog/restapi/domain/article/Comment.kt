@@ -35,5 +35,4 @@ class Comment(parent: Comment?, contents: String, author: Member, article: Artic
     fun updateContents(contents: String) {
         this.contents = contents
     }
-
 }

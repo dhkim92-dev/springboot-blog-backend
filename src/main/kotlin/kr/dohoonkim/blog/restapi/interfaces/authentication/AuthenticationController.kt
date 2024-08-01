@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.interfaces
+package kr.dohoonkim.blog.restapi.interfaces.authentication
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -9,20 +9,16 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import kr.dohoonkim.blog.restapi.application.authentication.AuthenticationService
 import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
-import kr.dohoonkim.blog.restapi.common.error.exceptions.NotImplementedException
-import kr.dohoonkim.blog.restapi.common.response.ApiResult
-import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
-import kr.dohoonkim.blog.restapi.common.response.ResultCode
-import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginRequest
-import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.LoginRequest
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueResult
-import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueTokenRequest
+import kr.dohoonkim.blog.restapi.common.response.ApiResult
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.ReissueTokenRequest
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.AUTHENTICATION_SUCCESS
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.REISSUE_TOKEN_SUCCESS
 import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
-import org.springframework.http.HttpStatus
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.LoginResponse
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.ReissueResponse
 import org.springframework.http.HttpStatus.CREATED
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -48,8 +44,8 @@ class AuthenticationController(
         ]
     )
     @ApplicationCode(AUTHENTICATION_SUCCESS)
-    fun login(@RequestBody @Valid request: LoginRequest): LoginResult {
-        return this.authenticationService.login(request)
+    fun login(@RequestBody @Valid request: LoginRequest): LoginResponse {
+        return LoginResponse.valueOf(this.authenticationService.login(request.email, request.password))
     }
 
     @PostMapping("v1/authentication/reissue")
@@ -64,7 +60,7 @@ class AuthenticationController(
     )
     @ResponseStatus(CREATED)
     @ApplicationCode(REISSUE_TOKEN_SUCCESS)
-    fun reissue(@RequestBody request: ReissueTokenRequest): ReissueResult {
-        return this.authenticationService.reIssueAccessToken(request)
+    fun reissue(@RequestBody request: ReissueTokenRequest): ReissueResponse {
+        return ReissueResponse.valueOf(authenticationService.reIssueAccessToken(request.refreshToken))
     }
 }

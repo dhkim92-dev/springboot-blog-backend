@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.interfaces
+package kr.dohoonkim.blog.restapi.interfaces.file
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse

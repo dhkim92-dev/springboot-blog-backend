@@ -12,7 +12,7 @@ import kr.dohoonkim.blog.restapi.application.member.dto.*
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ConflictException
 import kr.dohoonkim.blog.restapi.domain.member.Member
-import kr.dohoonkim.blog.restapi.interfaces.MemberController
+import kr.dohoonkim.blog.restapi.interfaces.member.MemberController
 import kr.dohoonkim.blog.restapi.support.entity.createMember
 
 class MemberControllerTest : AnnotationSpec() {

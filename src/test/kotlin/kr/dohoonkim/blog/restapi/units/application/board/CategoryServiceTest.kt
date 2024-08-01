@@ -5,9 +5,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
-import kr.dohoonkim.blog.restapi.application.board.dto.CategoryCreateDto
 import kr.dohoonkim.blog.restapi.application.board.dto.CategoryDto
-import kr.dohoonkim.blog.restapi.application.board.dto.CategoryModifyDto
+import kr.dohoonkim.blog.restapi.application.board.dto.CategoryModifyCommand
 import kr.dohoonkim.blog.restapi.application.board.impl.CategoryServiceImpl
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ConflictException
@@ -35,7 +34,7 @@ class CategoryServiceTest : BehaviorSpec() {
             When("신규 카테고리를 생성하여 저장하면") {
                 every { categoryRepository.existsByName(any()) } returns false
                 Then("정상적으로 저장되어야한다.") {
-                    val dto = CategoryCreateDto("test-category-1")
+                    val dto = PostCategoryCreateCommand("test-category-1")
                     val ret = categoryService.createCategory(dto)
                     ret.name shouldBe "test-category-1"
                     ret.count shouldBe 0L
@@ -46,7 +45,7 @@ class CategoryServiceTest : BehaviorSpec() {
                 every { categoryRepository.existsByName(any()) } returns true
                 Then("에러가 발생해야한다.") {
                     shouldThrow<ConflictException> {
-                        val dto = CategoryCreateDto("test-category-1")
+                        val dto = PostCategoryCreateCommand("test-category-1")
                         categoryService.createCategory(dto)
                     }
                 }
@@ -60,7 +59,7 @@ class CategoryServiceTest : BehaviorSpec() {
                 every { categoryRepository.existsByName(any()) } returns false
                 every { categoryRepository.save(any()) } returns Category(name = "test-category-3")
                 Then("정상적으로 수정된다.") {
-                    val dto = CategoryModifyDto(
+                    val dto = CategoryModifyCommand(
                         id = 0L,
                         newName = "test-category-3"
                     )
@@ -77,7 +76,7 @@ class CategoryServiceTest : BehaviorSpec() {
 
                 Then("에러가 발생한다.") {
                     shouldThrow<ConflictException> {
-                        categoryService.modifyCategoryName(CategoryModifyDto(id = 0L, newName = "test-category-3"))
+                        categoryService.modifyCategoryName(CategoryModifyCommand(id = 0L, newName = "test-category-3"))
                     }
                 }
             }
@@ -86,7 +85,7 @@ class CategoryServiceTest : BehaviorSpec() {
                 every { categoryRepository.findById(any()) } throws EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND)
                 Then("에러가 발생한다.") {
                     shouldThrow<EntityNotFoundException> {
-                        categoryService.modifyCategoryName(CategoryModifyDto(id = 0L, newName = "test-category-3"))
+                        categoryService.modifyCategoryName(CategoryModifyCommand(id = 0L, newName = "test-category-3"))
                     }
                 }
             }

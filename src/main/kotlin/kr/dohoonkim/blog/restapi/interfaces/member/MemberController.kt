@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.interfaces
+package kr.dohoonkim.blog.restapi.interfaces.member
 
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -7,16 +7,13 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import kr.dohoonkim.blog.restapi.application.member.MemberService
 import kr.dohoonkim.blog.restapi.application.member.dto.*
-import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ApiResult.*
-import kr.dohoonkim.blog.restapi.common.response.ApiResult.Companion.Ok
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
 import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
 import kr.dohoonkim.blog.restapi.security.annotations.MemberId
 import org.hibernate.validator.constraints.Length
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -63,8 +60,8 @@ class MemberController(private val memberService: MemberService) {
     @PatchMapping("v1/members/{resourceId}/nickname")
     @ApplicationCode(CHANGE_NICKNAME_SUCCESS)
     fun changeNickname(
-        @PathVariable resourceId: UUID,
         @RequestBody @Valid request: NicknameChangeRequest,
+        @PathVariable resourceId: UUID,
         @MemberId memberId: UUID
     ): MemberDto{
         val dto = MemberNicknameChangeDto(
@@ -78,9 +75,9 @@ class MemberController(private val memberService: MemberService) {
     @PatchMapping("v1/members/{resourceId}/email")
     @ApplicationCode(CHANGE_EMAIL_SUCCESS)
     fun changeEmail(
+        @MemberId memberId : UUID,
         @PathVariable resourceId: UUID,
-        @RequestBody @Valid request: EmailChangeRequest,
-        @MemberId memberId : UUID
+        @RequestBody @Valid request: EmailChangeRequest
     ): MemberDto {
         val dto = MemberEmailChangeDto(resourceId, request.email)
         return memberService.changeMemberEmail(memberId, dto)
@@ -89,9 +86,9 @@ class MemberController(private val memberService: MemberService) {
     @PatchMapping("v1/members/{resourceId}/password")
     @ApplicationCode(CHANGE_PASSWORD_SUCCESS)
     fun changePassword(
+        @MemberId memberId: UUID,
         @PathVariable resourceId: UUID,
-        @RequestBody @Valid request: PasswordChangeRequest,
-        @MemberId memberId: UUID
+        @RequestBody @Valid request: PasswordChangeRequest
     ): MemberDto {
         val dto = MemberPasswordChangeDto(
             memberId = resourceId,

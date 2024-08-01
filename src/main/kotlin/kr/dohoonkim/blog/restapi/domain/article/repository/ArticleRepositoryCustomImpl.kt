@@ -9,7 +9,6 @@ import kr.dohoonkim.blog.restapi.application.board.dto.ArticleDto
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleSummaryDto
 import kr.dohoonkim.blog.restapi.application.board.dto.CategorySummaryDto
 import kr.dohoonkim.blog.restapi.application.member.dto.MemberSummaryDto
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode.MEMBER_NOT_FOUND
 import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
 import kr.dohoonkim.blog.restapi.domain.article.QArticle.Companion.article
@@ -45,7 +44,8 @@ class ArticleRepositoryCustomImpl(
                     category.name
                 ),
                 article.createdAt,
-                article.viewCount
+                article.viewCount,
+                Expressions.constant(0L),
             )
         )
             .from(article)

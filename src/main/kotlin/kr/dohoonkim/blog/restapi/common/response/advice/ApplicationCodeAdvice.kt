@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import java.io.InvalidClassException
 
+/**
+ * Response Body를 ApiResult로 Wrapping 을 수행하는 클래스
+ * ApplicationCode 어노테이션이 적용된 엔드포인트에 대해서만 이 어드바이스가 동작해야한다
+ */
 @ControllerAdvice
 class ApplicationCodeAdvice : ResponseBodyAdvice<Any> {
 
@@ -26,8 +30,7 @@ class ApplicationCodeAdvice : ResponseBodyAdvice<Any> {
         request: ServerHttpRequest,
         response: ServerHttpResponse
     ): Any? {
-        val applicationCode = returnType.getMethodAnnotation(ApplicationCode::class.java)
-            ?: throw InvalidClassException("출력 클래스 직렬화 실패")
+        val applicationCode = returnType.getMethodAnnotation(ApplicationCode::class.java)!!
         val resultCode = applicationCode.code
         response.setStatusCode(resultCode.status)
 

@@ -9,10 +9,10 @@ import io.mockk.every
 import io.mockk.mockk
 import kr.dohoonkim.blog.restapi.application.authentication.AuthenticationService
 import kr.dohoonkim.blog.restapi.application.authentication.CustomUserDetailService
-import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginRequest
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.LoginRequest
 import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueResult
-import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueTokenRequest
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.ReissueTokenRequest
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository

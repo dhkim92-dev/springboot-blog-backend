@@ -10,17 +10,19 @@ import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
-
 /**
- * Authentication Logic
- * 1) 사용자가 Email/Password LoginRquest 를 보낸다.
- * 2) userDetailService를 통해 사용자 정보를 불러오고, Password 가 일치하는지 확인한다.
- * 3) 패스워드가 일치한다면 [CustomUserDetails] 객체로부터 Refresh token과 Access token을 생성한다.
- * 4) 사용자에게 LoginResult 응답을 전송한다.
+ * Authentication Service
+ * @author dhkim92.dev@gmail.com
+ * @since 2023.08.10
+ * @property jwtService
+ * @property memberRepository
+ * @property userDetailService
+ * @property passwordEncoder
  */
 @Transactional(readOnly = true)
 @Service
@@ -28,20 +30,20 @@ class AuthenticationService(
     private val jwtService: JwtService,
     private val memberRepository: MemberRepository,
     private val userDetailService: CustomUserDetailService,
-    private val passwordEncoder: BCryptPasswordEncoder
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    fun login(request: LoginRequest): LoginResult {
-        val user = userDetailService.loadUserByUsername(request.email) as CustomUserDetails
+    fun login(email: String, password: String): LoginResult {
+        val user = userDetailService.loadUserByUsername(email) as CustomUserDetails
 
         if (!user.isEnabled) {
             throw UnauthorizedException(ErrorCode.NOT_VERIFIED_EMAIL)
         }
 
-        if (!passwordEncoder.matches(request.password, user.password)) {
+        if (!passwordEncoder.matches(password, user.password)) {
             throw BadCredentialsException("email/password mismatched.");
         }
 
@@ -54,8 +56,8 @@ class AuthenticationService(
     }
 
     @Transactional
-    fun reIssueAccessToken(request: ReissueTokenRequest): ReissueResult {
-        val jwt = jwtService.verifyRefreshToken(request.refreshToken)
+    fun reIssueAccessToken(refreshToken: String): ReissueResult {
+        val jwt = jwtService.verifyRefreshToken(refreshToken)
         val memberId = UUID.fromString(jwt.subject)
         val member: Member = memberRepository.findByMemberId(memberId)
         val userDetails = userDetailService.loadUserByUsername(member.email) as CustomUserDetails
@@ -64,5 +66,4 @@ class AuthenticationService(
             accessToken =  jwtService.createAccessToken(JwtClaims.fromCustomUserDetails(userDetails))
         )
     }
-
 }

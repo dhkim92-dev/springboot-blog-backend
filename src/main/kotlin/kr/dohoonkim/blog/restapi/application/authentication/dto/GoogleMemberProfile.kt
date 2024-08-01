@@ -3,6 +3,11 @@ package kr.dohoonkim.blog.restapi.application.authentication.dto
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 
+/**
+ * Google Member Profile
+ * @author dhkim92.dev@gmail.com
+ * @since 2023.08.10
+ */
 class GoogleMemberProfile(attributes: MutableMap<String, Any>) : MemberProfile(attributes) {
 
     init {

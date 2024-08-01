@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.kotlinModule
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import kr.dohoonkim.blog.restapi.application.board.dto.CategorySummaryDto
-import org.objectweb.asm.TypeReference
 
 class ObjectMapperTest : AnnotationSpec(){
     private val objectMapper = ObjectMapper().registerModule(kotlinModule())

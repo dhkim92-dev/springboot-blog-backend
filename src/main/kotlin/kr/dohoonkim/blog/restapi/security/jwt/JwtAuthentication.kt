@@ -1,8 +1,10 @@
-package kr.dohoonkim.blog.restapi.security.authentication
+package kr.dohoonkim.blog.restapi.security.jwt
 
+import com.auth0.jwt.interfaces.DecodedJWT
 import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.util.UUID
 
 /**
@@ -44,4 +46,20 @@ class JwtAuthentication(
     }
 
     override fun setAuthenticated(isAuthenticated: Boolean) {}
+
+    companion object {
+        fun fromDecodedJwt(jwt: DecodedJWT): JwtAuthentication {
+            val memberId: UUID = UUID.fromString(jwt.subject)
+            val email: String = jwt.getClaim("email").asString()
+            val nickname: String = jwt.getClaim("nickname").asString()
+            val roles = jwt.getClaim("roles")
+                .asArray(String::class.java)
+                .map { rolename -> SimpleGrantedAuthority(rolename) }
+                .toMutableList()
+            val isActivated = jwt.getClaim("isActivated").asBoolean()
+
+            return JwtAuthentication(memberId, email, nickname, roles, isActivated)
+
+        }
+    }
 }

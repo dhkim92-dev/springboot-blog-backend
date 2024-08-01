@@ -42,7 +42,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.session:spring-session-data-redis")
-//	implementation("org.springframework.boot:spring-boot-starter-websocket")
 
 	// Utilities
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -65,10 +64,7 @@ dependencies {
 	kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
 	kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
 	kapt("org.springframework.boot:spring-boot-configuration-processor")
-//	kapt ("jakarta.annotation:jakarta.annotation-api")
-//	kapt ("jakarta.persistence:jakarta.persistence-api")
-	// Database
-//	runtimeOnly("com.mysql:mysql-connector-j")
+
 	implementation("com.h2database:h2:2.1.214")
 	implementation("org.postgresql:postgresql:42.6.0")
 	testRuntimeOnly("org.springdoc:springdoc-openapi-kotlin:1.7.0")

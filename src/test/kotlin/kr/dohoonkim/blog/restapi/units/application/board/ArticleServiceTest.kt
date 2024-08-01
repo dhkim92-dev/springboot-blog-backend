@@ -8,9 +8,9 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import kr.dohoonkim.blog.restapi.application.board.ArticleService
-import kr.dohoonkim.blog.restapi.application.board.dto.ArticleCreateDto
+import kr.dohoonkim.blog.restapi.application.board.dto.ArticleCreateCommand
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleDto
-import kr.dohoonkim.blog.restapi.application.board.dto.ArticleModifyDto
+import kr.dohoonkim.blog.restapi.application.board.dto.ArticleModifyCommand
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleSummaryDto
 import kr.dohoonkim.blog.restapi.application.board.impl.ArticleServiceImpl
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
@@ -37,9 +37,9 @@ class ArticleServiceTest : BehaviorSpec({
     val admin = createMember(role = Role.ADMIN)
     val category = createCategory()
     val article = createArticle(admin, category)
-    val articleCreateDto =
-        ArticleCreateDto(title = article.title, contents = article.contents, category = category.name)
-    val articleModifyDto = ArticleModifyDto(
+    val articleCreateCommand =
+        ArticleCreateCommand(title = article.title, contents = article.contents, category = category.name)
+    val articleModifyRequestDto = ArticleModifyCommand(
         articleId = article.id,
         title = "modified-title",
         contents = "modified-contents",
@@ -140,7 +140,7 @@ class ArticleServiceTest : BehaviorSpec({
             every { categoryRepository.findByName(any()) } returns category
 
             Then("게시글 작성이 성공한다.") {
-                val newArticle = articleService.createArticle(admin.id, articleCreateDto)
+                val newArticle = articleService.createArticle(admin.id, articleCreateCommand)
 
                 newArticle.id shouldBe article.id
                 newArticle.title shouldBe article.title
@@ -153,7 +153,7 @@ class ArticleServiceTest : BehaviorSpec({
         When("존재하지 않는 카테고리에 게시글을 작성하면") {
             every { articleRepository.save(any()) } returns article
             every { categoryRepository.findByName(any()) } throws EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND)
-            val dto = ArticleCreateDto(title = article.title, contents = article.contents, category = category.name)
+            val dto = ArticleCreateCommand(title = article.title, contents = article.contents, category = category.name)
 
             Then("에러가 발생한다.") {
                 shouldThrow<EntityNotFoundException> {
@@ -163,19 +163,19 @@ class ArticleServiceTest : BehaviorSpec({
         }
 
         When("정상 수정 정보로 자신의 글을 수정하면") {
-            val newCategory = Category(name = articleModifyDto.category)
+            val newCategory = Category(name = articleModifyRequestDto.category)
             every { articleRepository.save(any()) } returns article
             every { categoryRepository.findByName(any()) } returns newCategory
             every { categoryRepository.existsByName(any()) } returns true
             every { articleRepository.findById(any()) } returns Optional.of(article)
 
             Then("게시글이 변경된다.") {
-                val ret = articleService.modifyArticle(admin.id, articleModifyDto)
+                val ret = articleService.modifyArticle(admin.id, articleModifyRequestDto)
 
                 ret.id shouldBe article.id
-                ret.title shouldBe articleModifyDto.title
-                ret.contents shouldBe articleModifyDto.contents
-                ret.category.name shouldBe articleModifyDto.category
+                ret.title shouldBe articleModifyRequestDto.title
+                ret.contents shouldBe articleModifyRequestDto.contents
+                ret.category.name shouldBe articleModifyRequestDto.category
             }
         }
 
@@ -190,7 +190,7 @@ class ArticleServiceTest : BehaviorSpec({
 
             Then("에러가 발생한다.") {
                 shouldThrow<ForbiddenException> {
-                    articleService.modifyArticle(admin.id, articleModifyDto)
+                    articleService.modifyArticle(admin.id, articleModifyRequestDto)
                 }
             }
         }

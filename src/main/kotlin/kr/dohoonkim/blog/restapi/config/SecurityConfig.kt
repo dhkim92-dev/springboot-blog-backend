@@ -1,18 +1,17 @@
 package kr.dohoonkim.blog.restapi.config
 
+import kr.dohoonkim.blog.restapi.application.authentication.CustomUserDetailService
 import kr.dohoonkim.blog.restapi.application.authentication.oauth2.CustomOAuth2UserService
-import kr.dohoonkim.blog.restapi.security.MethodPathRequestMatcher
-import kr.dohoonkim.blog.restapi.security.filter.JwtAuthenticationFilter
+import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationFilter
 import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationFailureHandler
 import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationSuccessHandler
-import kr.dohoonkim.blog.restapi.security.provider.JwtAuthenticationProvider
+import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationProvider
 import kr.dohoonkim.blog.restapi.security.handler.EntryPointUnauthorizedHandler
 import kr.dohoonkim.blog.restapi.security.handler.JwtAccessDeniedHandler
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -21,6 +20,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -36,7 +36,8 @@ class SecurityConfig(
     private val authenticationConfiguration: AuthenticationConfiguration,
     private val oAuth2AuthenticationSuccessHandler: CustomOAuth2AuthenticationSuccessHandler,
     private val oAuth2AuthenticationFailureHandler: CustomOAuth2AuthenticationFailureHandler,
-    private val customOAuth2UserService: CustomOAuth2UserService
+    private val customOAuth2UserService: CustomOAuth2UserService,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -45,26 +46,10 @@ class SecurityConfig(
         private val WHITELIST_STATIC = arrayOf("/static/css/**", "/static/js/**", "*.ico", "/error")
         private val WHITELIST_SWAGGER =
             arrayOf("/swagger-ui", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs", "/api-docs", "/api-docs/**")
-        private val AUTHENTICATION_REQUEST_ENDPOINTS = arrayOf("/api/v1/authentication", "/api/v1/reissueToken")
-        private val MEMBER_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS = arrayOf("/api/v1/members/**")
-        private val MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS = arrayOf(
-            "/api/v1/comments",
-            "/api/v1/comments/**",
-            "/api/v1/members/**"
-        )
-        private val ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS = arrayOf("/api/v1/members")
-        private val ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS = arrayOf(
-            "/api/v1/articles",
-            "/api/v1/articles/**",
-            "/api/v1/article-categories",
-            "/api/v1/article-categories/**",
-            "/api/v1/files/**"
-        )
-        private val HTTP_COMMAND_METHODS = listOf(HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.POST, HttpMethod.DELETE)
     }
 
-    @Bean
-    fun passwordEncrypt() = BCryptPasswordEncoder(10);
+//    @Bean
+//    fun passwordEncrypt(): PasswordEncoder = BCryptPasswordEncoder(10);
 
     @Bean
     fun authenticationManager(): AuthenticationManager {
@@ -72,21 +57,7 @@ class SecurityConfig(
     }
 
     fun jwtAuthenticationFilter(): JwtAuthenticationFilter {
-        val matchers = MethodPathRequestMatcher()
-        matchers.add(HttpMethod.GET, MEMBER_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS)
-        matchers.add(HttpMethod.GET, ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS)
-
-        val targets = arrayOf(
-            *MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS,
-            *ADMIN_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS, *ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS
-        )
-
-        HTTP_COMMAND_METHODS.forEach { method ->
-            matchers.add(method, targets)
-        }
-        matchers.build()
-
-        return JwtAuthenticationFilter(matchers, jwtService, jwtAuthenticationProvider)
+        return JwtAuthenticationFilter(jwtService, jwtAuthenticationProvider)
     }
 
     @Bean
@@ -107,17 +78,8 @@ class SecurityConfig(
             .exceptionHandling { customizer -> customizer.authenticationEntryPoint(entryPointUnauthorizedHandler) }
             .exceptionHandling { customizer -> customizer.accessDeniedHandler(jwtAccessDeniedHandler) }
             .authorizeHttpRequests { customizer ->
-                customizer.requestMatchers(HttpMethod.POST, "/api/v1/members").permitAll()
-                customizer.requestMatchers(HttpMethod.GET, *MEMBER_QUERY_AUTHENTICATION_REQUIRED_ENDPOINTS)
-                    .hasAnyRole("ADMIN", "MEMBER")
-                customizer.requestMatchers(HttpMethod.DELETE, "/api/v1/members/**").hasAnyRole("ADMIN", "MEMBER")
-                customizer.requestMatchers(HttpMethod.PATCH, "/api/v1/members/**").hasAnyRole("ADMIN", "MEMBER")
-                HTTP_COMMAND_METHODS.forEach { method ->
-                    customizer.requestMatchers(method, *MEMBER_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS)
-                        .hasAnyRole("MEMBER", "ADMIN")
-                    customizer.requestMatchers(method, *ADMIN_COMMAND_AUTHENTICATION_REQUIRED_ENDPOINTS)
-                        .hasRole("ADMIN")
-                }
+                customizer.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                customizer.requestMatchers("/api/v1/files/**").hasRole("ADMIN")
                 customizer.anyRequest().permitAll()
             }
             .oauth2Login { customizer ->

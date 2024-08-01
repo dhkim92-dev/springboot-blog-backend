@@ -16,6 +16,11 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
+/**
+ * 파일 업로드 서비스
+ * @author dhkim92.dev@gmail.com
+ * @since 2023.08.10
+ */
 @Service
 class FileUploadService(
     private val imageTypeValidator: ImageTypeValidator,
@@ -30,6 +35,12 @@ class FileUploadService(
     @Value("\${server.media.storagePath}")
     private lateinit var basePath: String
 
+    /**
+     * 전송받은 이미지 파일을 저장한다
+     * @param file 이미지 파일 MultipartFile
+     * @return 저장된 이미지 접근 URI
+     * @throws UnsupportedMediaTypeException 지원하지 않는 파일 형식
+     */
     fun createImage(file: MultipartFile): String {
         if (!imageTypeValidator.isSupportFile(file)) {
             throw UnsupportedMediaTypeException(ErrorCode.NOT_SUPPORT_IMAGE_TYPE)

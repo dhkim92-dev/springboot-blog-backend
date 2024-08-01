@@ -10,11 +10,10 @@ class Category(name: String) : LongPrimaryKeyEntity() {
     @Column(unique = true)
     var name: String = name
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     var articles: MutableList<Article> = arrayListOf()
 
     fun changeName(name: String) {
         this.name = name
     }
-
 }

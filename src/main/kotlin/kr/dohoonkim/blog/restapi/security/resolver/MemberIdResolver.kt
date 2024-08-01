@@ -27,7 +27,6 @@ class MemberIdResolver(private val authenticationUtil: AuthenticationUtil) : Han
         binderFactory: WebDataBinderFactory?
     ): UUID {
         return authenticationUtil.extractMemberId()
-            ?: throw UnauthorizedException()
     }
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {

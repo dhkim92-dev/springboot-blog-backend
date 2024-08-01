@@ -6,15 +6,15 @@ import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kr.dohoonkim.blog.restapi.application.board.ArticleService
-import kr.dohoonkim.blog.restapi.application.board.dto.ArticleCreateRequest
+import kr.dohoonkim.blog.restapi.interfaces.board.dto.PostArticleRequest
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleDto
-import kr.dohoonkim.blog.restapi.application.board.dto.ArticleModifyRequest
+import kr.dohoonkim.blog.restapi.interfaces.board.dto.ModifyArticleRequest
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleSummaryDto
 import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
 import kr.dohoonkim.blog.restapi.common.utility.CursorListBuilder
 import kr.dohoonkim.blog.restapi.domain.member.Role
-import kr.dohoonkim.blog.restapi.interfaces.ArticleController
+import kr.dohoonkim.blog.restapi.interfaces.board.ArticleController
 import kr.dohoonkim.blog.restapi.support.entity.createArticle
 import kr.dohoonkim.blog.restapi.support.entity.createCategory
 import kr.dohoonkim.blog.restapi.support.entity.createDummyArticles
@@ -40,7 +40,7 @@ class ArticleControllerTest : AnnotationSpec() {
 
     @Test
     fun `게시물을 생성한다`() {
-        val request = ArticleCreateRequest(title = article.title, contents = article.contents, category = category.name)
+        val request = PostArticleRequest(title = article.title, contents = article.contents, category = category.name)
         val data = ArticleDto.fromEntity(article)
         val response = ApiResult.Ok(CREATE_ARTICLE_SUCCESS, data)
 
@@ -117,7 +117,7 @@ class ArticleControllerTest : AnnotationSpec() {
     @Test
     fun `게시물을 수정한다`() {
         article.updateContents("수정된 본문")
-        val request = ArticleModifyRequest(article.title, article.contents, article.category.name)
+        val request = ModifyArticleRequest(article.title, article.contents, article.category.name)
         val data = ArticleDto.fromEntity(article)
 
         every { articleService.modifyArticle(article.author.id, any()) } returns data

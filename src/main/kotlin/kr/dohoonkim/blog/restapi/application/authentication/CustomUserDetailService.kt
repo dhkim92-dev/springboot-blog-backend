@@ -9,13 +9,19 @@ import org.slf4j.LoggerFactory
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsPasswordService
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.stereotype.Service
+import org.springframework.security.crypto.password.PasswordEncoder
 
-@Service
-class CustomUserDetailService(private val memberRepository: MemberRepository) : UserDetailsService,
-    UserDetailsPasswordService {
+//@Service
+class CustomUserDetailService(
+    private val memberRepository: MemberRepository,
+    private val passwordEncoder: PasswordEncoder
+): UserDetailsService, UserDetailsPasswordService {
 
-    private val log: Logger = LoggerFactory.getLogger(javaClass)
+    private val logger: Logger = LoggerFactory.getLogger(javaClass)
+
+    init {
+        logger.info("CustomUserDetailService passwordEncoder : ${passwordEncoder}")
+    }
 
     override fun loadUserByUsername(email: String): UserDetails {
         val member = memberRepository.findByEmail(email)
@@ -28,7 +34,7 @@ class CustomUserDetailService(private val memberRepository: MemberRepository) : 
         val member = memberRepository.findByEmail(user.username)
             ?: throw EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND)
 
-        member.updatePassword(newPassword)
+        member.updatePassword(passwordEncoder.encode(newPassword))
         memberRepository.save(member)
 
         return member.let { CustomUserDetails.from(member) }

@@ -21,30 +21,23 @@ class Article(title: String, contents: String, author: Member, category: Categor
     @Column
     var viewCount: Long = 0
 
-    // TODO("댓글 기능 구현 후 재개")
-//    @OneToMany(mappedBy = "article", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-//    var comments : MutableList<Comment> = mutableListOf()
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     var category: Category = category
 
-    // TODO("댓글 기능 구현 후 재개")
-//    fun addComment(comment: Comment) {
-//        comments.add(comment)
-//    }
-
-    fun updateTitle(title: String) {
-        this.title = title
+    fun updateTitle(title: String?) {
+        this.title = title ?: this.title
     }
 
-    fun updateCategory(category: Category) {
+    fun updateCategory(category: Category?) {
+        if(category == null) return
+
         if (this.category.id != category.id)
             this.category = category
     }
 
-    fun updateContents(contents: String) {
-        this.contents = contents
+    fun updateContents(contents: String?) {
+        this.contents = contents ?: this.contents
     }
 
     fun increaseViewCount() = viewCount++

@@ -7,13 +7,13 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import kr.dohoonkim.blog.restapi.application.authentication.AuthenticationService
-import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginRequest
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.LoginRequest
 import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueResult
-import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueTokenRequest
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.ReissueTokenRequest
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
 import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
-import kr.dohoonkim.blog.restapi.interfaces.AuthenticationController
+import kr.dohoonkim.blog.restapi.interfaces.authentication.AuthenticationController
 import kr.dohoonkim.blog.restapi.support.web.createLoginResult
 import kr.dohoonkim.blog.restapi.support.entity.createMember
 import org.springframework.security.authentication.BadCredentialsException
