@@ -6,6 +6,6 @@ package kr.dohoonkim.blog.restapi.application.board.dto
  * @since 2023.08.10
  * @property name 카테고리 이름
  */
-class CategoryCreateCommand(
+data class CategoryCreateCommand(
     val name: String
 )

@@ -2,9 +2,9 @@ INSERT INTO MEMBER(id, nickname, email, password, role, is_activated, created_at
 INSERT INTO MEMBER(id, nickname, email, password, role, is_activated, created_at, updated_at) VALUES('136b31a4-e67d-4ab8-98ce-e0d4bad6ac25','member','member@dohoon-kim.kr','$2b$12$dWDIm1VVOhiKgwH8pCfXv.0iRU2DY3X8ljhYsP7Kch5Rbj3Js6IOO','MEMBER',true, current_timestamp, current_timestamp);
 INSERT INTO MEMBER(id, nickname, email, password, role, is_activated, created_at, updated_at) VALUES('eb4ee0b9-8dd7-4348-93e4-4b965dd9fc3b','inactivate_member','inactivate_member@dohoon-kim.kr','$2b$12$dWDIm1VVOhiKgwH8pCfXv.0iRU2DY3X8ljhYsP7Kch5Rbj3Js6IOO','MEMBER',false, current_timestamp, current_timestamp);
 
-insert into article_category(name,created_at,updated_at) values('category1', current_timestamp, current_timestamp);
-insert into article_category(name,created_at,updated_at) values('category2', current_timestamp, current_timestamp);
-insert into article_category(name,created_at,updated_at) values('category3', current_timestamp, current_timestamp);
+insert into article_category(name,created_at,updated_at) values('category_1', current_timestamp, current_timestamp);
+insert into article_category(name,created_at,updated_at) values('category_2', current_timestamp, current_timestamp);
+insert into article_category(name,created_at,updated_at) values('category_3', current_timestamp, current_timestamp);
 
 INSERT INTO ARTICLE(id, category_id, member_id, title, contents, view_count, created_at, updated_at) VALUES('f986fcad-a333-4381-a80d-7ed4709a9327', 1, '9d8c633e-3f19-11ee-9a24-3e15b9241b23', 'article-1-title', 'article-1-contents', 0, current_timestamp, current_timestamp);
 INSERT INTO ARTICLE(id, category_id, member_id, title, contents, view_count, created_at, updated_at) VALUES('ce643373-82c2-4b70-80aa-1bec65345c05', 2, '9d8c633e-3f19-11ee-9a24-3e15b9241b23', 'article-2-title', 'article-2-contents', 0, current_timestamp, current_timestamp);

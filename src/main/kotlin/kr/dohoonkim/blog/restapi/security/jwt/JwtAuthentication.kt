@@ -1,7 +1,7 @@
 package kr.dohoonkim.blog.restapi.security.jwt
 
 import com.auth0.jwt.interfaces.DecodedJWT
-import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
+import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority

@@ -1,0 +1,107 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CategoryService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.application.board</a>
+</div>
+
+<h1>Coverage Summary for Class: CategoryService (kr.dohoonkim.blog.restapi.application.board)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">CategoryService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.application.board
+&nbsp;
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.dto.CategoryCreateCommand
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.dto.CategoryDto
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.dto.CategoryModifyCommand
+&nbsp;
+&nbsp;/**
+&nbsp; * 게시물 카테고리 CRUD를 담당하는 서비스 인터페이스
+&nbsp; * @author dhkim92.dev@gmail.com
+&nbsp; * @since 2023.08.10
+&nbsp; */
+&nbsp;interface CategoryService {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 카테고리를 신규 생성한다
+&nbsp;     * &lt;p&gt;관리자 전용 기능&lt;/p&gt;
+&nbsp;     * @param request 카테고리 생성 요청 본문
+&nbsp;     * @return 카테고리 전체 정보를 포함한 데이터
+&nbsp;     */
+&nbsp;    fun createCategory(request: CategoryCreateCommand): CategoryDto
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 카테고리 이름을 수정한다
+&nbsp;     * @param request 카테고리 수정 요청 본문
+&nbsp;     * @return 카테고리 전체 정보를 포함한 데이터
+&nbsp;     */
+&nbsp;    fun modifyCategoryName(request: CategoryModifyCommand): CategoryDto
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 카테고리 목록을 반환한다
+&nbsp;     * @return 전체 카테고리 목록 리스트
+&nbsp;     */
+&nbsp;    fun getCategories(): List&lt;CategoryDto&gt;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 카테고리를 삭제한다
+&nbsp;     * @param categoryId 대상 카테고리 ID
+&nbsp;     */
+&nbsp;    fun deleteCategory(categoryId: Long): Unit
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 package kr.dohoonkim.blog.restapi.application.board.dto
 
-import kr.dohoonkim.blog.restapi.domain.article.Category
+import kr.dohoonkim.blog.restapi.domain.board.Category
 
 /**
  * 카테고리 객체

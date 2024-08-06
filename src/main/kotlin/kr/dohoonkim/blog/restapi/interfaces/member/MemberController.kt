@@ -10,6 +10,10 @@ import kr.dohoonkim.blog.restapi.application.member.dto.*
 import kr.dohoonkim.blog.restapi.common.response.ApiResult.*
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
 import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
+import kr.dohoonkim.blog.restapi.interfaces.member.dto.EmailChangeRequest
+import kr.dohoonkim.blog.restapi.interfaces.member.dto.MemberJoinRequest
+import kr.dohoonkim.blog.restapi.interfaces.member.dto.NicknameChangeRequest
+import kr.dohoonkim.blog.restapi.interfaces.member.dto.PasswordChangeRequest
 import kr.dohoonkim.blog.restapi.security.annotations.MemberId
 import org.hibernate.validator.constraints.Length
 import org.slf4j.LoggerFactory
@@ -39,7 +43,7 @@ class MemberController(private val memberService: MemberService) {
     @PostMapping("v1/members")
     @ApplicationCode(CREATE_MEMBER_SUCCESS)
     fun createMember(@RequestBody @Valid request: MemberJoinRequest): MemberDto {
-        val dto = MemberCreateDto(
+        val dto = MemberCreateCommand(
             nickname = request.nickname,
             email = request.email,
             password = request.password
@@ -64,7 +68,7 @@ class MemberController(private val memberService: MemberService) {
         @PathVariable resourceId: UUID,
         @MemberId memberId: UUID
     ): MemberDto{
-        val dto = MemberNicknameChangeDto(
+        val dto = NicknameChangeCommand(
             memberId = resourceId,
             nickname = request.nickname
         )
@@ -79,7 +83,7 @@ class MemberController(private val memberService: MemberService) {
         @PathVariable resourceId: UUID,
         @RequestBody @Valid request: EmailChangeRequest
     ): MemberDto {
-        val dto = MemberEmailChangeDto(resourceId, request.email)
+        val dto = EmailChangeCommand(resourceId, request.email)
         return memberService.changeMemberEmail(memberId, dto)
     }
 
@@ -90,7 +94,7 @@ class MemberController(private val memberService: MemberService) {
         @PathVariable resourceId: UUID,
         @RequestBody @Valid request: PasswordChangeRequest
     ): MemberDto {
-        val dto = MemberPasswordChangeDto(
+        val dto = PasswordChangeCommand(
             memberId = resourceId,
             currentPassword = request.currentPassword,
             newPassword = request.newPassword

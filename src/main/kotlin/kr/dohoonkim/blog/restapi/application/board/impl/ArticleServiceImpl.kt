@@ -5,12 +5,12 @@ import kr.dohoonkim.blog.restapi.application.board.dto.*
 import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLES_CACHE_KEY
 import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLE_CACHE_KEY
 import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.CATEGORIES_CACHE_KEY
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode
-import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
-import kr.dohoonkim.blog.restapi.domain.article.Article
-import kr.dohoonkim.blog.restapi.domain.article.repository.ArticleRepository
-import kr.dohoonkim.blog.restapi.domain.article.repository.CategoryRepository
+import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
+import kr.dohoonkim.blog.restapi.domain.board.Article
+import kr.dohoonkim.blog.restapi.domain.board.repository.ArticleRepository
+import kr.dohoonkim.blog.restapi.domain.board.repository.CategoryRepository
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheEvict
@@ -48,7 +48,7 @@ class ArticleServiceImpl(
     )
     override fun createArticle(memberId: UUID, request: ArticleCreateCommand): ArticleDto {
         val category = categoryRepository.findByName(request.category)
-            ?: throw EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND)
+            ?: throw NotFoundException(ErrorCodes.CATEGORY_NOT_FOUND)
         val article = Article(
             author = Member(memberId),
             title = request.title,
@@ -71,15 +71,15 @@ class ArticleServiceImpl(
     )
     override fun modifyArticle(memberId: UUID, articleId: UUID, request: ArticleModifyCommand): ArticleDto {
         val article = articleRepository.findByIdOrNull(articleId)
-            ?: throw EntityNotFoundException(ErrorCode.ARTICLE_NOT_FOUND)
+            ?: throw NotFoundException(ErrorCodes.ARTICLE_NOT_FOUND)
 
         if(memberId != article.author.id) {
-            throw ForbiddenException(ErrorCode.RESOURCE_OWNERSHIP_VIOLATION)
+            throw ForbiddenException(ErrorCodes.RESOURCE_OWNERSHIP_VIOLATION)
         }
 
         val category = if(request.category!=null) {
             categoryRepository.findByName(request.category)
-                ?: throw EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND)
+                ?: throw NotFoundException(ErrorCodes.CATEGORY_NOT_FOUND)
         } else {
             null
         }
@@ -101,10 +101,10 @@ class ArticleServiceImpl(
     )
     override fun deleteArticle(memberId: UUID, articleId: UUID): Unit {
         val article = articleRepository.findByIdOrNull(articleId)
-            ?: throw EntityNotFoundException(ErrorCode.ARTICLE_NOT_FOUND)
+            ?: throw NotFoundException(ErrorCodes.ARTICLE_NOT_FOUND)
 
         if(memberId != article.author.id) {
-            throw ForbiddenException(ErrorCode.RESOURCE_OWNERSHIP_VIOLATION)
+            throw ForbiddenException(ErrorCodes.RESOURCE_OWNERSHIP_VIOLATION)
         }
 
         articleRepository.deleteById(article.id)
@@ -118,7 +118,7 @@ class ArticleServiceImpl(
 
     @Transactional
     @Cacheable(value = ["articles"], unless = "#result.isEmpty()")
-    override fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, pageSize: Long): List<ArticleSummaryDto> {
-        return articleRepository.findArticles(categoryId, cursor, pageSize)
+    override fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, pageSize: Int): List<ArticleSummaryDto> {
+        return articleRepository.findArticles(categoryId, cursor, pageSize+1)
     }
 }

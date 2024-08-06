@@ -8,7 +8,7 @@ package kr.dohoonkim.blog.restapi.application.board.dto
  * @property contains 변경 본문
  * @property category 변경 카테고리
  */
-class ArticleModifyCommand(
+data class ArticleModifyCommand(
     val title: String?,
     val contents: String?,
     val category: String?

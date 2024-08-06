@@ -13,7 +13,9 @@ import kr.dohoonkim.blog.restapi.common.response.CursorList
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
 import kr.dohoonkim.blog.restapi.application.board.dto.*
 import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
+import kr.dohoonkim.blog.restapi.common.response.pagination.CursorPagination
 import kr.dohoonkim.blog.restapi.interfaces.board.dto.ModifyCategoryRequest
+import kr.dohoonkim.blog.restapi.interfaces.board.dto.PostCategoryRequest
 import kr.dohoonkim.blog.restapi.interfaces.board.dto.PostedCategory
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -60,7 +63,7 @@ class CategoryController(
     )
     @PostMapping("v1/admin/article-categories")
     @ApplicationCode(ResultCode.CREATE_CATEGORY_SUCCESS)
-    fun createCategory(@RequestBody @Valid request: CategoryCreateCommand): PostedCategory {
+    fun createCategory(@RequestBody @Valid request: PostCategoryRequest): PostedCategory {
         return PostedCategory.valueOf(categoryService.createCategory(CategoryCreateCommand(name=request.name)))
     }
 
@@ -72,10 +75,11 @@ class CategoryController(
     )
     @GetMapping("v1/article-categories")
     @ApplicationCode(ResultCode.GET_CATEGORIES_SUCCESS)
-    fun getCategories(): CursorList<PostedCategory> {
+    @CursorPagination
+    fun getCategories(@RequestParam(required = false, defaultValue = "200") size: Int): List<PostedCategory> {
         val categories = categoryService.getCategories()
             .map { it -> PostedCategory.valueOf(it) }
-        return CursorList(categories.size, categories, null)
+        return categories
     }
 
     @Operation(summary = "카테고리명 수정", description = "카테고리 이름을 수정합니다.")

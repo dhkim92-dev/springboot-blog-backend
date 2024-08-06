@@ -1,6 +1,6 @@
 package kr.dohoonkim.blog.restapi.application.board.dto
 
-import kr.dohoonkim.blog.restapi.domain.article.Article
+import kr.dohoonkim.blog.restapi.domain.board.Article
 import kr.dohoonkim.blog.restapi.application.member.dto.MemberSummaryDto
 import java.time.LocalDateTime
 import java.util.UUID

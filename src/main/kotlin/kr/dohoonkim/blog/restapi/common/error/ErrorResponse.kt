@@ -1,10 +1,8 @@
 package kr.dohoonkim.blog.restapi.common.error
 
-import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.ConstraintViolation
 import org.springframework.validation.BindingResult
-import org.springframework.validation.FieldError
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 
@@ -37,9 +35,9 @@ class ErrorResponse {
     }
 
     private constructor(code: ErrorCode) {
-        this.message = code.message
         this.status = code.status.value()
         this.code = code.code
+        this.message = code.message
         this.errors = listOf()
     }
 
@@ -68,7 +66,7 @@ class ErrorResponse {
         fun of(e: MethodArgumentTypeMismatchException): ErrorResponse {
             val value = e.value?.toString() ?: ""
             val errors = FieldError.of(e.name, value, e.errorCode);
-            return ErrorResponse(ErrorCode.INVALID_INPUT_VALUE, errors);
+            return ErrorResponse(ErrorCodes.INVALID_INPUT_VALUE, errors);
         }
 
     }
@@ -85,7 +83,7 @@ class ErrorResponse {
             }
 
             fun of(bindingResult: BindingResult): List<FieldError> {
-                val fieldErrors: List<org.springframework.validation.FieldError> = bindingResult.getFieldErrors()
+                val fieldErrors: List<org.springframework.validation.FieldError> = bindingResult.fieldErrors
 
                 return fieldErrors.stream().map {
                     FieldError(
@@ -93,8 +91,7 @@ class ErrorResponse {
                         it.rejectedValue?.toString() ?: "",
                         it.defaultMessage ?: ""
                     )
-                }
-                    .toList()
+                }.toList()
             }
 
             fun of(constraintViolations: Set<ConstraintViolation<*>>): List<FieldError> {

@@ -4,22 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kr.dohoonkim.blog.restapi.application.authentication.CustomUserDetailService
-import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
+import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
 import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
-import kr.dohoonkim.blog.restapi.application.authentication.dto.MemberProfile
+import kr.dohoonkim.blog.restapi.application.authentication.vo.MemberProfile
 import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.util.UriComponentsBuilder
 
 @Component
 class CustomOAuth2AuthenticationSuccessHandler(

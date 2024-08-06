@@ -1,0 +1,193 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MultiPartSnake2CamelFilter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.common.filter</a>
+</div>
+
+<h1>Coverage Summary for Class: MultiPartSnake2CamelFilter (kr.dohoonkim.blog.restapi.common.filter)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MultiPartSnake2CamelFilter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (10/11)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MultiPartSnake2CamelFilter$createWrappedRequest$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (6/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (12/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.common.filter
+&nbsp;
+&nbsp;import com.google.common.base.CaseFormat
+&nbsp;
+&nbsp;import jakarta.servlet.FilterChain
+&nbsp;import jakarta.servlet.http.HttpServletRequest
+&nbsp;import jakarta.servlet.http.HttpServletRequestWrapper
+&nbsp;import jakarta.servlet.http.HttpServletResponse
+&nbsp;import org.slf4j.Logger
+&nbsp;import org.slf4j.LoggerFactory
+&nbsp;import org.springframework.http.MediaType
+&nbsp;import org.springframework.web.filter.OncePerRequestFilter
+&nbsp;import java.util.*
+&nbsp;
+&nbsp;/**
+&nbsp; * MediaType이 Multipart/FormData 인 경우 Snake2Camel 표기 변환을 수행하는 필터
+&nbsp; */
+<b class="fc">&nbsp;class MultiPartSnake2CamelFilter : OncePerRequestFilter() {</b>
+&nbsp;
+<b class="fc">&nbsp;    private val log: Logger = LoggerFactory.getLogger(javaClass)</b>
+&nbsp;
+&nbsp;    override fun doFilterInternal(
+&nbsp;        request: HttpServletRequest,
+&nbsp;        response: HttpServletResponse,
+&nbsp;        filterChain: FilterChain
+&nbsp;    ) {
+<b class="fc">&nbsp;        if (request.contentType?.startsWith(MediaType.MULTIPART_FORM_DATA_VALUE) == true) {</b>
+<b class="fc">&nbsp;            val formattedParams = formatParameters(request.parameterMap)</b>
+<b class="fc">&nbsp;            val wrappedRequest = createWrappedRequest(request, formattedParams)</b>
+<b class="fc">&nbsp;            filterChain.doFilter(wrappedRequest, response)</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            filterChain.doFilter(request, response)</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private fun formatParameters(parameterMap: Map&lt;String, Array&lt;String&gt;&gt;): Map&lt;String, Array&lt;String&gt;&gt; {
+<b class="fc">&nbsp;        return parameterMap.mapKeys {</b>
+<b class="fc">&nbsp;            CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, it.key)</b>
+<b class="fc">&nbsp;        }.toMap()</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private fun createWrappedRequest(
+&nbsp;        originalRequest: HttpServletRequest,
+&nbsp;        formattedParams: Map&lt;String, Array&lt;String&gt;&gt;
+&nbsp;    ): HttpServletRequestWrapper {
+<b class="fc">&nbsp;        return object : HttpServletRequestWrapper(originalRequest) {</b>
+&nbsp;            override fun getParameter(name: String): String? {
+<b class="nc">&nbsp;                return formattedParams[name]?.firstOrNull()</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            override fun getParameterNames(): Enumeration&lt;String&gt; {
+<b class="nc">&nbsp;                return Collections.enumeration(formattedParams.keys)</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            override fun getParameterValues(name: String): Array&lt;String&gt; {
+<b class="nc">&nbsp;                return formattedParams[name] ?: arrayOf()</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            override fun getParameterMap(): Map&lt;String, Array&lt;String&gt;&gt; {
+<b class="fc">&nbsp;                return formattedParams</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

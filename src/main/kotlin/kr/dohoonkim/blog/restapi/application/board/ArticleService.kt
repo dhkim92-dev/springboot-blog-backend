@@ -1,7 +1,6 @@
 package kr.dohoonkim.blog.restapi.application.board
 
 import kr.dohoonkim.blog.restapi.application.board.dto.*
-import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
 import java.time.LocalDateTime
 import java.util.*
@@ -50,7 +49,7 @@ interface ArticleService {
      * @param pageSize 페이지네이션 사이즈. 데이터베이스 조회는 pageSize + 1만큼 조회된다.
      * @return 게시물 본문을 포함하지 않는 게시물 정보 리스트 반환, 최대 크기는 pageSize 이다.
      */
-    fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, pageSize: Long): List<ArticleSummaryDto>
+    fun getListOfArticles(categoryId: Long, cursor: LocalDateTime?, pageSize: Int): List<ArticleSummaryDto>
 
     /**
      * 게시물 ID를 가지고 게시물을 조회하여 게시물을 반환한다.

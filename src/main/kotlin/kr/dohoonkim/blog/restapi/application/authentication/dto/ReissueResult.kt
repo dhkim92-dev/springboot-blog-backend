@@ -4,6 +4,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class ReissueResult(
     val type: String = "Bearer",
-    @JsonProperty("access_token")
     val accessToken: String
 )

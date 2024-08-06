@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 import io.swagger.v3.oas.annotations.media.Schema
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleDto
-import kr.dohoonkim.blog.restapi.interfaces.member.vo.MemberSummaryVo
+import kr.dohoonkim.blog.restapi.interfaces.member.dto.MemberSummaryVo
 import java.time.LocalDateTime
 import java.util.UUID
 

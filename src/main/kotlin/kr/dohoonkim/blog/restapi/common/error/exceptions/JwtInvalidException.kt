@@ -1,6 +1,6 @@
 package kr.dohoonkim.blog.restapi.common.error.exceptions
 
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 
-class JwtInvalidException : BusinessException(ErrorCode.INVALID_JWT_EXCEPTION) {
+class JwtInvalidException : BusinessException(ErrorCodes.INVALID_JWT_EXCEPTION) {
 }

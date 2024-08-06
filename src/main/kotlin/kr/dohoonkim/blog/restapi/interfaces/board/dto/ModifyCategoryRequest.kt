@@ -15,8 +15,8 @@ import org.hibernate.validator.constraints.Length
 @Schema(description = "카테고리 수정 요청 객체")
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class ModifyCategoryRequest(
-    @field : Length(min = 1, max = 16, message = "카테고리 이름은 1자이상 16자 이하입니다")
     @field : NotBlank(message = "카테고리 이름이 입력되어야 합니다")
+    @field : Length(min = 1, max = 16, message = "카테고리 이름은 1자 이상 16자 이하입니다")
     @Schema(description = "변경될 카테고리 이름", required = true, example = "Devops")
     val name: String
 )

@@ -8,7 +8,7 @@ package kr.dohoonkim.blog.restapi.application.board.dto
  * @property id 카테고리 ID
  * @property newName 변경될 카테고리 이름
  */
-class CategoryModifyCommand(
+data class CategoryModifyCommand(
     val id: Long,
     val newName: String
 )

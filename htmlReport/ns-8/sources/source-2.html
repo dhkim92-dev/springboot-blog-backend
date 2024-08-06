@@ -1,0 +1,213 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CategoryServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.application.board.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: CategoryServiceImpl (kr.dohoonkim.blog.restapi.application.board.impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CategoryServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CategoryServiceImpl$modifyCategoryName$category$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.application.board.impl
+&nbsp;
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.CategoryService
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.dto.CategoryCreateCommand
+&nbsp;import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
+&nbsp;import kr.dohoonkim.blog.restapi.common.error.exceptions.ConflictException
+&nbsp;import kr.dohoonkim.blog.restapi.domain.board.repository.CategoryRepository
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.dto.CategoryDto
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.dto.CategoryModifyCommand
+&nbsp;import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLES_CACHE_KEY
+&nbsp;import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLE_CACHE_KEY
+&nbsp;import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.CATEGORIES_CACHE_KEY
+&nbsp;import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
+&nbsp;import kr.dohoonkim.blog.restapi.domain.board.Category
+&nbsp;import org.slf4j.LoggerFactory
+&nbsp;import org.springframework.cache.annotation.CacheEvict
+&nbsp;import org.springframework.cache.annotation.Cacheable
+&nbsp;import org.springframework.cache.annotation.Caching
+&nbsp;import org.springframework.stereotype.Service
+&nbsp;import org.springframework.transaction.annotation.Transactional
+&nbsp;
+&nbsp;/**
+&nbsp; * CategoryService 구현체
+&nbsp; * @author dhkim92.dev@gmail.com
+&nbsp; * @since 2023.08.10
+&nbsp; */
+<b class="nc">&nbsp;@Service</b>
+&nbsp;@Transactional(readOnly = true)
+&nbsp;class CategoryServiceImpl(
+<b class="nc">&nbsp;    private val categoryRepository: CategoryRepository</b>
+&nbsp;) : CategoryService {
+&nbsp;
+<b class="nc">&nbsp;    private val log = LoggerFactory.getLogger(this::class.java)</b>
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    @CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true)
+&nbsp;    override fun createCategory(request: CategoryCreateCommand): CategoryDto {
+<b class="nc">&nbsp;        if (this.categoryRepository.existsByName(request.name)) {</b>
+<b class="nc">&nbsp;            throw ConflictException(ErrorCodes.ALREADY_EXIST_CATEGORY)</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        val category = Category(name = request.name)</b>
+<b class="nc">&nbsp;        return CategoryDto.fromEntity(this.categoryRepository.save(category))</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    @Cacheable(CATEGORIES_CACHE_KEY)
+&nbsp;    override fun getCategories(): List&lt;CategoryDto&gt; {
+<b class="nc">&nbsp;        return categoryRepository.findAllCategory()</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    @Caching(
+&nbsp;        evict = [
+&nbsp;            CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true),
+&nbsp;            CacheEvict(ARTICLE_CACHE_KEY, allEntries = true),
+&nbsp;            CacheEvict(ARTICLES_CACHE_KEY, allEntries = true)
+&nbsp;        ]
+&nbsp;    )
+&nbsp;    override fun modifyCategoryName(request: CategoryModifyCommand): CategoryDto {
+<b class="nc">&nbsp;        val category = categoryRepository.findById(request.id)</b>
+<b class="nc">&nbsp;            .orElseThrow { throw NotFoundException(ErrorCodes.CATEGORY_NOT_FOUND) }</b>
+&nbsp;
+<b class="nc">&nbsp;        if (categoryRepository.existsByName(request.newName)) {</b>
+<b class="nc">&nbsp;            throw ConflictException(ErrorCodes.ALREADY_EXIST_CATEGORY)</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        category.changeName(request.newName)</b>
+&nbsp;
+<b class="nc">&nbsp;        return CategoryDto.fromEntity(categoryRepository.save(category))</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    @Caching(
+&nbsp;        evict = [
+&nbsp;            CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true),
+&nbsp;            CacheEvict(ARTICLE_CACHE_KEY, allEntries = true),
+&nbsp;            CacheEvict(ARTICLES_CACHE_KEY, allEntries = true)
+&nbsp;        ]
+&nbsp;    )
+&nbsp;    override fun deleteCategory(categoryId: Long): Unit {
+<b class="nc">&nbsp;        categoryRepository.deleteById(categoryId)</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

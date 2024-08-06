@@ -60,7 +60,7 @@ class AuthenticationController(
     )
     @ResponseStatus(CREATED)
     @ApplicationCode(REISSUE_TOKEN_SUCCESS)
-    fun reissue(@RequestBody request: ReissueTokenRequest): ReissueResponse {
+    fun reissue(@RequestBody @Valid request: ReissueTokenRequest): ReissueResponse {
         return ReissueResponse.valueOf(authenticationService.reIssueAccessToken(request.refreshToken))
     }
 }

@@ -11,11 +11,11 @@ import kr.dohoonkim.blog.restapi.application.board.ArticleService
 import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
 import kr.dohoonkim.blog.restapi.application.board.dto.*
 import kr.dohoonkim.blog.restapi.security.annotations.MemberId
-import kr.dohoonkim.blog.restapi.common.response.CursorList
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
 import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
-import kr.dohoonkim.blog.restapi.common.utility.CursorListBuilder
+import kr.dohoonkim.blog.restapi.common.response.pagination.Cursor
+import kr.dohoonkim.blog.restapi.common.response.pagination.CursorPagination
 import kr.dohoonkim.blog.restapi.interfaces.board.dto.PostArticleRequest
 import kr.dohoonkim.blog.restapi.interfaces.board.dto.ModifyArticleRequest
 import kr.dohoonkim.blog.restapi.interfaces.board.dto.PostedArticle
@@ -98,16 +98,14 @@ class ArticleController(private val articleService: ArticleService) {
     )
     @GetMapping("v1/articles")
     @ApplicationCode(GET_ARTICLE_LIST_SUCCESS)
+    @CursorPagination
     fun getArticles(
-        @RequestParam(required = false) categoryId: Long?,
-        @RequestParam(required = false) createdAt: LocalDateTime?
-    ) : CursorList<PostedArticleSummary> {
-        val articles = articleService.getListOfArticles(categoryId ?: 0, createdAt, DEFAULT_PAGINATION_SIZE)
+        @RequestParam(required = false) @Cursor(inherit = true) categoryId: Long?,
+        @RequestParam(required = false) @Cursor createdAt: LocalDateTime?,
+        @RequestParam(required = false, defaultValue = "20") size: Int
+    ) : List<PostedArticleSummary> {
+        return articleService.getListOfArticles(categoryId ?: 0, createdAt, size)
             .map{ it -> PostedArticleSummary.valueOf(it) }
-        val queryMap = mutableMapOf<String, String>("created_at" to "createdAt")
-        if (categoryId != null && categoryId != 0L) queryMap.put("category#id", "categoryId")
-
-        return CursorListBuilder.build(articles, queryMap, DEFAULT_PAGINATION_SIZE)
     }
 
     @Operation(summary = "게시물 수정", description = "게시물의 제목, 본문, 카테고리등을 수정한다.")

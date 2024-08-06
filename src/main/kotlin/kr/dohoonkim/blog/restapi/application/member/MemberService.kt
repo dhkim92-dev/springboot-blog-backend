@@ -1,10 +1,10 @@
 package kr.dohoonkim.blog.restapi.application.member
 
 import kr.dohoonkim.blog.restapi.application.member.dto.*
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ConflictException
-import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
+import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.common.response.PageList
 import kr.dohoonkim.blog.restapi.common.utility.AuthenticationUtil
@@ -21,27 +21,26 @@ import java.util.UUID
 @Service
 @Transactional(readOnly = true)
 class MemberService(
-
     private val memberRepository: MemberRepository,
     private val passwordEncoder: BCryptPasswordEncoder,
     private val authenticationUtil: AuthenticationUtil
 ) {
+
     private val log: Logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    fun create(dto: MemberCreateDto): MemberDto {
-        if (this.checkEmailExist(dto.email)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_EMAIL)
+    fun create(dto: MemberCreateCommand): MemberDto {
+        if (checkEmailExist(dto.email)) {
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_EMAIL)
         }
 
-        if (this.checkNicknameExist(dto.nickname)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_NICKNAME)
+        if (checkNicknameExist(dto.nickname)) {
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_NICKNAME)
         }
 
-        val encodedPassword = this.passwordEncoder.encode(dto.password);
-        val member: Member = Member(dto.nickname, dto.email, encodedPassword, null);
-
-        return MemberDto.fromEntity(this.memberRepository.save(member));
+        val encodedPassword = passwordEncoder.encode(dto.password);
+        var member: Member = Member(dto.nickname, dto.email, encodedPassword, null);
+        return MemberDto.fromEntity(memberRepository.save(member));
     }
 
     @Transactional
@@ -50,17 +49,17 @@ class MemberService(
         memberRepository.deleteById(memberId);
     }
 
-    @Transactional
-    fun getMemberByEmail(email: String): MemberDto {
-        return MemberDto.fromEntity(
-            this.memberRepository.findByEmail(email)
-                ?: throw EntityNotFoundException(ErrorCode.MEMBER_NOT_FOUND)
-        );
-    }
+//    @Transactional
+//    fun getMemberByEmail(email: String): MemberDto {
+//        return MemberDto.fromEntity(
+//            memberRepository.findByEmail(email)
+//                ?: throw NotFoundException(ErrorCodes.MEMBER_NOT_FOUND)
+//        );
+//    }
 
     @Transactional
     fun getMembers(pageable: Pageable?): PageList<MemberDto> {
-        if (!authenticationUtil.isAdmin()) throw ForbiddenException(ErrorCode.RESOURCE_OWNERSHIP_VIOLATION)
+        if (!authenticationUtil.isAdmin()) throw ForbiddenException(ErrorCodes.RESOURCE_OWNERSHIP_VIOLATION)
         val total = memberRepository.count();
         val page = memberRepository.findAll()
         val data: List<MemberDto> = page.toList().map { member -> MemberDto.fromEntity(member) }
@@ -70,8 +69,8 @@ class MemberService(
 
     @Transactional
     fun checkEmailAvailable(email: String): Boolean {
-        if (this.checkEmailExist(email)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_EMAIL)
+        if (checkEmailExist(email)) {
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_EMAIL)
         }
 
         return true;
@@ -79,17 +78,17 @@ class MemberService(
 
     @Transactional
     fun checkNicknameAvailable(nickname: String): Boolean {
-        if (this.checkNicknameExist(nickname)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_NICKNAME)
+        if (checkNicknameExist(nickname)) {
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_NICKNAME)
         }
 
         return true;
     }
 
     @Transactional
-    fun changeMemberNickname(memberId: UUID, dto: MemberNicknameChangeDto): MemberDto {
+    fun changeMemberNickname(memberId: UUID, dto: NicknameChangeCommand): MemberDto {
         if (checkNicknameExist(dto.nickname)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_NICKNAME)
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_NICKNAME)
         }
 
         val target = memberRepository.findByMemberId(dto.memberId)
@@ -101,9 +100,9 @@ class MemberService(
     }
 
     @Transactional
-    fun changeMemberEmail(memberId: UUID, dto: MemberEmailChangeDto): MemberDto {
+    fun changeMemberEmail(memberId: UUID, dto: EmailChangeCommand): MemberDto {
         if (checkEmailExist(dto.email)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_EMAIL)
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_EMAIL)
         }
         val target = memberRepository.findByMemberId(dto.memberId)
         authenticationUtil.checkPermission(memberId, target.id)
@@ -113,13 +112,13 @@ class MemberService(
     }
 
     @Transactional
-    fun changePassword(memberId: UUID, dto: MemberPasswordChangeDto): MemberDto {
+    fun changePassword(memberId: UUID, dto: PasswordChangeCommand): MemberDto {
         val target = memberRepository.findByMemberId(dto.memberId)
 
         authenticationUtil.checkPermission(memberId, target.id)
 
-        if (!passwordEncoder.matches(dto.currentPassword, target.password)) {
-            throw UnauthorizedException(ErrorCode.UPDATE_PASSWORD_FAILED)
+        if(!authenticationUtil.isAdmin() && !passwordEncoder.matches(dto.currentPassword, target.password)) {
+            throw UnauthorizedException(ErrorCodes.UPDATE_PASSWORD_FAILED)
         }
 
         target.updatePassword(passwordEncoder.encode(dto.newPassword))
@@ -128,11 +127,11 @@ class MemberService(
     }
 
     private fun checkEmailExist(email: String): Boolean {
-        return this.memberRepository.existsByEmail(email);
+        return memberRepository.existsByEmail(email);
     }
 
     private fun checkNicknameExist(nickname: String): Boolean {
-        return this.memberRepository.existsByNickname(nickname);
+        return memberRepository.existsByNickname(nickname);
     }
 
 }

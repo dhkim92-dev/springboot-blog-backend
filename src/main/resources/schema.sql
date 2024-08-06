@@ -28,8 +28,8 @@ create table if not exists article (
     created_at timestamp(6) not null default CURRENT_TIMESTAMP,
     updated_at timestamp(6) default CURRENT_TIMESTAMP,
     primary key (id),
-    constraint FK_member FOREIGN KEY(member_id) REFERENCES member(id),
-    constraint FK_category FOREIGN KEY(category_id) REFERENCES article_category(id)
+    constraint FK_article_table_member FOREIGN KEY(member_id) REFERENCES member(id) ON DELETE CASCADE,
+    constraint FK_article_table_category FOREIGN KEY(category_id) REFERENCES article_category(id) ON DELETE SET NULL
 );
 
 create table if not exists article_comment(
@@ -41,7 +41,7 @@ create table if not exists article_comment(
     created_at timestamp(6) default CURRENT_TIMESTAMP,
     updated_at timestamp(6) default CURRENT_TIMESTAMP,
     primary key (id),
-    constraint FK_article foreign key(article_id) references article(id) on delete cascade,
-    constraint FK_parent_comment foreign key(parent_id) references article_comment(id) on delete set null,
-    constraint FK_member foreign key(member_id) references member(id) on delete cascade
+    constraint FK_article_comment_table_article foreign key(article_id) references article(id) on delete cascade,
+    constraint FK_article_comment_table_parent_comment foreign key(parent_id) references article_comment(id) on delete set null,
+    constraint FK_article_comment_table_member foreign key(member_id) references member(id) on delete cascade
 );

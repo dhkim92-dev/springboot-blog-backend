@@ -20,10 +20,8 @@ class LoginRequest(
     @field : Email(message = "이메일 형식이 제출되어야 합니다")
     @Schema(description = "Email/Password 로그인 요청 객체", example = "example@dohoon-kim.kr", required =  true)
     val email: String,
-    @field : Length(min = 8, max = 64)
+    @field : Length(min = 8, max = 64, message = "패스워드는 8자 이상 64자 이하여야 합니다")
     @field: NotBlank(message = "패스워드가 제출되어야 합니다")
     @Schema(description = "Email/Password 로그인 요청 객체", example = "password1234", required = true)
     val password: String
-) {
-
-}
+)

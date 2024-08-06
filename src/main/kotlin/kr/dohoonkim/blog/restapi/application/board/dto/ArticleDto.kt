@@ -1,9 +1,7 @@
 package kr.dohoonkim.blog.restapi.application.board.dto
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.annotation.JsonNaming
 import kr.dohoonkim.blog.restapi.application.member.dto.MemberSummaryDto
-import kr.dohoonkim.blog.restapi.domain.article.Article
+import kr.dohoonkim.blog.restapi.domain.board.Article
 import java.time.LocalDateTime
 import java.util.UUID
 

@@ -1,0 +1,99 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MemberRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.domain.member.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: MemberRepository (kr.dohoonkim.blog.restapi.domain.member.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">MemberRepository$Subclass11</td>
+  </tr>
+  <tr>
+    <td class="name">MemberRepository$Subclass11$auxiliary$4gcenMPG</td>
+  </tr>
+  <tr>
+    <td class="name">MemberRepository$Subclass11$auxiliary$4Mf4lHlM</td>
+  </tr>
+  <tr>
+    <td class="name">MemberRepository$Subclass11$auxiliary$JHnW89oW</td>
+  </tr>
+  <tr>
+    <td class="name">MemberRepository$Subclass11$auxiliary$mGXhr8D4</td>
+  </tr>
+  <tr>
+    <td class="name">MemberRepository$Subclass11$auxiliary$wuuPreIR</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.domain.member.repository
+&nbsp;
+&nbsp;import kr.dohoonkim.blog.restapi.domain.member.Member
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository
+&nbsp;import org.springframework.stereotype.Component
+&nbsp;import org.springframework.stereotype.Repository
+&nbsp;import java.util.UUID
+&nbsp;
+&nbsp;@Repository
+&nbsp;interface MemberRepository : JpaRepository&lt;Member, UUID&gt;, MemberRepositoryCustom {
+&nbsp;
+&nbsp;    fun findByEmail(email : String) : Member?
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

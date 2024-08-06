@@ -1,0 +1,158 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Category</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.domain.board</a>
+</div>
+
+<h1>Coverage Summary for Class: Category (kr.dohoonkim.blog.restapi.domain.board)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Category</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Category$HibernateInstantiator$E81RLWWL</td>
+  </tr>
+  <tr>
+    <td class="name">Category$HibernateInstantiator$q9gnqbsx</td>
+  </tr>
+  <tr>
+    <td class="name">Category$HibernateInstantiator$ZXbBDyM4</td>
+  </tr>
+  <tr>
+    <td class="name">Category$HibernateProxy$3HQ2UcwY</td>
+  </tr>
+  <tr>
+    <td class="name">Category$HibernateProxy$oqlAvD38</td>
+  </tr>
+  <tr>
+    <td class="name">Category$HibernateProxy$Uch11Ixi</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.domain.board
+&nbsp;
+&nbsp;import jakarta.persistence.*
+&nbsp;import kr.dohoonkim.blog.restapi.common.entity.LongPrimaryKeyEntity
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;article_category&quot;)
+<b class="fc">&nbsp;class Category(id: Long) : LongPrimaryKeyEntity(id) {</b>
+&nbsp;
+<b class="fc">&nbsp;    constructor(name: String): this(0L) {</b>
+<b class="fc">&nbsp;        this.name = name</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Column(unique = true)
+<b class="fc">&nbsp;    var name: String = &quot;&quot;</b>
+<b class="fc">&nbsp;        protected set</b>
+&nbsp;
+&nbsp;    @OneToMany(mappedBy = &quot;category&quot;, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
+<b class="fc">&nbsp;    var articles: MutableList&lt;Article&gt; = arrayListOf()</b>
+<b class="nc">&nbsp;        protected set;</b>
+&nbsp;
+&nbsp;    fun addArticle(article: Article) {
+<b class="fc">&nbsp;        articles.add(article)</b>
+<b class="fc">&nbsp;        article.updateCategory(this)</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun changeName(name: String) {
+<b class="fc">&nbsp;        this.name = name</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

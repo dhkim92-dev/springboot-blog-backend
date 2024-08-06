@@ -1,6 +1,8 @@
 package kr.dohoonkim.blog.restapi.common.error.exceptions
 
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 
-class ExpiredTokenException : BusinessException(ErrorCode.EXPIRED_TOKEN_EXCEPTION) {
+class ExpiredTokenException:
+BusinessException(ErrorCodes.EXPIRED_TOKEN_EXCEPTION) {
+
 }

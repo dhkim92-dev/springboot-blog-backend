@@ -23,7 +23,7 @@ class WarmupRunner(
 
     private fun warmUpArticleController() {
         try {
-            articleController.getArticles(0L, null)
+            articleController.getArticles(0L, null, 20)
         } catch (e: Exception) {
             // nothing to do
         }
@@ -40,7 +40,7 @@ class WarmupRunner(
 
     private fun warmupCategoryController() {
         try {
-            categoryController.getCategories()
+            categoryController.getCategories(200)
         } catch (e: Exception) {
             // nothing to do
         }
