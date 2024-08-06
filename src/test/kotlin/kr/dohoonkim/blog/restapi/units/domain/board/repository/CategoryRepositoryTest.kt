@@ -1,9 +1,6 @@
 package kr.dohoonkim.blog.restapi.units.domain.board.repository
 
-import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.core.test.TestCase
-import io.kotest.core.test.TestResult
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
@@ -17,7 +14,6 @@ import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import kr.dohoonkim.blog.restapi.support.entity.createArticle
 import kr.dohoonkim.blog.restapi.support.entity.createCategory
 import kr.dohoonkim.blog.restapi.support.entity.createMember
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 
@@ -119,6 +115,7 @@ class CategoryRepositoryTest(
         }
 
         afterContainer {
+            categoryRepository.deleteAll()
         }
     }
 }

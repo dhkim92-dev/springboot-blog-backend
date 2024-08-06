@@ -31,7 +31,7 @@ class MemberRepositoryTest @Autowired constructor(
     init {
         extension(SpringExtension)
 
-        beforeContainer {
+        beforeSpec {
             memberRepository.deleteAll()
             val members = createMember(20)
             existEmail = members[0].email
@@ -145,7 +145,7 @@ class MemberRepositoryTest @Autowired constructor(
         }
 
 
-        afterEach {
+        afterSpec {
             clearAllMocks()
         }
     }
