@@ -1,13 +1,12 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
-import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginRequest
-import kr.dohoonkim.blog.restapi.interfaces.ArticleController
-import kr.dohoonkim.blog.restapi.interfaces.AuthenticationController
-import kr.dohoonkim.blog.restapi.interfaces.CategoryController
+import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.LoginRequest
+import kr.dohoonkim.blog.restapi.interfaces.board.ArticleController
+import kr.dohoonkim.blog.restapi.interfaces.authentication.AuthenticationController
+import kr.dohoonkim.blog.restapi.interfaces.board.CategoryController
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class WarmupRunner(
@@ -24,7 +23,7 @@ class WarmupRunner(
 
     private fun warmUpArticleController() {
         try {
-            articleController.getArticles(0L, null)
+            articleController.getArticles(0L, null, 20)
         } catch (e: Exception) {
             // nothing to do
         }
@@ -41,7 +40,7 @@ class WarmupRunner(
 
     private fun warmupCategoryController() {
         try {
-            categoryController.getCategories()
+            categoryController.getCategories(200)
         } catch (e: Exception) {
             // nothing to do
         }

@@ -8,7 +8,6 @@ plugins {
 	kotlin("jvm") version "1.8.21"
 	kotlin("plugin.spring") version "1.8.21"
 	kotlin("kapt") version "1.8.21"
-//	id("io.freefair.lombok") version "5.3.0"
 }
 
 allOpen {
@@ -33,16 +32,15 @@ repositories {
 
 dependencies {
 	// Spring boot
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.session:spring-session-data-redis")
-//	implementation("org.springframework.boot:spring-boot-starter-websocket")
 
 	// Utilities
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -65,13 +63,12 @@ dependencies {
 	kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
 	kapt("com.querydsl:querydsl-kotlin-codegen:5.0.0")
 	kapt("org.springframework.boot:spring-boot-configuration-processor")
-//	kapt ("jakarta.annotation:jakarta.annotation-api")
-//	kapt ("jakarta.persistence:jakarta.persistence-api")
-	// Database
-//	runtimeOnly("com.mysql:mysql-connector-j")
+
 	implementation("com.h2database:h2:2.1.214")
 	implementation("org.postgresql:postgresql:42.6.0")
 	testRuntimeOnly("org.springdoc:springdoc-openapi-kotlin:1.7.0")
+
+	testImplementation("com.google.jimfs:jimfs:1.2")
 	testImplementation("io.mockk:mockk:1.13.5")
 	testImplementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 	testImplementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.1.0")

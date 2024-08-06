@@ -474,11 +474,12 @@
 									"pm.test('Member create success', function () {",
 									"    var jsonData = pm.response.json()",
 									"    pm.response.to.have.status(201)",
-									"    pm.expect(jsonData.data).to.have.keys([\"id\", \"nickname\", \"email\", \"is_activated\"])",
+									"    pm.expect(jsonData.data).to.have.keys([\"id\", \"nickname\", \"email\", \"role\", \"is_activated\"])",
 									"})",
 									""
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						},
 						{
@@ -487,7 +488,8 @@
 								"exec": [
 									"pm.request.removeHeader('Authorization')"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -534,7 +536,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -547,7 +550,8 @@
 											"    pm.variables.set(\"new_article_id\", jsonData.data.id)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -564,13 +568,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/articles",
+									"raw": "{{host}}/api/v1/admin/articles",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"articles"
 									]
 								}
@@ -586,7 +591,8 @@
 										"exec": [
 											"// pm.request.url = pm.request.url + pm.variables.get(\"article_id\")"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -599,7 +605,8 @@
 											"    pm.expect(jsonData.data.title).to.equals(\"modified-article-title\")",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -616,13 +623,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"raw": "{{host}}/api/v1/admin/articles/{{article_id}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"articles",
 										"{{article_id}}"
 									]
@@ -639,7 +647,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -650,7 +659,8 @@
 											"    pm.response.to.have.status(204)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -658,13 +668,14 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"raw": "{{host}}/api/v1/admin/articles/{{article_id}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"articles",
 										"{{article_id}}"
 									]
@@ -718,7 +729,8 @@
 											"    pm.response.to.have.status(403)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -735,13 +747,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/articles",
+									"raw": "{{host}}/api/v1/admin/articles",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"articles"
 									]
 								}
@@ -757,7 +770,8 @@
 										"exec": [
 											"// pm.request.url = pm.request.url + pm.collectionVariables.get(\"article_id\")"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -768,7 +782,8 @@
 											"    pm.response.to.have.status(403)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -785,13 +800,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"raw": "{{host}}/api/v1/admin/articles/{{article_id}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"articles",
 										"{{article_id}}"
 									]
@@ -808,7 +824,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -819,7 +836,8 @@
 											"    pm.response.to.have.status(403)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -827,15 +845,16 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{host}}/api/v1/articles/{{article_id}}",
+									"raw": "{{host}}/api/v1/admin/articles/{{member_delete_article_target}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"articles",
-										"{{article_id}}"
+										"{{member_delete_article_target}}"
 									]
 								}
 							},
@@ -1017,7 +1036,8 @@
 											"    // pm.variables.set(\"new_category_id\", jsonData.data.id)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1044,13 +1064,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/article-categories",
+									"raw": "{{host}}/api/v1/admin/article-categories",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"article-categories"
 									]
 								}
@@ -1066,7 +1087,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -1079,7 +1101,8 @@
 											"    pm.expect(jsonData.data.name).to.equals(\"modified_new_ca\")",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1088,7 +1111,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"new_name\" : \"modified_new_ca\"\n}",
+									"raw": "{\n    \"name\" : \"modified_new_ca\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1096,13 +1119,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/article-categories/{{category_id}}/name",
+									"raw": "{{host}}/api/v1/admin/article-categories/{{category_id}}/name",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"article-categories",
 										"{{category_id}}",
 										"name"
@@ -1120,7 +1144,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -1131,7 +1156,8 @@
 											"    pm.response.to.have.status(204)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1139,13 +1165,14 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{host}}/api/v1/article-categories/{{category_id}}",
+									"raw": "{{host}}/api/v1/admin/article-categories/{{category_id}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"article-categories",
 										"{{category_id}}"
 									]
@@ -1199,7 +1226,8 @@
 											"    pm.response.to.have.status(403)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1216,13 +1244,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/article-categories",
+									"raw": "{{host}}/api/v1/admin/article-categories",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"article-categories"
 									]
 								}
@@ -1238,7 +1267,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -1249,7 +1279,8 @@
 											"    pm.response.to.have.status(403)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1258,7 +1289,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"new_name\" : \"failed_request\"\n}",
+									"raw": "{\n    \"name\" : \"failed_request\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1266,13 +1297,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{host}}/api/v1/article-categories/{{category_id}}",
+									"raw": "{{host}}/api/v1/admin/article-categories/{{category_id}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"article-categories",
 										"{{category_id}}"
 									]
@@ -1289,7 +1321,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								},
 								{
@@ -1300,7 +1333,8 @@
 											"    pm.response.to.have.status(403)",
 											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1308,15 +1342,16 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{host}}/api/v1/article-categories/{{category_id}}",
+									"raw": "{{host}}/api/v1/admin/article-categories/{{member_delete_category_target}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
 										"api",
 										"v1",
+										"admin",
 										"article-categories",
-										"{{category_id}}"
+										"{{member_delete_category_target}}"
 									]
 								}
 							},
@@ -1505,6 +1540,16 @@
 		{
 			"key": "admin_access_token",
 			"value": ""
+		},
+		{
+			"key": "member_delete_article_target",
+			"value": "ea76534a-cd38-47bf-b5a3-5fed7d60fa0c",
+			"type": "string"
+		},
+		{
+			"key": "member_delete_category_target",
+			"value": "3",
+			"type": "string"
 		}
 	]
 }

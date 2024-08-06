@@ -1,0 +1,166 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ResultCode</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.common.response</a>
+</div>
+
+<h1>Coverage Summary for Class: ResultCode (kr.dohoonkim.blog.restapi.common.response)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ResultCode</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (34/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.common.response
+&nbsp;
+&nbsp;import org.springframework.http.HttpStatus
+&nbsp;
+&nbsp;import org.springframework.http.HttpStatus.*
+&nbsp;
+&nbsp;/**
+&nbsp; * API 요청 성공 결과 응답 코드 목록
+&nbsp; * @property status HttpStatus
+&nbsp; * @property code Application Code
+&nbsp; * @property message 요청 처리 결과 메시지
+&nbsp; */
+<b class="fc">&nbsp;enum class ResultCode(</b>
+<b class="fc">&nbsp;    val status: HttpStatus,</b>
+<b class="fc">&nbsp;    val code: String,</b>
+<b class="fc">&nbsp;    val message: String</b>
+&nbsp;) {
+&nbsp;    // GLOBAL
+<b class="fc">&nbsp;    HEALTH_CHECK_SUCCESS(OK, &quot;G001&quot;, &quot;서버 인스턴스 상태를 체크하였습니다.&quot;),</b>
+&nbsp;
+&nbsp;    // MEMBER
+<b class="fc">&nbsp;    CREATE_MEMBER_SUCCESS(CREATED, &quot;M001&quot;, &quot;회원 가입 완료했습니다.&quot;),</b>
+<b class="fc">&nbsp;    GET_MEMBER_LIST_SUCCESS(OK, &quot;M002&quot;, &quot;회원 리스트를 조회하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    GET_MEMBER_INFO_SUCCESS(OK, &quot;M003&quot;, &quot;회원 정보를 조회하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    UPDATE_MEMBER_NICKNAME_SUCCESS(OK, &quot;M004&quot;, &quot;회원 닉네임을 변경하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    AVAILABLE_EMAIL(OK, &quot;M005&quot;, &quot;사용 가능한 이메일입니다.&quot;),</b>
+<b class="fc">&nbsp;    AVAILABLE_NICKNAME(OK, &quot;M006&quot;, &quot;사용 가능한 닉네임입니다.&quot;),</b>
+<b class="fc">&nbsp;    CHANGE_NICKNAME_SUCCESS(OK, &quot;M007&quot;, &quot;닉네임을 변경하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    CHANGE_PASSWORD_SUCCESS(OK, &quot;M008&quot;, &quot;비밀번호를 변경하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    CHANGE_EMAIL_SUCCESS(OK, &quot;M009&quot;, &quot;이메일을 변경하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    DELETE_MEMBER_SUCCESS(NO_CONTENT, &quot;M010&quot;, &quot;회원 정보를 삭제하였습니다.&quot;),</b>
+&nbsp;
+&nbsp;    // ARTICLE
+<b class="fc">&nbsp;    CREATE_ARTICLE_SUCCESS(CREATED, &quot;P001&quot;, &quot;게시물을 생성하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    MODIFY_ARTICLE_SUCCESS(OK, &quot;P002&quot;, &quot;게시물을 수정하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    DELETE_ARTICLE_SUCCESS(NO_CONTENT, &quot;P003&quot;, &quot;게시물을 삭제하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    GET_ARTICLE_SUCCESS(OK, &quot;P004&quot;, &quot;게시물을 조회하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    GET_ARTICLE_LIST_SUCCESS(OK, &quot;P005&quot;, &quot;게시물 목록을 조회하였습니다.&quot;),</b>
+&nbsp;
+&nbsp;    // COMMENT
+<b class="fc">&nbsp;    CREATE_COMMENT_SUCCESS(CREATED, &quot;R001&quot;, &quot;댓글을 생성하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    MODIFY_COMMENT_SUCCESS(OK, &quot;R002&quot;, &quot;댓글을 수정하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    DELETE_COMMENT_SUCCESS(NO_CONTENT, &quot;R003&quot;, &quot;댓글을 삭제하였습니다.&quot;),</b>
+&nbsp;
+&nbsp;    // CATEGORY
+<b class="fc">&nbsp;    CREATE_CATEGORY_SUCCESS(CREATED, &quot;AC01&quot;, &quot;신규 게시물 카테고리를 생성하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    MODIFY_CATEGORY_NAME_SUCCESS(OK, &quot;AC02&quot;, &quot;카테고리 이름을 수정하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    DELETE_CATEGORY_SUCCESS(NO_CONTENT, &quot;AC03&quot;, &quot;카테고리를 삭제하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    GET_CATEGORIES_SUCCESS(OK, &quot;AC04&quot;, &quot;카테고리 목록을 조회하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    GET_CATEGORY_DETAIL_SUCCESS(OK, &quot;AC05&quot;, &quot;카테고리 세부 정보를 조회하였습니다.&quot;),</b>
+&nbsp;
+&nbsp;    // ARTICLE_LIKE
+<b class="fc">&nbsp;    CREATE_ARTICLE_LIKE_SUCCESS(CREATED, &quot;AC01&quot;, &quot;신규 게시물 좋아요를 생성하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    DELETE_ARTICLE_LIKE_SUCCESS(NO_CONTENT, &quot;AC03&quot;, &quot;게시물 좋아요를 삭제하였습니다.&quot;),</b>
+&nbsp;
+&nbsp;    // AUTHENTICATION
+<b class="fc">&nbsp;    AUTHENTICATION_SUCCESS(CREATED, &quot;A001&quot;, &quot;회원 인증에 성공하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    REISSUE_TOKEN_SUCCESS(CREATED, &quot;A002&quot;, &quot;토큰을 재발급하였습니다.&quot;),</b>
+<b class="fc">&nbsp;    TEMPOLARY_LOGIN_SUCCESS(OK, &quot;A003&quot;, &quot;임시 코드로 로그인하였습니다.&quot;),</b>
+&nbsp;
+&nbsp;    // FILE UPLOAD
+<b class="fc">&nbsp;    IMAGE_UPLOAD_SUCCESS(CREATED, &quot;FI01&quot;, &quot;이미지를 업로드 했습니다.&quot;),</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

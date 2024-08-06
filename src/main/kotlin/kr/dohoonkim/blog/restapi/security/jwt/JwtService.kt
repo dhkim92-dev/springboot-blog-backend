@@ -7,11 +7,8 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import jakarta.servlet.http.HttpServletRequest
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ExpiredTokenException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.JwtInvalidException
-import kr.dohoonkim.blog.restapi.security.authentication.JwtAuthentication
-import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
+import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
 import org.slf4j.LoggerFactory
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -19,11 +16,9 @@ import java.util.*
 class JwtService(private val config: JwtConfig) {
 
     private val log = LoggerFactory.getLogger(JwtService::class.java)
-
     private val accessTokenVerifier = JWT.require(Algorithm.HMAC512(config.accessSecret))
         .withIssuer(config.issuer)
         .build()
-
     private val refreshTokenVerifier = JWT.require(Algorithm.HMAC512(config.refreshSecret))
         .withIssuer(config.issuer)
         .build()
@@ -56,7 +51,7 @@ class JwtService(private val config: JwtConfig) {
     }
 
     fun verifyAccessToken(token: String): DecodedJWT {
-        return this.accessTokenVerifier.verify(token);
+        return accessTokenVerifier.verify(token);
     }
 
     fun verifyRefreshToken(token: String): DecodedJWT {
@@ -64,17 +59,14 @@ class JwtService(private val config: JwtConfig) {
     }
 
     fun extractBearerTokenFromHeader(request: HttpServletRequest): String? {
-        var token: String? = request.getHeader(this.config.header)
+        var token: String = request.getHeader(this.config.header)
+            ?: return null
 
-        if (token == null) {
-            return null
+        return if (!token.startsWith(config.type, true)) {
+            null
+        } else {
+            token.substring(7);
         }
-
-        if (!token.startsWith(config.type, true)) {
-            return null
-        }
-
-        return token.substring(7);
     }
 
     /**
@@ -82,18 +74,10 @@ class JwtService(private val config: JwtConfig) {
      * @param token : String, JWT Access Token
      * @return [JwtAuthentication]
      */
-
     fun getAuthentication(token: String): JwtAuthentication {
         try {
             val jwt: DecodedJWT = this.verifyAccessToken(token)
-            val memberId: UUID = UUID.fromString(jwt.subject)
-            val email: String = jwt.getClaim("email").asString()
-            val nickname: String = jwt.getClaim("nickname").asString()
-            val roles: MutableCollection<out GrantedAuthority> = jwt.getClaim("roles").asArray(String::class.java)
-                .map { rolename -> SimpleGrantedAuthority(rolename) }
-                .toMutableList()
-            val isActivated = jwt.getClaim("isActivated").asBoolean()
-            return JwtAuthentication(memberId, email, nickname, roles, isActivated)
+            return JwtAuthentication.fromDecodedJwt(jwt)
         } catch (e: TokenExpiredException) {
             throw ExpiredTokenException()
         } catch (e: Exception) {

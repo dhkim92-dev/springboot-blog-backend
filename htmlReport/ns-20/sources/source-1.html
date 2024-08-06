@@ -1,0 +1,148 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > FileController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.interfaces.file</a>
+</div>
+
+<h1>Coverage Summary for Class: FileController (kr.dohoonkim.blog.restapi.interfaces.file)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FileController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.interfaces.file
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses
+&nbsp;import kr.dohoonkim.blog.restapi.application.file.FileUploadService
+&nbsp;import kr.dohoonkim.blog.restapi.application.file.dto.ImageUploadResponse
+&nbsp;import kr.dohoonkim.blog.restapi.common.response.ResultCode
+&nbsp;import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
+&nbsp;import org.slf4j.LoggerFactory
+&nbsp;import org.springframework.http.MediaType
+&nbsp;import org.springframework.web.bind.annotation.PutMapping
+&nbsp;import org.springframework.web.bind.annotation.RequestBody
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping
+&nbsp;import org.springframework.web.bind.annotation.RestController
+&nbsp;import org.springframework.web.multipart.MultipartFile
+&nbsp;
+<b class="nc">&nbsp;@RestController</b>
+&nbsp;@RequestMapping(&quot;/api&quot;)
+&nbsp;@ApiResponses(
+&nbsp;    value = [
+&nbsp;        ApiResponse(responseCode = &quot;401&quot;, description = &quot;J002 - 만료된 토큰&quot;),
+&nbsp;        ApiResponse(responseCode = &quot;403&quot;, description = &quot;G003 - 권한 업음&quot;),
+&nbsp;        ApiResponse(responseCode = &quot;409&quot;, description = &quot;G004 - 지원하지 않는 이미지 타입&quot;)
+&nbsp;    ]
+&nbsp;)
+<b class="nc">&nbsp;class FileController(private val fileUploadService: FileUploadService) {</b>
+<b class="nc">&nbsp;    private val log = LoggerFactory.getLogger(javaClass)</b>
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Image upload&quot;, description = &quot;Upload Image file&quot;)
+&nbsp;    @ApiResponses(
+&nbsp;        value = [
+&nbsp;            ApiResponse(responseCode = &quot;201&quot;, description = &quot;FI01 - 이미지 업로드 성공&quot;),
+&nbsp;        ]
+&nbsp;    )
+&nbsp;    @PutMapping(
+&nbsp;        &quot;v1/files/images&quot;,
+&nbsp;        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
+&nbsp;        produces = [MediaType.APPLICATION_JSON_VALUE]
+&nbsp;    )
+&nbsp;    @ApplicationCode(ResultCode.IMAGE_UPLOAD_SUCCESS)
+&nbsp;    fun uploadImage(@RequestBody(required = true) file: MultipartFile): ImageUploadResponse {
+<b class="nc">&nbsp;        return ImageUploadResponse(fileUploadService.createImage(file))</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

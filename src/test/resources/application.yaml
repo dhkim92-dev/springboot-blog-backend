@@ -1,0 +1,94 @@
+
+spring:
+  h2:
+    console:
+      enabled: true # /h2-console 설정
+  cache:
+    type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;
+    username: admin
+    password: admin
+  sql:
+    init:
+      mode: never
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test
+            client-secret: test
+            authorization-grant-type: authorization_code
+            scope: profile,email
+            redirect-uri: http://test.com
+          github:
+            client-id: test
+            client-secret: test
+            scope: profile
+            redirect-uri: http://test
+            authorization-grant-type: authorization_code
+jwt :
+  issuer: http://localhost:8080
+  type: Bearer
+  header: Authorization
+  audience: http://localhost:3000
+  access-token:
+    secret: test-access-token-secret
+    expiry: 180000
+  refresh-token:
+    secret: test-refresh-token-secret
+    expiry: 18000000
+
+oauth2:
+  redirect-uri:
+    on-success: http://localhost:3000/sign-in/oauth2/callback
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
+    path : /api-docs
+  version: 'v3'
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  model-and-view-allowed: true
+  disable-swagger-default-url: true
+  display-query-params-without-oauth2: true
+
+server:
+  port: 8080
+  domain: "localhost"
+  protocol: "http"
+  media:
+    host: 'http://localhost/media'
+    storagePath: '/Users/terrapin/.volumes/media'
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  encoding:
+    charset: UTF-8
+    force-response: true
+    force-request: true
+cors:
+  host: "http://localhost:8080"
+  frontend: "http://localhost:3000"
+
+logging:
+  level:
+    root: debug

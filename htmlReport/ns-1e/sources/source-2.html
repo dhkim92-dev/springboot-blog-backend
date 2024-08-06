@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CategoryController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">kr.dohoonkim.blog.restapi.interfaces.board</a>
+</div>
+
+<h1>Coverage Summary for Class: CategoryController (kr.dohoonkim.blog.restapi.interfaces.board)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CategoryController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package kr.dohoonkim.blog.restapi.interfaces.board
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation
+&nbsp;import io.swagger.v3.oas.annotations.media.Content
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses
+&nbsp;import io.swagger.v3.oas.annotations.tags.Tag
+&nbsp;import jakarta.validation.Valid
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.CategoryService
+&nbsp;import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
+&nbsp;import kr.dohoonkim.blog.restapi.common.response.CursorList
+&nbsp;import kr.dohoonkim.blog.restapi.common.response.ResultCode
+&nbsp;import kr.dohoonkim.blog.restapi.application.board.dto.*
+&nbsp;import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
+&nbsp;import kr.dohoonkim.blog.restapi.common.response.pagination.CursorPagination
+&nbsp;import kr.dohoonkim.blog.restapi.interfaces.board.dto.ModifyCategoryRequest
+&nbsp;import kr.dohoonkim.blog.restapi.interfaces.board.dto.PostedCategory
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping
+&nbsp;import org.springframework.web.bind.annotation.GetMapping
+&nbsp;import org.springframework.web.bind.annotation.PatchMapping
+&nbsp;import org.springframework.web.bind.annotation.PathVariable
+&nbsp;import org.springframework.web.bind.annotation.PostMapping
+&nbsp;import org.springframework.web.bind.annotation.RequestBody
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping
+&nbsp;import org.springframework.web.bind.annotation.RequestParam
+&nbsp;import org.springframework.web.bind.annotation.RestController
+&nbsp;
+&nbsp;/**
+&nbsp; * 카테고리 API 컨트롤러
+&nbsp; * @author dhkim92.dev@gmail.com
+&nbsp; * @since 2023.08.10
+&nbsp; */
+<b class="nc">&nbsp;@RestController</b>
+&nbsp;@ApiResponses(
+&nbsp;    value = [
+&nbsp;        ApiResponse(
+&nbsp;            responseCode = &quot;401&quot;, description = &quot;G002 - 사용자 인증 실패&quot;,
+&nbsp;            content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+&nbsp;        ),
+&nbsp;        ApiResponse(
+&nbsp;            responseCode = &quot;403&quot;, description = &quot;G003 - 이용 권한 없음&quot;,
+&nbsp;            content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+&nbsp;        )
+&nbsp;    ]
+&nbsp;)
+&nbsp;@RequestMapping(&quot;api/&quot;)
+&nbsp;@Tag(name=&quot;게시물 카테고리 API&quot;)
+&nbsp;class CategoryController(
+<b class="nc">&nbsp;    private val categoryService: CategoryService</b>
+&nbsp;) {
+&nbsp;
+&nbsp;    @Operation(summary = &quot;카테고리 추가&quot;, description = &quot;게시글 카테고리를 추가합니다.&quot;)
+&nbsp;    @ApiResponses(
+&nbsp;        value = [
+&nbsp;            ApiResponse(responseCode = &quot;201&quot;, description = &quot;AC01 - 게시글 카테고리 추가 성공&quot;),
+&nbsp;            ApiResponse(
+&nbsp;                responseCode = &quot;409&quot;, description = &quot;AC02 - 이미 존재하는 카테고리 이름입니다.&quot;,
+&nbsp;                content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+&nbsp;            )
+&nbsp;        ]
+&nbsp;    )
+&nbsp;    @PostMapping(&quot;v1/admin/article-categories&quot;)
+&nbsp;    @ApplicationCode(ResultCode.CREATE_CATEGORY_SUCCESS)
+&nbsp;    fun createCategory(@RequestBody @Valid request: CategoryCreateCommand): PostedCategory {
+<b class="nc">&nbsp;        return PostedCategory.valueOf(categoryService.createCategory(CategoryCreateCommand(name=request.name)))</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;카테고리 목록 조회&quot;, description = &quot;전체 게시글 카테고리를 조회합니다.&quot;)
+&nbsp;    @ApiResponses(
+&nbsp;        value = [
+&nbsp;            ApiResponse(responseCode = &quot;200&quot;, description = &quot;AC04 - 카테고리 목록을 조회하였습니다.&quot;),
+&nbsp;        ]
+&nbsp;    )
+&nbsp;    @GetMapping(&quot;v1/article-categories&quot;)
+&nbsp;    @ApplicationCode(ResultCode.GET_CATEGORIES_SUCCESS)
+&nbsp;    @CursorPagination
+&nbsp;    fun getCategories(@RequestParam(required = false, defaultValue = &quot;200&quot;) size: Int): List&lt;PostedCategory&gt; {
+<b class="nc">&nbsp;        val categories = categoryService.getCategories()</b>
+<b class="nc">&nbsp;            .map { it -&gt; PostedCategory.valueOf(it) }</b>
+<b class="nc">&nbsp;        return categories</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;카테고리명 수정&quot;, description = &quot;카테고리 이름을 수정합니다.&quot;)
+&nbsp;    @ApiResponses(
+&nbsp;        value = [
+&nbsp;            ApiResponse(responseCode = &quot;200&quot;, description = &quot;카테고리명 수정 성공&quot;),
+&nbsp;            ApiResponse(
+&nbsp;                responseCode = &quot;404&quot;, description = &quot;AC02 - 카테고리 이름을 수정하였습니다.&quot;,
+&nbsp;                content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+&nbsp;            )
+&nbsp;        ]
+&nbsp;    )
+&nbsp;    @PatchMapping(&quot;v1/admin/article-categories/{categoryId}/name&quot;)
+&nbsp;    @ApplicationCode(ResultCode.MODIFY_CATEGORY_NAME_SUCCESS)
+&nbsp;    fun updateName(
+&nbsp;        @PathVariable categoryId: Long,
+&nbsp;        @RequestBody @Valid request: ModifyCategoryRequest
+&nbsp;    ): PostedCategory {
+<b class="nc">&nbsp;        return PostedCategory.valueOf(</b>
+<b class="nc">&nbsp;            categoryService.modifyCategoryName(CategoryModifyCommand(id = categoryId, newName = request.name))</b>
+&nbsp;        )
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;카테고리명 삭제&quot;, description = &quot;카테고리를 삭제합니다&quot;)
+&nbsp;    @ApiResponses(
+&nbsp;        value = [
+&nbsp;            ApiResponse(responseCode = &quot;204&quot;, description = &quot;카테고리 삭제&quot;),
+&nbsp;        ]
+&nbsp;    )
+&nbsp;    @DeleteMapping(&quot;v1/admin/article-categories/{categoryId}&quot;)
+&nbsp;    @ApplicationCode(ResultCode.DELETE_CATEGORY_SUCCESS)
+&nbsp;    fun delete(@PathVariable categoryId: Long) {
+<b class="nc">&nbsp;        categoryService.deleteCategory(categoryId)</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-08-05 04:27</div>
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 package kr.dohoonkim.blog.restapi.application.authentication.oauth2
 
-import kr.dohoonkim.blog.restapi.application.authentication.dto.MemberProfile
+import kr.dohoonkim.blog.restapi.application.authentication.vo.MemberProfile
 
 interface MemberProfileFactory {
 

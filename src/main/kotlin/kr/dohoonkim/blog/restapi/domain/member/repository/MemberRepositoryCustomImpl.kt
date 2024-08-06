@@ -1,8 +1,8 @@
 package kr.dohoonkim.blog.restapi.domain.member.repository
 
 import com.querydsl.jpa.impl.JPAQueryFactory
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode.MEMBER_NOT_FOUND
-import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.*
+import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.QMember.Companion.member
 import java.util.*
@@ -15,7 +15,7 @@ class MemberRepositoryCustomImpl(private val queryFactory : JPAQueryFactory
             .selectFrom(member)
             .where(member.id.eq(memberId))
             .fetchOne()
-            ?: throw EntityNotFoundException(MEMBER_NOT_FOUND)
+            ?: throw NotFoundException(MEMBER_NOT_FOUND)
     }
 
     override fun existsByNickname(nickname: String): Boolean {

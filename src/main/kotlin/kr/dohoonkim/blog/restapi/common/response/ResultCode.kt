@@ -4,6 +4,12 @@ import org.springframework.http.HttpStatus
 
 import org.springframework.http.HttpStatus.*
 
+/**
+ * API 요청 성공 결과 응답 코드 목록
+ * @property status HttpStatus
+ * @property code Application Code
+ * @property message 요청 처리 결과 메시지
+ */
 enum class ResultCode(
     val status: HttpStatus,
     val code: String,

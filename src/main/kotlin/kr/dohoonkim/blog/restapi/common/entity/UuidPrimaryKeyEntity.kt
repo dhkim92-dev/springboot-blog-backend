@@ -21,7 +21,6 @@ abstract class UuidPrimaryKeyEntity {
     @LastModifiedDate
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime = LocalDateTime.now()
-        protected set;
 
     @PreUpdate
     fun updateLastModifiedDate() {

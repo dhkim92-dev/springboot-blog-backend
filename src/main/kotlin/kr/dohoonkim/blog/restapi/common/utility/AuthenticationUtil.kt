@@ -1,36 +1,37 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
-import kr.dohoonkim.blog.restapi.application.authentication.dto.JwtClaims
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode.*
+import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.*
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
-import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.Role
-import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.util.*
 
+/**
+ * 인증 정보 추출 및 권한 체크 등의 책임을 갖는 클래스
+ */
 @Component
-class AuthenticationUtil(private val memberRepository: MemberRepository) {
+class AuthenticationUtil {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun extractAuthenticationMember(): Member {
-        val authentication = SecurityContextHolder.getContext().authentication
-        val claims = authentication.principal as JwtClaims
-
-        return this.memberRepository.findByMemberId(claims.id)
-    }
-
+    /**
+     * 사용자 인증 정보가 존재하는 경우 사용자 id 반환
+     */
     fun extractMemberId(): UUID {
         val authentication = SecurityContextHolder.getContext().authentication
         val claims = authentication.principal as JwtClaims
 
-        return if (claims.isActivated) claims.id else throw UnauthorizedException(NOT_VERIFIED_EMAIL)
+        return if (claims.isActivated) claims.id
+        else throw UnauthorizedException(NOT_VERIFIED_EMAIL)
     }
 
+    /**
+     *
+     */
     fun checkResourceOwner(memberId: UUID, resourceOwnerId: UUID): Boolean {
         return resourceOwnerId == memberId
     }

@@ -1,42 +1,47 @@
 package kr.dohoonkim.blog.restapi.application.board.impl
 
 import kr.dohoonkim.blog.restapi.application.board.CategoryService
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode
+import kr.dohoonkim.blog.restapi.application.board.dto.CategoryCreateCommand
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ConflictException
-import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
-import kr.dohoonkim.blog.restapi.common.response.CursorList
-import kr.dohoonkim.blog.restapi.domain.article.repository.CategoryRepository
-import kr.dohoonkim.blog.restapi.application.board.dto.CategoryCreateDto
+import kr.dohoonkim.blog.restapi.domain.board.repository.CategoryRepository
 import kr.dohoonkim.blog.restapi.application.board.dto.CategoryDto
-import kr.dohoonkim.blog.restapi.application.board.dto.CategoryModifyDto
+import kr.dohoonkim.blog.restapi.application.board.dto.CategoryModifyCommand
 import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLES_CACHE_KEY
 import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.ARTICLE_CACHE_KEY
 import kr.dohoonkim.blog.restapi.common.constants.CacheKey.Companion.CATEGORIES_CACHE_KEY
-import kr.dohoonkim.blog.restapi.domain.article.Category
+import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
+import kr.dohoonkim.blog.restapi.domain.board.Category
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.cache.annotation.Caching
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+/**
+ * CategoryService 구현체
+ * @author dhkim92.dev@gmail.com
+ * @since 2023.08.10
+ */
 @Service
 @Transactional(readOnly = true)
 class CategoryServiceImpl(
     private val categoryRepository: CategoryRepository
 ) : CategoryService {
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Transactional
     @CacheEvict(CATEGORIES_CACHE_KEY, allEntries = true)
-    override fun createCategory(dto: CategoryCreateDto): CategoryDto {
-        if (this.categoryRepository.existsByName(dto.name)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_CATEGORY)
+    override fun createCategory(request: CategoryCreateCommand): CategoryDto {
+        if (categoryRepository.existsByName(request.name)) {
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_CATEGORY)
         }
 
-        val category = Category(name = dto.name)
-        return CategoryDto.fromEntity(this.categoryRepository.save(category))
+        val category = Category(name = request.name)
+        return CategoryDto.fromEntity(categoryRepository.save(category))
     }
 
     @Transactional
@@ -53,15 +58,15 @@ class CategoryServiceImpl(
             CacheEvict(ARTICLES_CACHE_KEY, allEntries = true)
         ]
     )
-    override fun modifyCategoryName(dto: CategoryModifyDto): CategoryDto {
-        val category = categoryRepository.findById(dto.id)
-            .orElseThrow { throw EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND) }
+    override fun modifyCategoryName(request: CategoryModifyCommand): CategoryDto {
+        val category = categoryRepository.findByIdOrNull(request.id)
+            ?: throw NotFoundException(ErrorCodes.CATEGORY_NOT_FOUND)
 
-        if (categoryRepository.existsByName(dto.newName)) {
-            throw ConflictException(ErrorCode.ALREADY_EXIST_CATEGORY)
+        if (categoryRepository.existsByName(request.newName)) {
+            throw ConflictException(ErrorCodes.ALREADY_EXIST_CATEGORY)
         }
 
-        category.changeName(dto.newName)
+        category.changeName(request.newName)
 
         return CategoryDto.fromEntity(categoryRepository.save(category))
     }

@@ -9,7 +9,6 @@ data class MemberDto(
     val id: UUID,
     val nickname: String,
     val email: String,
-    @JsonIgnore
     val role: String,
     @JsonProperty("is_activated")
     val isActivated: Boolean

@@ -6,6 +6,9 @@ import java.awt.image.BufferedImage
 import java.io.InputStream
 import javax.imageio.ImageIO
 
+/**
+ * Image 크기 변환 클래스
+ */
 @Component
 class ImageResizer {
 

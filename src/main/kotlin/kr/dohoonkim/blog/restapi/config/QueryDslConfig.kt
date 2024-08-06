@@ -16,5 +16,4 @@ class QueryDslConfig(@PersistenceContext val em: EntityManager) {
     fun jpaQueryFactory(): JPAQueryFactory {
         return JPAQueryFactory(em)
     }
-
 }

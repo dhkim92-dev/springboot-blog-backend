@@ -1,14 +1,15 @@
 package kr.dohoonkim.blog.restapi.application.authentication.oauth2
 
-import kr.dohoonkim.blog.restapi.application.authentication.dto.MemberProfile
+import kr.dohoonkim.blog.restapi.application.authentication.vo.MemberProfile
 import kr.dohoonkim.blog.restapi.application.authentication.exceptions.NotSupportedOAuth2ProviderException
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode.MEMBER_NOT_FOUND
-import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.MEMBER_NOT_FOUND
+import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService
@@ -18,23 +19,21 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
-class CustomOAuth2UserService(private val memberRepository: MemberRepository) :
-    OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+class CustomOAuth2UserService(
+    private val memberRepository: MemberRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val delegate: DefaultOAuth2UserService
+)
+: OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-    init {
-        logger.debug("CustomOAUth2UserService created")
-    }
-
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
-        val delegate = DefaultOAuth2UserService()
         val oAuth2User = delegate.loadUser(userRequest)
         val attributes = oAuth2User.attributes
         val provider = userRequest.clientRegistration.registrationId
         val factory = createMemberProfileFactory(provider)
         val memberProfile = factory.build(attributes);
-
         checkMemberProfile(memberProfile)
 
         return memberProfile
@@ -46,10 +45,11 @@ class CustomOAuth2UserService(private val memberRepository: MemberRepository) :
             val newMember = registerMember(memberProfile)
             memberProfile.nickname = newMember.nickname
         } else {
-            val existsMember = memberRepository.findByEmail(memberProfile.email)
-                ?: throw EntityNotFoundException(MEMBER_NOT_FOUND)
-            memberProfile.customAuthorities = mutableListOf(SimpleGrantedAuthority(existsMember.role.name))
-            memberProfile.nickname = existsMember.nickname;
+            memberRepository.findByEmail(memberProfile.email)?.
+            let {
+                memberProfile.customAuthorities = mutableListOf(SimpleGrantedAuthority(it.role.rolename))
+                memberProfile.nickname = it.nickname;
+            }
         }
     }
 
@@ -66,7 +66,7 @@ class CustomOAuth2UserService(private val memberRepository: MemberRepository) :
             Member(
                 nickname = nickname,
                 email = email,
-                password = UUID.randomUUID().toString(),
+                password = passwordEncoder.encode(UUID.randomUUID().toString()),
                 isActivated = true,
             )
         )
@@ -75,11 +75,10 @@ class CustomOAuth2UserService(private val memberRepository: MemberRepository) :
     }
 
     private fun createMemberProfileFactory(provider: String): MemberProfileFactory {
-        when (provider.lowercase()) {
-            "google" -> return GoogleMemberProfileFactory();
-            "github" -> return GithubMemberProfileFactory();
+        return when (provider.lowercase()) {
+//            "google" -> GoogleMemberProfileFactory();
+            "github" -> GithubMemberProfileFactory();
+            else -> throw NotSupportedOAuth2ProviderException()
         }
-
-        throw NotSupportedOAuth2ProviderException()
     }
 }

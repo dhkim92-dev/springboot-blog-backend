@@ -2,227 +2,221 @@ package kr.dohoonkim.blog.restapi.units.application.board
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.matchers.comparables.shouldBeLessThanOrEqualTo
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import kr.dohoonkim.blog.restapi.application.board.ArticleService
-import kr.dohoonkim.blog.restapi.application.board.dto.ArticleCreateDto
+import kr.dohoonkim.blog.restapi.application.board.dto.ArticleCreateCommand
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleDto
-import kr.dohoonkim.blog.restapi.application.board.dto.ArticleModifyDto
+import kr.dohoonkim.blog.restapi.application.board.dto.ArticleModifyCommand
 import kr.dohoonkim.blog.restapi.application.board.dto.ArticleSummaryDto
 import kr.dohoonkim.blog.restapi.application.board.impl.ArticleServiceImpl
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode.ARTICLE_NOT_FOUND
-import kr.dohoonkim.blog.restapi.common.error.ErrorCode.RESOURCE_OWNERSHIP_VIOLATION
-import kr.dohoonkim.blog.restapi.common.error.exceptions.EntityNotFoundException
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.*
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
-import kr.dohoonkim.blog.restapi.common.utility.AuthenticationUtil
-import kr.dohoonkim.blog.restapi.domain.article.Category
-import kr.dohoonkim.blog.restapi.domain.article.repository.ArticleRepository
-import kr.dohoonkim.blog.restapi.domain.article.repository.CategoryRepository
-import kr.dohoonkim.blog.restapi.domain.member.Role
-import kr.dohoonkim.blog.restapi.support.entity.createArticle
+import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
+import kr.dohoonkim.blog.restapi.domain.board.Article
+import kr.dohoonkim.blog.restapi.domain.board.repository.ArticleRepository
+import kr.dohoonkim.blog.restapi.domain.board.repository.CategoryRepository
+import kr.dohoonkim.blog.restapi.support.entity.createArticles
 import kr.dohoonkim.blog.restapi.support.entity.createCategory
 import kr.dohoonkim.blog.restapi.support.entity.createMember
+import org.springframework.data.repository.findByIdOrNull
 import java.util.*
 
-class ArticleServiceTest : BehaviorSpec({
+internal class ArticleServiceTest: BehaviorSpec({
 
     val articleRepository = mockk<ArticleRepository>()
     val categoryRepository = mockk<CategoryRepository>()
-    val authenticationUtils = mockk<AuthenticationUtil>()
-    val articleService: ArticleService = ArticleServiceImpl(articleRepository, categoryRepository, authenticationUtils)
-    val admin = createMember(role = Role.ADMIN)
-    val category = createCategory()
-    val article = createArticle(admin, category)
-    val articleCreateDto =
-        ArticleCreateDto(title = article.title, contents = article.contents, category = category.name)
-    val articleModifyDto = ArticleModifyDto(
-        articleId = article.id,
-        title = "modified-title",
-        contents = "modified-contents",
-        category = "modified-category-name"
-    )
+    val articleService = ArticleServiceImpl(articleRepository, categoryRepository)
+    val member = createMember(1).first()
+    val categories = createCategory(2)
+    val articles = createArticles(member, categories[0], 10)
+        .plus(createArticles(member, categories[1], 10))
 
-    Given("게시물 목록을 조회한다.") {
-        val category2 = createCategory()
-        var articleList: MutableList<ArticleSummaryDto> = mutableListOf()
-
-        for (i in 0..20) {
-            articleList.add(ArticleSummaryDto.fromEntity(createArticle(admin, category)))
-            articleList.add(ArticleSummaryDto.fromEntity(createArticle(admin, category2)))
-            Thread.sleep(50)
-        }
-
-
-        When("카테고리 목록이 주어졌을 때") {
-            every { articleRepository.findArticles(category.id, any(), any()) } returns articleList.filter {
-                it.category.name == category.name
-            }
-
-            Then("해당 카테고리의 게시글 목록만 반환된다.") {
-                val ret = articleService.getListOfArticles(category.id, null, 20)
-
-                ret.size shouldBe 21
-                ret.forEach {
-                    it.category.name shouldBe category.name
-                }
-            }
-        }
-
-        When("카테고리 목록이 주어지지 않을 때") {
-            every { articleRepository.findArticles(any(), any(), any()) } returns articleList.subList(0, 20)
-
-            Then("전체 카테고리에 대해 조회된다.") {
-                val ret = articleService.getListOfArticles(0L, null, 20)
-
-                ret.size shouldBe 20
-                ret[0].category.name shouldBe category.name
-                ret[1].category.name shouldBe category2.name
-            }
-        }
-
-        When("커서가 주어지면") {
-            articleList.sortBy { it.createdAt }
-            articleList.reverse()
-            val cursor = articleList[4].createdAt
-
-            every { articleRepository.findArticles(any(), any(), any()) } returns articleList.filter {
-                it.createdAt <= cursor
-            }
-
-            Then("커서 이전의 값들이 반환된다.") {
-                val ret = articleService.getListOfArticles(0L, cursor, 20)
-
-                ret.forEach {
-                    it.createdAt shouldBeLessThanOrEqualTo cursor
-                }
-            }
-        }
+    beforeSpec {
 
     }
 
-    Given("게시물을 조회한다.") {
+    fun checkEqual(dto: ArticleDto, article: Article) {
+        dto.id shouldBe article.id
+        dto.title shouldBe article.title
+        dto.contents shouldBe article.contents
+        dto.category.id shouldBe article.category.id
+        dto.viewCount shouldBe article.viewCount
+        dto.author.id shouldBe article.author.id
+    }
+
+    fun checkEqual(dto: ArticleSummaryDto, article: Article) {
+        dto.id shouldBe article.id
+        dto.title shouldBe article.title
+        dto.category.id shouldBe article.category.id
+        dto.viewCount shouldBe article.viewCount
+        dto.author.id shouldBe article.author.id
+    }
+
+    Given("게시물 생성 커맨드가 주어진다") {
+        val command = ArticleCreateCommand(articles[0].title, articles[0].contents, articles[0].category.name)
+
+        When("존재하지 않는 카테고리에 대해 게시물을 생성하면") {
+            every { categoryRepository.findByName(any()) } returns null
+            Then("NotFoundException이 발생한다") {
+                shouldThrow<NotFoundException> {
+                    articleService.createArticle(member.id, command)
+                }.message shouldBe CATEGORY_NOT_FOUND.message
+            }
+        }
+
+        When("존재하는 카테고리에 게시물을 생성하면") {
+            every { categoryRepository.findByName(any()) } returns articles[0].category
+            every { articleRepository.save(any()) } returns articles[0]
+            val result = articleService.createArticle(member.id, command)
+            Then("생성된다"){
+                checkEqual(result, articles[0])
+            }
+        }
+    }
+
+    Given("아무것도 수정하지 않는 수정 커맨드가 주어진다") {
+        val command = ArticleModifyCommand(
+            title= null,
+            contents = null,
+            category = null
+        )
+
+        When("게시글을 수정하면") {
+            every { articleRepository.findByIdOrNull(any()) } returns articles[0]
+            every { articleRepository.save(any()) } returns articles[0]
+            val originTitle = articles[0].title
+            val originContents= articles[0].contents
+            val originCategory = articles[0].category
+
+            Then("수정되지 않는다") {
+                val result = articleService.modifyArticle(member.id,articles[0].id, command)
+                result.title shouldBe originTitle
+                result.contents shouldBe originContents
+                result.category.id shouldBe originCategory.id
+            }
+        }
+    }
+
+    Given("게시물 수정 커맨드가 주어진다") {
+        val command = ArticleModifyCommand(
+            title="new title",
+            contents = null,
+            category = categories[1].name
+        )
+        val target = articles[1]
+
+        When("게시글을 찾을 수 없으면") {
+            every { articleRepository.findByIdOrNull(any()) } returns null
+            Then("NotFoundException이 발생한다"){
+                shouldThrow<NotFoundException> {
+                    articleService.modifyArticle(member.id, target.id, command)
+                }.message shouldBe ARTICLE_NOT_FOUND.message
+            }
+        }
+
+        When("요청 사용자와 작성자의 ID가 일치하지 않으면") {
+            every { articleRepository.findByIdOrNull(any()) } returns target
+            Then("ForbiddenException이 발생한다") {
+                shouldThrow<ForbiddenException> {
+                    articleService.modifyArticle(UUID.randomUUID(), target.id, command)
+                }.message shouldBe RESOURCE_OWNERSHIP_VIOLATION.message
+            }
+        }
+
+        When("존재하지 않는 카테고리로 변경하려 하면") {
+            every { articleRepository.findByIdOrNull(any()) } returns target
+            every { categoryRepository.findByName(any()) } returns null
+            Then("NotFoundException이 발생한다") {
+                shouldThrow<NotFoundException> {
+                    articleService.modifyArticle(member.id, target.id, command)
+                }.message shouldBe CATEGORY_NOT_FOUND.message
+            }
+        }
+
+        When("필드가 모두 정상이면") {
+            every { articleRepository.findByIdOrNull(any()) } returns target
+            every { categoryRepository.findByName(any()) } returns categories[1]
+            every { articleRepository.save(any()) } returns target
+
+            Then("정상적으로 수정된다") {
+                val dto = articleService.modifyArticle(member.id, target.id, command)
+                checkEqual(dto, target)
+                target.title shouldBe command.title
+                target.category.id shouldBe categories[1].id
+            }
+        }
+    }
+
+    Given("삭제하려는 게시물 아이디가 주어진다") {
+        val target = articles[2]
+
+        When("게시글이 존재하지 않으면") {
+            every {articleRepository.findByIdOrNull(any()) } returns null
+
+            Then("NotFoundException이 발생한다") {
+                shouldThrow<NotFoundException> {
+                    articleService.deleteArticle(member.id, UUID.randomUUID())
+                }.message shouldBe ARTICLE_NOT_FOUND.message
+            }
+        }
+
+        When("삭제 요청 사용자와 게시글 사용자의 ID가 일치하지 않으면") {
+            every { articleRepository.findByIdOrNull(any()) } returns target
+
+            Then("Forbidden Exception이 발생한다") {
+                shouldThrow<ForbiddenException> {
+                    articleService.deleteArticle(UUID.randomUUID(), target.id)
+                }.message shouldBe RESOURCE_OWNERSHIP_VIOLATION.message
+            }
+        }
+
+        When("정상 요청이라면") {
+            every { articleRepository.findByIdOrNull(any()) } returns target
+            every { articleRepository.deleteById(any()) } returns Unit
+            Then("삭제된다") {
+                articleService.deleteArticle(member.id, target.id)
+            }
+        }
+    }
+
+    Given("조회하려는 게시물 ID가 주어진다") {
+        When("존재하지 않는 게시물이면") {
+            every { articleRepository.findByArticleId(any()) } throws NotFoundException(ARTICLE_NOT_FOUND)
+            Then("NotFoundException이 발생한다") {
+                shouldThrow<NotFoundException> {
+                    articleService.getArticle(articles[0].id)
+                }.message shouldBe ARTICLE_NOT_FOUND.message
+            }
+        }
+
         When("게시물이 존재하면") {
-            every { articleRepository.findByArticleId(any()) } returns ArticleDto.fromEntity(article)
-
-            Then("게시글이 조회된다.") {
-                val ret = articleService.getArticle(article.id)
-
-                ret.id shouldBe article.id
-                ret.author.id shouldBe article.author.id
-                ret.category.name shouldBe article.category.name
-                ret.title shouldBe article.title
-                ret.contents shouldBe article.contents
+            every { articleRepository.findByArticleId(any()) } returns ArticleDto.fromEntity(articles[0])
+            Then("ArticleDto 객체가 반환된다") {
+                val result = articleService.getArticle(articles[0].id)
+                checkEqual(result, articles[0])
             }
         }
+    }
 
-        When("게시물이 존재하지 않으면") {
-            every { articleRepository.findByArticleId(any()) } throws EntityNotFoundException(ARTICLE_NOT_FOUND)
+    Given("카테고리 ID이 주어진다") {
+        val id = categories[0].id
 
-            Then("에러가 발생한다.") {
-                shouldThrow<EntityNotFoundException> {
-                    articleService.getArticle(article.id)
+        When("게시물 목록을 조회하면") {
+            every { articleRepository.findArticles(id, null, any()) } returns articles.subList(0, 5)
+                .map { it -> ArticleSummaryDto.fromEntity(it) }
+
+            Then("해당 카테고리 게시글 ArticleSummaryDto 리스트가 반환된다") {
+                val result = articleService.getListOfArticles(id, null,5 )
+                result.forEachIndexed { index, value ->
+                    checkEqual(value, articles[index])
                 }
             }
         }
     }
 
-    Given("사용자 인증 정보가 있다.") {
-//        every{ authenticationUtils.extractMemberId() } returns admin.id
-//        every{ authenticationUtils.extractAuthenticationMember() } returns admin
-        every { authenticationUtils.checkPermission(admin.id, admin.id) } returns Unit
-
-        When("존재하는 카테고리에 게시글을 작성하면") {
-            every { articleRepository.save(any()) } returns article
-            every { categoryRepository.findByName(any()) } returns category
-
-            Then("게시글 작성이 성공한다.") {
-                val newArticle = articleService.createArticle(admin.id, articleCreateDto)
-
-                newArticle.id shouldBe article.id
-                newArticle.title shouldBe article.title
-                newArticle.contents shouldBe article.contents
-                newArticle.author.id shouldBe admin.id
-                newArticle.category.name shouldBe category.name
-            }
-        }
-
-        When("존재하지 않는 카테고리에 게시글을 작성하면") {
-            every { articleRepository.save(any()) } returns article
-            every { categoryRepository.findByName(any()) } throws EntityNotFoundException(ErrorCode.CATEGORY_NOT_FOUND)
-            val dto = ArticleCreateDto(title = article.title, contents = article.contents, category = category.name)
-
-            Then("에러가 발생한다.") {
-                shouldThrow<EntityNotFoundException> {
-                    articleService.createArticle(admin.id, dto)
-                }
-            }
-        }
-
-        When("정상 수정 정보로 자신의 글을 수정하면") {
-            val newCategory = Category(name = articleModifyDto.category)
-            every { articleRepository.save(any()) } returns article
-            every { categoryRepository.findByName(any()) } returns newCategory
-            every { categoryRepository.existsByName(any()) } returns true
-            every { articleRepository.findById(any()) } returns Optional.of(article)
-
-            Then("게시글이 변경된다.") {
-                val ret = articleService.modifyArticle(admin.id, articleModifyDto)
-
-                ret.id shouldBe article.id
-                ret.title shouldBe articleModifyDto.title
-                ret.contents shouldBe articleModifyDto.contents
-                ret.category.name shouldBe articleModifyDto.category
-            }
-        }
-
-        When("다른 사람의 글을 수정하면") {
-            every { articleRepository.save(any()) } returns article
-            every { categoryRepository.findByName(any()) } returns category
-            every { categoryRepository.existsByName(any()) } returns true
-            every { articleRepository.findById(any()) } returns Optional.of(createArticle(createMember(), category))
-            every { authenticationUtils.checkPermission(any(), any()) } throws ForbiddenException(
-                RESOURCE_OWNERSHIP_VIOLATION
-            )
-
-            Then("에러가 발생한다.") {
-                shouldThrow<ForbiddenException> {
-                    articleService.modifyArticle(admin.id, articleModifyDto)
-                }
-            }
-        }
-
-        When("자신의 글을 삭제하면") {
-            every { articleRepository.findByArticleId(any()) } returns ArticleDto.fromEntity(article)
-            every { articleRepository.deleteById(any()) } returns Unit
-            every { authenticationUtils.checkPermission(any(), any()) } returns Unit
-
-            Then("삭제 된다.") {
-                articleService.deleteArticle(article.author.id, article.id) shouldBe Unit
-            }
-        }
-
-        When("다른 사람의 글을 삭제하면") {
-            val othersArticle = createArticle(createMember(), category)
-            every { articleRepository.findByArticleId(any()) } returns ArticleDto.fromEntity(othersArticle)
-            every { articleRepository.deleteById(any()) } returns Unit
-            every { authenticationUtils.checkPermission(any(), any()) } throws ForbiddenException(
-                RESOURCE_OWNERSHIP_VIOLATION
-            )
-
-            Then("에러가 발생한다.") {
-                shouldThrow<ForbiddenException> {
-                    articleService.deleteArticle(admin.id, othersArticle.id)
-                }
-            }
-        }
-    }
-
-    afterProject {
+    afterSpec {
         clearAllMocks()
     }
-
 })

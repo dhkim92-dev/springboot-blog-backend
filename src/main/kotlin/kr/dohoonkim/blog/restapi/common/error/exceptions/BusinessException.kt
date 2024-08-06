@@ -1,25 +1,19 @@
 package kr.dohoonkim.blog.restapi.common.error.exceptions
 
 import kr.dohoonkim.blog.restapi.common.error.ErrorCode
-import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
+import org.springframework.http.HttpStatus
 import java.lang.RuntimeException
 
 
-open class BusinessException : RuntimeException {
-    var errorCode: ErrorCode
-    var errors: List<ErrorResponse.FieldError> = arrayListOf<ErrorResponse.FieldError>()
+open class BusinessException(
+    override val status: HttpStatus,
+    override val code: String,
+    override val message: String
+) : RuntimeException(message), ErrorCode {
 
-    public constructor(message: String, errorCode: ErrorCode) : super(message) {
-        this.errorCode = errorCode
-    }
+    constructor(errorCode: ErrorCode)
+    :this(errorCode.status, errorCode.code, errorCode.message) {
 
-    public constructor(errorCode: ErrorCode) : super(errorCode.message) {
-        this.errorCode = errorCode
-    }
-
-    public constructor(errorCode: ErrorCode, errors: List<ErrorResponse.FieldError>)
-            : super(errorCode.message) {
-        this.errors = errors;
-        this.errorCode = errorCode;
     }
 }

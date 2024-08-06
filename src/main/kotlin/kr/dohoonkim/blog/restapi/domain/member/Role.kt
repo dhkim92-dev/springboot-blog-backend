@@ -2,16 +2,17 @@ package kr.dohoonkim.blog.restapi.domain.member
 
 enum class Role(val rolename: String) {
     ADMIN("ROLE_ADMIN"),
-    MEMBER("ROLE_MEMBER");
+    MEMBER("ROLE_MEMBER"),
+    GUEST("ROLE_GUEST");
 
     companion object {
-        fun from(rolename: String): Role {
-            when (rolename) {
-                "ROLE_ADMIN" -> return ADMIN
-                "ROLE_MEMBER" -> return MEMBER
-            }
 
-            return MEMBER
+        fun from(rolename: String): Role {
+            return when (rolename) {
+                "ROLE_ADMIN" -> ADMIN
+                "ROLE_MEMBER" -> MEMBER
+                else -> GUEST
+            }
         }
     }
 }
