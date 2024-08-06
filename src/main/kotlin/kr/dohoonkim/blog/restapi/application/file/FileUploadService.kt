@@ -45,6 +45,7 @@ class FileUploadService(
         val ext = FilenameUtils.getExtension(file.originalFilename)
         val resizedImage = imageResizer.resize(file.inputStream, 1280)
         val filename = "${UUID.randomUUID().toString()}.$ext"
+        val relativePath = "images/${filename[0]}/${filename}"
         val filePath = basePath.resolve("images/${filename[0]}/${filename}")
 
         // 부모 경로 생성
@@ -58,6 +59,6 @@ class FileUploadService(
         // Files를 이용하여 저장
         Files.write(filePath, imageBytes)
 
-        return "$host/$filePath"
+        return "$host/${relativePath}"
     }
 }
