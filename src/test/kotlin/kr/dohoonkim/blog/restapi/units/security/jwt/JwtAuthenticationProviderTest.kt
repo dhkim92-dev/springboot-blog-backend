@@ -1,14 +1,15 @@
 package kr.dohoonkim.blog.restapi.units.security.jwt
 
+import com.nimbusds.oauth2.sdk.auth.JWTAuthentication
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
-import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
+import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthentication
 import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationProvider
 import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationToken
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.support.createMember
-import kr.dohoonkim.blog.restapi.support.security.createJwtClaims
+import kr.dohoonkim.blog.restapi.support.security.createJwtAuthentication
 import kr.dohoonkim.blog.restapi.support.security.createJwtConfig
 
 
@@ -16,22 +17,24 @@ internal class JwtAuthenticationProviderTest: AnnotationSpec() {
 
     private lateinit var authenticationProvider: JwtAuthenticationProvider
     private lateinit var jwtService: JwtService
-    private lateinit var jwtClaims: JwtClaims
+    private lateinit var jwtAuthenticationToken: JwtAuthenticationToken
+    private lateinit var member: Member
 
     @BeforeEach
     fun setUp() {
+        member = createMember(1).first()
         jwtService = JwtService(createJwtConfig(100000, 100000))
-        jwtClaims = createJwtClaims(createMember(1).get(0))
+        jwtAuthenticationToken = JwtAuthenticationToken(createJwtAuthentication(member))
         authenticationProvider = JwtAuthenticationProvider(jwtService)
     }
 
     @Test
-    fun `JwtAuthenticationToken이 주어지면 JwtAuthentication이 반환된다`() {
-        val token = JwtAuthenticationToken(jwtService.createAccessToken(jwtClaims))
+    fun `JwtAuthenticationToken의 Principal에 JWT가 주어지면 JwtAuthenticatio이 반환된다`() {
+        val token = JwtAuthenticationToken(jwtService.createAccessToken(member))
 
         authenticationProvider.supports(token::class.java) shouldBe true
         val authentication = authenticationProvider.authenticate(token)
-        (authentication is JwtAuthentication) shouldBe true
+        (authentication.principal is JwtAuthentication) shouldBe true
     }
 
 

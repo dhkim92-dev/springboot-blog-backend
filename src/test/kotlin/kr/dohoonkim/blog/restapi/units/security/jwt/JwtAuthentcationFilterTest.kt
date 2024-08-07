@@ -5,7 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.*
 import kr.dohoonkim.blog.restapi.security.jwt.*
 import kr.dohoonkim.blog.restapi.support.createMember
-import kr.dohoonkim.blog.restapi.support.security.createJwtClaims
+import kr.dohoonkim.blog.restapi.support.security.createJwtAuthentication
 import kr.dohoonkim.blog.restapi.support.security.createNormalAccessToken
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
@@ -35,7 +35,7 @@ internal class JwtAuthentcationFilterTest: AnnotationSpec() {
         val response = MockHttpServletResponse()
         val filterChain = MockFilterChain()
 
-        every {jwtService.extractBearerTokenFromHeader(request)} returns null
+//        every {jwtService.extractBearerTokenFromHeader(request)} returns null
         jwtAuthenticationFilter.doFilter(request, response, filterChain)
         every{SecurityContextHolder.getContext().authentication} returns null
 
@@ -46,23 +46,18 @@ internal class JwtAuthentcationFilterTest: AnnotationSpec() {
     @Test
     @WithMockUser
     fun `인증 헤더에 정상적인 token이 존재하고 인증 정보가 없으면 필터가 수행되고 인증 정보가 저장된다`() {
-        val jwtClaims = createJwtClaims(createMember(1).get(0))
-        val accessToken = createNormalAccessToken(jwtClaims)
+//        val jwtClaims = createJwtAuthentication(createMember(1).get(0))
+        val member = createMember(1).first()
+        val accessToken = createNormalAccessToken(member)
         val request = MockHttpServletRequest()
         val response = MockHttpServletResponse()
         val filterChain = MockFilterChain()
-        val jwtAuthentication = JwtAuthentication(id= jwtClaims.id,
-            nickname = jwtClaims.nickname,
-            email = jwtClaims.email,
-            roles = jwtClaims.roles.map{it->SimpleGrantedAuthority(it)}.toMutableList(),
-            isActivated = jwtClaims.isActivated
-        )
+        val jwtAuthenticationToken = JwtAuthenticationToken(createJwtAuthentication(member))
 
-        every { jwtService.extractBearerTokenFromHeader(request) } returns accessToken
-        every {jwtAuthenticationProvider.authenticate(any()) } returns jwtAuthentication
-        every {SecurityContextHolder.getContext().authentication } returns jwtAuthentication
+        every {jwtAuthenticationProvider.authenticate(any()) } returns jwtAuthenticationToken
+        every {SecurityContextHolder.getContext().authentication } returns jwtAuthenticationToken
         jwtAuthenticationFilter.doFilter(request, response, filterChain)
-        SecurityContextHolder.getContext().authentication shouldBe jwtAuthentication
+        SecurityContextHolder.getContext().authentication shouldBe jwtAuthenticationToken
     }
 
     @AfterEach

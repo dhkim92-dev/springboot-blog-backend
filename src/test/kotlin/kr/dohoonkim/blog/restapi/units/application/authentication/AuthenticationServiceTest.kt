@@ -2,30 +2,23 @@ package kr.dohoonkim.blog.restapi.units.application.authentication
 
 import com.auth0.jwt.exceptions.TokenExpiredException
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.assertions.throwables.shouldThrowAny
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import kr.dohoonkim.blog.restapi.application.authentication.AuthenticationService
-import kr.dohoonkim.blog.restapi.application.authentication.CustomUserDetailService
-import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
-import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.MEMBER_NOT_FOUND
-import kr.dohoonkim.blog.restapi.common.error.exceptions.ExpiredTokenException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
-import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.support.createMember
 import kr.dohoonkim.blog.restapi.support.security.createExpiredRefreshToken
 import kr.dohoonkim.blog.restapi.support.security.createJwtConfig
 import kr.dohoonkim.blog.restapi.support.security.createJwtService
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 
 internal class AuthenticationServiceTest: BehaviorSpec({
 
@@ -94,8 +87,7 @@ internal class AuthenticationServiceTest: BehaviorSpec({
     }
 
     Given("유효한 Refresh Token이 주어진다") {
-        val jwtClaims = JwtClaims.fromCustomUserDetails(CustomUserDetails.from(member))
-        val refreshToken = jwtService.createRefreshToken(jwtClaims)
+        val refreshToken = jwtService.createRefreshToken(member)
         every { memberRepository.findByMemberId(member.id) } returns member
 
         When("유효한 Access Token 재발급 요청하면") {
@@ -107,8 +99,8 @@ internal class AuthenticationServiceTest: BehaviorSpec({
     }
 
     Given("만료된 Refresh Token이 주어진다") {
-        val jwtClaims = JwtClaims.fromCustomUserDetails(CustomUserDetails.from(member))
-        val refreshToken = createExpiredRefreshToken(jwtClaims)
+//        val jwtClaims = JwtClaims.fromCustomUserDetails(CustomUserDetails.from(member))
+        val refreshToken = createExpiredRefreshToken(member)
         When("Access Token 재발급 요청하면") {
             Then("ExpiredTokenException이 발생한다") {
                 shouldThrow<TokenExpiredException> {
@@ -119,8 +111,8 @@ internal class AuthenticationServiceTest: BehaviorSpec({
     }
 
     Given("탈퇴한 사용자의 Refresh Token이 주어진다") {
-        val jwtClaims = JwtClaims.fromCustomUserDetails(CustomUserDetails.from(member))
-        val refreshToken = jwtService.createRefreshToken(jwtClaims)
+//        val jwtClaims = JwtClaims.fromCustomUserDetails(CustomUserDetails.from(member))
+        val refreshToken = jwtService.createRefreshToken(member)
         every{ memberRepository.findByMemberId(member.id) } throws NotFoundException(MEMBER_NOT_FOUND)
         When("Access Token 재발급 요청을 하면") {
             Then("NotFoundException이 발생한다") {

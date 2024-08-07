@@ -2,14 +2,36 @@ package kr.dohoonkim.blog.restapi.security.jwt
 
 import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import org.springframework.security.authentication.AbstractAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.GrantedAuthority
 
 /**
  * JwtAuthenticationProvider 에서 다룰 JwtAuthenticationToken
- * @property _principal : 인증전 JWT String, 인증 후 JwtAuthentication
+ * @property _principal : 인증전 JWT String, 인증 후 JwtAuthentication이 된다
  */
 
-class JwtAuthenticationToken(private val _principal : Any?)
-: AbstractAuthenticationToken(null) {
+class JwtAuthenticationToken(var _principal : Any)
+:  Authentication { //AbstractAuthenticationToken(null) {
+
+    override fun getName(): String {
+        return (_principal as JwtAuthentication).nickname
+    }
+
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+        return (_principal as JwtAuthentication).authorities
+    }
+
+    override fun getDetails(): Any {
+        return (_principal as JwtAuthentication).id
+    }
+
+    override fun isAuthenticated(): Boolean {
+        return (_principal as JwtAuthentication).isActivated
+    }
+
+    override fun setAuthenticated(isAuthenticated: Boolean) {
+
+    }
 
     override fun getCredentials(): Any? {
         return null
@@ -18,16 +40,4 @@ class JwtAuthenticationToken(private val _principal : Any?)
     override fun getPrincipal(): Any? {
         return _principal
     }
-//
-//    companion object {
-//        fun fromCustomUserDetails(details : CustomUserDetails) : JwtAuthenticationToken {
-//            return JwtAuthenticationToken(
-//                    JwtAuthentication(id=details.memberId,
-//                            email=details.email,
-//                            nickname=details.nickname,
-//                            roles=details.authorities,
-//                            isActivated = details.isActivated)
-//            )
-//        }
-//    }
 }

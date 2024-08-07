@@ -2,12 +2,9 @@ package kr.dohoonkim.blog.restapi.config
 
 import kr.dohoonkim.blog.restapi.application.authentication.CustomUserDetailService
 import kr.dohoonkim.blog.restapi.application.authentication.oauth2.CustomOAuth2UserService
+import kr.dohoonkim.blog.restapi.security.handler.*
 import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationFilter
-import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationFailureHandler
-import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationSuccessHandler
 import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationProvider
-import kr.dohoonkim.blog.restapi.security.handler.EntryPointUnauthorizedHandler
-import kr.dohoonkim.blog.restapi.security.handler.JwtAccessDeniedHandler
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
@@ -52,6 +49,11 @@ class SecurityConfig(
 
 
     @Bean
+    fun jwtExceptionFilter(): JwtExceptionHandlingFilter {
+        return JwtExceptionHandlingFilter(entryPointUnauthorizedHandler)
+    }
+
+    @Bean
     fun authenticationManager(): AuthenticationManager {
         return authenticationConfiguration.authenticationManager
     }
@@ -64,7 +66,7 @@ class SecurityConfig(
     fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer {
             it.ignoring().requestMatchers(*WHITELIST_STATIC, *WHITELIST_SWAGGER)
-            it.ignoring().requestMatchers(PathRequest.toH2Console())
+//            it.ignoring().requestMatchers(PathRequest.toH2Console())
         }
     }
 
@@ -74,11 +76,13 @@ class SecurityConfig(
             .cors {}
             .formLogin { form -> form.disable() }
             .httpBasic { basic -> basic.disable() }
-            .httpBasic { basic -> basic.disable() }
-//            .headers{ headers -> headers.frameOptions { FrameOptionsConfig().sameOrigin } }
-            .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .exceptionHandling { customizer -> customizer.authenticationEntryPoint(entryPointUnauthorizedHandler) }
-            .exceptionHandling { customizer -> customizer.accessDeniedHandler(jwtAccessDeniedHandler) }
+            .sessionManagement {
+                sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .exceptionHandling { customizer ->
+                customizer.accessDeniedHandler(jwtAccessDeniedHandler)
+                customizer.authenticationEntryPoint(entryPointUnauthorizedHandler)
+            }
             .authorizeHttpRequests { customizer ->
                 customizer.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 customizer.requestMatchers("/api/v1/files/**").hasRole("ADMIN")
@@ -97,8 +101,8 @@ class SecurityConfig(
                 customizer.successHandler(oAuth2AuthenticationSuccessHandler)
                 customizer.failureHandler(oAuth2AuthenticationFailureHandler)
             }
-
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(jwtExceptionFilter(), JwtAuthenticationFilter::class.java)
         return http.build();
     }
 

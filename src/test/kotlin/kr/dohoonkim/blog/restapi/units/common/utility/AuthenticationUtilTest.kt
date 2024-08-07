@@ -35,7 +35,7 @@ internal class AuthenticationUtilTest: AnnotationSpec() {
 
     @Test
     fun `인증 정보가 존재하면 MemberId가 추출된다`() {
-        every { SecurityContextHolder.getContext().authentication } returns memberAuthentication as Authentication
+        every { SecurityContextHolder.getContext().authentication.principal } returns memberAuthentication
         authenticationUtil.extractMemberId() shouldBe memberAuthentication.id
     }
 
@@ -49,19 +49,19 @@ internal class AuthenticationUtilTest: AnnotationSpec() {
 
     @Test
     fun `관리자 권한이 있으면 true가 반환된다`() {
-        every { SecurityContextHolder.getContext().authentication } returns adminAuthentication as Authentication
+        every { SecurityContextHolder.getContext().authentication.principal } returns adminAuthentication
         authenticationUtil.isAdmin() shouldBe true
     }
 
     @Test
     fun `관리자 권한이 없으면 false가 반환된다`() {
-        every { SecurityContextHolder.getContext().authentication } returns memberAuthentication as Authentication
+        every { SecurityContextHolder.getContext().authentication.principal } returns memberAuthentication
         authenticationUtil.isAdmin() shouldBe false
     }
 
     @Test
     fun `리소스 접근 권한을 만족하면 정상 실행된다`() {
-        every { SecurityContextHolder.getContext().authentication } returns memberAuthentication as Authentication
+        every { SecurityContextHolder.getContext().authentication.principal } returns memberAuthentication
 
         shouldNotThrowAny {
             authenticationUtil.checkPermission(memberAuthentication.id, memberAuthentication.id)
@@ -70,7 +70,7 @@ internal class AuthenticationUtilTest: AnnotationSpec() {
 
     @Test
     fun `리소스 접근 권한을 만족하지 않으면 ForbiddenException이 발생한다`() {
-        every { SecurityContextHolder.getContext().authentication } returns memberAuthentication as Authentication
+        every { SecurityContextHolder.getContext().authentication.principal } returns memberAuthentication
 
         shouldThrow<ForbiddenException> {
             authenticationUtil.checkPermission(memberAuthentication.id, adminAuthentication.id)

@@ -60,6 +60,14 @@ class Member : UuidPrimaryKeyEntity {
         this.isActivated = isActivated ?: false;
     }
 
+    constructor(id: UUID, nickname: String, email: String, password: String, isActivated: Boolean?) {
+        this.id = id;
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.isActivated = isActivated ?: false;
+    }
+
     override fun toString(): String {
         return ToStringBuilder
             .reflectionToString(this, ToStringStyle.JSON_STYLE)
