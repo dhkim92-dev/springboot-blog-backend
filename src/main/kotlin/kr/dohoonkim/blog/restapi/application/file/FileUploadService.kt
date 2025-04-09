@@ -29,7 +29,7 @@ class FileUploadService(
     private val basePath: Path
 ) {
 
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     /**
      * 전송받은 이미지 파일을 저장한다
@@ -38,7 +38,11 @@ class FileUploadService(
      * @throws UnsupportedMediaTypeException 지원하지 않는 파일 형식
      */
     fun createImage(file: MultipartFile): String {
+
+        logger.info("File upload request : ${file.originalFilename}")
+
         if (!imageTypeValidator.isSupportFile(file)) {
+            logger.info("${file.originalFilename} is not supported media type.")
             throw UnsupportedMediaTypeException(ErrorCodes.NOT_SUPPORT_IMAGE_TYPE)
         }
 
@@ -47,17 +51,21 @@ class FileUploadService(
         val filename = "${UUID.randomUUID().toString()}.$ext"
         val relativePath = "images/${filename[0]}/${filename}"
         val filePath = basePath.resolve("images/${filename[0]}/${filename}")
+        logger.info("file path : ${filePath}")
 
         // 부모 경로 생성
         Files.createDirectories(filePath.parent)
+        logger.info("${file.originalFilename} created parent directory.")
 
         // Image IO로 결과를 OutputStream에 작성
         val outputStream = ByteArrayOutputStream()
         ImageIO.write(resizedImage, ext, outputStream)
+        logger.info("${file.originalFilename} image writed.")
         val imageBytes = outputStream.toByteArray()
 
         // Files를 이용하여 저장
         Files.write(filePath, imageBytes)
+        logger.info("${file.originalFilename} file writed.")
 
         return "$host/${relativePath}"
     }

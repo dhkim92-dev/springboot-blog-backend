@@ -18,21 +18,11 @@ class WarmupRunner(
     override fun run(args: ApplicationArguments?) {
         warmupCategoryController()
         warmUpArticleController()
-        warmUpAuthenticationController()
     }
 
     private fun warmUpArticleController() {
         try {
             articleController.getArticles(0L, null, 20)
-        } catch (e: Exception) {
-            // nothing to do
-        }
-    }
-
-    private fun warmUpAuthenticationController() {
-        try {
-            val authenticationDto = LoginRequest(email = "test@gmail.com", password = "testpassword")
-            authenticationController.login(authenticationDto)
         } catch (e: Exception) {
             // nothing to do
         }

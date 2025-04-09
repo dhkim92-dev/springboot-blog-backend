@@ -1,4 +1,4 @@
-package kr.dohoonkim.blog.restapi.security.handler
+package kr.dohoonkim.blog.restapi.security.oauth2.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nimbusds.common.contenttype.ContentType

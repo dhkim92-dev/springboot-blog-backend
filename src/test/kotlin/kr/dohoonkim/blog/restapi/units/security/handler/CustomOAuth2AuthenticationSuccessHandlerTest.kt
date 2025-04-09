@@ -5,14 +5,11 @@ import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import kr.dohoonkim.blog.restapi.application.authentication.CustomUserDetailService
-import kr.dohoonkim.blog.restapi.application.authentication.vo.MemberProfile
-import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
+import kr.dohoonkim.blog.restapi.security.oauth2.vo.OAuth2Authentication
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
-import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationSuccessHandler
+import kr.dohoonkim.blog.restapi.security.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
 import kr.dohoonkim.blog.restapi.support.createMember
-import kr.dohoonkim.blog.restapi.support.security.createJwtAuthentication
 import kr.dohoonkim.blog.restapi.support.security.createJwtConfig
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletRequest
@@ -23,8 +20,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 internal class CustomOAuth2AuthenticationSuccessHandlerTest: AnnotationSpec() {
 
     private lateinit var handler: CustomOAuth2AuthenticationSuccessHandler
-    private lateinit var memberProfile: MemberProfile
-    private lateinit var customUserDetailService: CustomUserDetailService
+    private lateinit var memberProfile: OAuth2Authentication
+//    private lateinit var customUserDetailService: CustomUserDetailService
     private lateinit var memberRepository: MemberRepository
     private lateinit var userDetails: CustomUserDetails
     private val jwtService = JwtService(createJwtConfig(10000, 10000))
@@ -32,7 +29,7 @@ internal class CustomOAuth2AuthenticationSuccessHandlerTest: AnnotationSpec() {
     @BeforeEach
     fun setUp() {
         val member = createMember(1)[0]
-        memberProfile = MemberProfile(mutableMapOf())
+        memberProfile = OAuth2Authentication(mutableMapOf())
         memberProfile.nickname = member.nickname
         memberProfile.email = member.email
         memberProfile.customAuthorities = mutableListOf(SimpleGrantedAuthority(member.role.rolename))

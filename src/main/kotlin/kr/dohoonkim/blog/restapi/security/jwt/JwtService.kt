@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class JwtService(private val config: JwtConfig) {
+class JwtService(val config: JwtConfig) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
     private val accessTokenVerifier = JWT.require(Algorithm.HMAC512(config.accessSecret))

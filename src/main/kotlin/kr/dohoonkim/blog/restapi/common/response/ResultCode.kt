@@ -58,6 +58,8 @@ enum class ResultCode(
     REISSUE_TOKEN_SUCCESS(CREATED, "A002", "토큰을 재발급하였습니다."),
     TEMPOLARY_LOGIN_SUCCESS(OK, "A003", "임시 코드로 로그인하였습니다."),
 
+    // OAUTH2
+    OAUTH2_REVOKE_ACCESS_TOKEN_SUCCESS(NO_CONTENT, "OAUTH2-001", "OAuth2 권한을 제거하였습니다."),
     // FILE UPLOAD
     IMAGE_UPLOAD_SUCCESS(CREATED, "FI01", "이미지를 업로드 했습니다."),
 }

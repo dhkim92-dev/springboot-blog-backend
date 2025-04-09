@@ -1,6 +1,7 @@
 package kr.dohoonkim.blog.restapi.interfaces.member
 
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -10,14 +11,17 @@ import kr.dohoonkim.blog.restapi.application.member.dto.*
 import kr.dohoonkim.blog.restapi.common.response.ApiResult.*
 import kr.dohoonkim.blog.restapi.common.response.ResultCode.*
 import kr.dohoonkim.blog.restapi.common.response.annotation.ApplicationCode
+import kr.dohoonkim.blog.restapi.common.utility.CookieUtils
 import kr.dohoonkim.blog.restapi.interfaces.member.dto.EmailChangeRequest
 import kr.dohoonkim.blog.restapi.interfaces.member.dto.MemberJoinRequest
 import kr.dohoonkim.blog.restapi.interfaces.member.dto.NicknameChangeRequest
 import kr.dohoonkim.blog.restapi.interfaces.member.dto.PasswordChangeRequest
 import kr.dohoonkim.blog.restapi.security.annotations.MemberId
+import kr.dohoonkim.blog.restapi.security.oauth2.OAuth2Provider
 import org.hibernate.validator.constraints.Length
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -107,4 +112,13 @@ class MemberController(private val memberService: MemberService) {
     @ApplicationCode(DELETE_MEMBER_SUCCESS)
     fun withdrawal(@PathVariable resourceId: UUID, @MemberId memberId: UUID)
     = memberService.delete(memberId, resourceId)
+
+    @DeleteMapping("v1/members/{resourceId}/oauth2/{provider}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun revokeOAuth2(@MemberId memberId: UUID, @PathVariable resourceId: UUID, @PathVariable provider: OAuth2Provider, response: HttpServletResponse): Unit {
+//        val oauth2PathVariable = OAuth2Provider.valueOf(provider.uppercase())
+//        println(oauth2PathVariable)
+        memberService.revokeAccessToken(memberId, resourceId, provider)
+        CookieUtils.setCookie(response, "refresh-token", "", 0)
+    }
 }

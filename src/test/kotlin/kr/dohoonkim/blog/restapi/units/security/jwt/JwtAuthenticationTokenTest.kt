@@ -15,16 +15,16 @@ internal class JwtAuthenticationTokenTest: AnnotationSpec() {
 
     @Test
     fun `getCredential을 호출하면 항상 nul이어야 한다`() {
-        val token = JwtAuthenticationToken(null)
+        val token = JwtAuthenticationToken("asdf")
 
         token.credentials shouldBe null
     }
 
     @Test
-    fun `인증되지 않은 상태에서 getPrincipal을 호출하면 null이 반환된다`() {
-        val token = JwtAuthenticationToken(null)
+    fun `인증되지 않은 상태에서 getPrincipal을 호출하면 JWT가 반환된다`() {
+        val token = JwtAuthenticationToken("abcd")
 
-        token.principal shouldBe null
+        token.principal shouldBe "abcd"
     }
 
     @Test

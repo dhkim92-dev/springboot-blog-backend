@@ -2,7 +2,6 @@ package kr.dohoonkim.blog.restapi.units.domain.member.entity
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.support.createMember
 
 internal class CustomUserDetailTest: BehaviorSpec({

@@ -1,6 +1,5 @@
 package kr.dohoonkim.blog.restapi.common.error
 
-import com.auth0.jwt.exceptions.TokenExpiredException
 import jakarta.validation.ConstraintViolationException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.BusinessException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ExpiredTokenException
@@ -89,7 +88,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(ExpiredTokenException::class)
     fun expiredTokenExceptionHandler(e: ExpiredTokenException): ResponseEntity<ErrorResponse> {
         logger.debug("expired token exception occured")
-        return ResponseEntity(ErrorResponse.of(ErrorCodes.EXPIRED_TOKEN_EXCEPTION), UNAUTHORIZED)
+        return ResponseEntity(ErrorResponse.of(ErrorCodes.EXPIRED_ACCESS_TOKEN_EXCEPTION), UNAUTHORIZED)
     }
 
     @ExceptionHandler

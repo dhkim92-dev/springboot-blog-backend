@@ -1,7 +1,5 @@
 package kr.dohoonkim.blog.restapi.security.jwt
 
-import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
-import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 

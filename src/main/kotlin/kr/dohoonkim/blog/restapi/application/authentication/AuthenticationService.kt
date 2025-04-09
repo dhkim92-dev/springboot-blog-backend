@@ -6,7 +6,6 @@ import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.NOT_VERIFIED_EMAIL
 import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
-import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import org.slf4j.LoggerFactory
@@ -51,6 +50,7 @@ class AuthenticationService(
 
         return LoginResult(
             refreshToken = jwtService.createRefreshToken(member),
+            refreshTokenExpiry = (jwtService.config.refreshExpiry/1000).toInt(),
             accessToken = jwtService.createAccessToken(member)
         )
     }

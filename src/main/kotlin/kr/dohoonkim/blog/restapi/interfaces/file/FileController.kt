@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("api/")
 @ApiResponses(
     value = [
         ApiResponse(responseCode = "401", description = "J002 - 만료된 토큰"),
@@ -33,8 +33,7 @@ class FileController(private val fileUploadService: FileUploadService) {
             ApiResponse(responseCode = "201", description = "FI01 - 이미지 업로드 성공"),
         ]
     )
-    @PutMapping(
-        "v1/files/images",
+    @PutMapping("v1/files/images",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )

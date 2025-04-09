@@ -1,18 +1,12 @@
 package kr.dohoonkim.blog.restapi.security.jwt
 
-import com.auth0.jwt.algorithms.Algorithm
-import com.auth0.jwt.exceptions.AlgorithmMismatchException
-import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.exceptions.TokenExpiredException
 import jakarta.servlet.FilterChain
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
-import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.EXPIRED_TOKEN_EXCEPTION
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.EXPIRED_ACCESS_TOKEN_EXCEPTION
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.INVALID_JWT_EXCEPTION
-import kr.dohoonkim.blog.restapi.common.error.exceptions.ExpiredTokenException
-import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.util.matcher.RequestMatcher
@@ -24,17 +18,23 @@ import org.springframework.web.filter.OncePerRequestFilter
  * @property jwtAuthenticationProvider 인증 프로바이더
  */
 class JwtAuthenticationFilter(
+    private val requestMatcher: RequestMatcher,
     private val jwtService : JwtService,
     private val jwtAuthenticationProvider: JwtAuthenticationProvider
 ) : OncePerRequestFilter(){
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     /**
      * 필터 로직, Authorization 헤더에 토큰이 포함되어있다면 이 필터가 수행된다.
-     * Endpoint에 따라 필터를 수행하지 않는 로직은 추가하지 않는다. 추후 다른 기능들이 추가하면 그때 고려
      */
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+        if(!requestMatcher.matches(request)) {
+            logger.debug("request : ${request.requestURL} is not matched. JWT process will be skipped.")
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val token = resolveAuthorizationHeader(request)?.let{ headerValue-> resolveJWTToken(headerValue) }
 
         if (token == null || SecurityContextHolder.getContext().authentication != null) {
@@ -51,7 +51,7 @@ class JwtAuthenticationFilter(
         } catch(e: TokenExpiredException) {
             // 만료된 토큰인 경우 재발급 요청을 위해 에러코드를 반환해야한다
             SecurityContextHolder.clearContext()
-            throw JwtAuthenticationException(EXPIRED_TOKEN_EXCEPTION)
+            throw JwtAuthenticationException(EXPIRED_ACCESS_TOKEN_EXCEPTION)
         } catch(e: Exception) {
             SecurityContextHolder.clearContext()
             throw JwtAuthenticationException(INVALID_JWT_EXCEPTION)

@@ -11,7 +11,6 @@ import kr.dohoonkim.blog.restapi.application.authentication.AuthenticationServic
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.MEMBER_NOT_FOUND
 import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
-import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import kr.dohoonkim.blog.restapi.support.createMember
 import kr.dohoonkim.blog.restapi.support.security.createExpiredRefreshToken

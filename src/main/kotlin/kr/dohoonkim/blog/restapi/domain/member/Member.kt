@@ -29,6 +29,9 @@ class Member : UuidPrimaryKeyEntity {
     @Column(nullable = false)
     var role: Role = Role.MEMBER
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    val oauth2Info = mutableListOf<OAuth2Member>()
+
     fun updateEmail(email: String) {
         this.email = email;
     }
