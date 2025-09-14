@@ -19,12 +19,15 @@ class JwtAuthenticationProvider(
     /**
      * JwtAuthenticationToken을 받아 jwtService에 처리를 위임하고 JwtAuthentication을 반환한다
      * @param authentication JWT Access token
+     * @throws JWTInvalidException
+     * @throws JWTVerificationException
      */
     override fun authenticate(authentication: Authentication): Authentication {
-        val jwt: String = authentication.principal as String // authentication
-        return jwtService.getAuthentication(jwt)
-    }
+        val jwt: String? = authentication.principal as String?
 
+        return jwt?.let { JwtAuthenticationToken(jwtService.getAuthentication(it))  }
+            ?: authentication
+    }
 
     /**
      * 이 프로바이더가 처리 가능한 토큰인지 확인한다

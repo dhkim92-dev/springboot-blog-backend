@@ -3,7 +3,7 @@ package kr.dohoonkim.blog.restapi.units.application.authentication.oauth2
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
-import kr.dohoonkim.blog.restapi.application.authentication.oauth2.CustomOAuth2UserService
+import kr.dohoonkim.blog.restapi.security.oauth2.CustomOAuth2UserService
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import kr.dohoonkim.blog.restapi.support.entity.createMember
 import kr.dohoonkim.blog.restapi.support.security.oauth2.GithubOAuth2User

@@ -41,10 +41,18 @@ enum class ErrorCodes(
     //AUTHENTICATION
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "A001", "로그인에 실패했습니다."),
     INVALID_PAYLOAD_EXCEPTION(HttpStatus.UNAUTHORIZED, "J001", "JWT 페이로드가 잘못되었습니다."),
-    EXPIRED_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "J002", "만료된 토큰입니다."),
+    EXPIRED_ACCESS_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "J002", "만료된 Access token 토큰입니다."),
+    EXPIRED_REFRESH_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "J005", "만료된 Refresh token 입니다"),
     INVALID_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "J003", "인증 헤더 정보가 잘못되었습니다."),
+    REFRESH_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "J004", "쿠키에 Refresh Token이 존재하지 않습니다."),
     NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, "A002", "이메일 인증이 완료되지 않은 계정입니다."),
-    NOT_SUPPORTED_OAUTH2_PROVIDER(HttpStatus.BAD_REQUEST, "A003", "지원하지 않는 OAuth2 Provider 입니다."),
-    OAUTH2_NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, "A004", "이메일 인증이 완료되지 않은 소셜 계정입니다.")
+
+    //OAUTH2
+    FAIL_TO_ACQUIRE_USER_INFO(HttpStatus.UNAUTHORIZED, "OAUTH2-001","인증 플랫폼으로부터 사용자 정보를 얻어오지 못했습니다."),
+    NOT_SUPPORTED_OAUTH2_PROVIDER(HttpStatus.BAD_REQUEST, "OAUTH2-002", "지원하지 않는 OAuth2 Provider 입니다."),
+    OAUTH2_REVOKE_FAILED(HttpStatus.UNAUTHORIZED, "OAUTH2-003", "OAuth2 인증 해제를 실패하였습니다."),
+    OAUTH2_NOT_VERIFIED_EMAIL(HttpStatus.UNAUTHORIZED, "OAUTH2-004", "이메일 인증이 완료되지 않은 소셜 계정입니다."),
+    OAUTH2_ACCESS_TOKEN_NOT_EXIST(HttpStatus.NOT_FOUND, "OAUTH2-005", "요청한 프로바이더의 등록된 Access token이 존재하지 않습니다."),
+    OAUTH2_REDIRECT_URL_RESOLVE_FAILED(HttpStatus.BAD_REQUEST, "OAUTH2-005", "redirect url이 입력되지 않았습니다")
     ;
 }

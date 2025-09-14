@@ -1,11 +1,13 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
-import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
+import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.*
 import kr.dohoonkim.blog.restapi.common.error.exceptions.ForbiddenException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.domain.member.Role
+import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthentication
 import org.slf4j.LoggerFactory
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.util.*
@@ -23,22 +25,22 @@ class AuthenticationUtil {
      */
     fun extractMemberId(): UUID {
         val authentication = SecurityContextHolder.getContext().authentication
-        val claims = authentication.principal as JwtClaims
+//        println("authentication : ${(authentication.principal as JwtAuthentication)?.id}")
+        val claims = authentication.principal as JwtAuthentication?
+            ?: throw UnauthorizedException(INVALID_JWT_EXCEPTION)
 
         return if (claims.isActivated) claims.id
         else throw UnauthorizedException(NOT_VERIFIED_EMAIL)
     }
 
-    /**
-     *
-     */
     fun checkResourceOwner(memberId: UUID, resourceOwnerId: UUID): Boolean {
         return resourceOwnerId == memberId
     }
 
     fun isAdmin(): Boolean {
-        val authentication = SecurityContextHolder.getContext().authentication.principal as JwtClaims
-        return authentication.roles.contains(Role.ADMIN.rolename)
+        return (SecurityContextHolder.getContext().authentication.principal as JwtAuthentication?)
+            ?.let { it.roles.contains(SimpleGrantedAuthority(Role.ADMIN.rolename)) }
+            ?: false
     }
 
     fun checkPermission(memberId: UUID, resourceOwnerId: UUID) {

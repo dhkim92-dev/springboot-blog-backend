@@ -1,14 +1,11 @@
 package kr.dohoonkim.blog.restapi.application.authentication
 
 import kr.dohoonkim.blog.restapi.application.authentication.dto.*
-import kr.dohoonkim.blog.restapi.application.authentication.vo.JwtClaims
-import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.MEMBER_NOT_FOUND
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.NOT_VERIFIED_EMAIL
 import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
-import kr.dohoonkim.blog.restapi.domain.member.CustomUserDetails
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.repository.MemberRepository
 import org.slf4j.LoggerFactory
@@ -39,7 +36,7 @@ class AuthenticationService(
 
     @Transactional
     fun login(email: String, password: String): LoginResult {
-//        val user = userDetailService.loadUserByUsername(email) as CustomUserDetails
+
         val member = memberRepository.findByEmail(email)
             ?: throw NotFoundException(MEMBER_NOT_FOUND)
 
@@ -51,13 +48,10 @@ class AuthenticationService(
             throw UnauthorizedException(NOT_VERIFIED_EMAIL)
         }
 
-        val claims = JwtClaims.fromCustomUserDetails(
-            CustomUserDetails.from(member)
-        )
-
         return LoginResult(
-            refreshToken = jwtService.createRefreshToken(claims),
-            accessToken = jwtService.createAccessToken(claims)
+            refreshToken = jwtService.createRefreshToken(member),
+            refreshTokenExpiry = (jwtService.config.refreshExpiry/1000).toInt(),
+            accessToken = jwtService.createAccessToken(member)
         )
     }
 
@@ -66,10 +60,9 @@ class AuthenticationService(
         val jwt = jwtService.verifyRefreshToken(refreshToken)
         val memberId = UUID.fromString(jwt.subject)
         val member: Member = memberRepository.findByMemberId(memberId)
-        val userDetails = CustomUserDetails.from(member)
 
         return ReissueResult(
-            accessToken =  jwtService.createAccessToken(JwtClaims.fromCustomUserDetails(userDetails))
+            accessToken =  jwtService.createAccessToken(member)
         )
     }
 }

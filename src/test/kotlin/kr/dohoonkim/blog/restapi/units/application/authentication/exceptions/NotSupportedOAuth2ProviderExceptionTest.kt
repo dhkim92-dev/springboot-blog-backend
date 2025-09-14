@@ -1,7 +1,7 @@
 package kr.dohoonkim.blog.restapi.units.application.authentication.exceptions
 
 import io.kotest.matchers.shouldBe
-import kr.dohoonkim.blog.restapi.application.authentication.exceptions.NotSupportedOAuth2ProviderException
+import kr.dohoonkim.blog.restapi.security.oauth2.exceptions.NotSupportedOAuth2ProviderException
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.support.dto.DtoValidation
 

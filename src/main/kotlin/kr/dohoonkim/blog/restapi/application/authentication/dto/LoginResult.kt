@@ -8,6 +8,7 @@ data class LoginResult(
     val type: String = "Bearer",
     @JsonProperty("refresh_token")
     val refreshToken: String,
+    val refreshTokenExpiry: Int,
     @JsonProperty("access_token")
     val accessToken: String
 )

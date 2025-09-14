@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationFailureHandler
+import kr.dohoonkim.blog.restapi.security.oauth2.handler.CustomOAuth2AuthenticationFailureHandler
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.core.AuthenticationException

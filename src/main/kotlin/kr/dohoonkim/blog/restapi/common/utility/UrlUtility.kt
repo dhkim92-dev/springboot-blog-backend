@@ -1,5 +1,6 @@
 package kr.dohoonkim.blog.restapi.common.utility
 
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
@@ -37,6 +38,11 @@ class UrlUtility() {
     fun getQueryParams(): Map<String, String> {
         val requestAttributes = (RequestContextHolder.currentRequestAttributes()) as? ServletRequestAttributes
         val request = requestAttributes?.request
+        return request?.parameterMap?.mapValues { entry -> entry.value.joinToString(",") }
+            ?: mapOf()
+    }
+
+    fun getQueryParams(request: HttpServletRequest): Map<String, String> {
         return request?.parameterMap?.mapValues { entry -> entry.value.joinToString(",") }
             ?: mapOf()
     }

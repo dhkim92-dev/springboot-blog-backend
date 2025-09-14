@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import kr.dohoonkim.blog.restapi.application.authentication.vo.GithubMemberProfile
+import kr.dohoonkim.blog.restapi.security.oauth2.user.github.GithubMemberProfile
 
 internal class GithubMemberProfileTest: BehaviorSpec({
 

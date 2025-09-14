@@ -8,6 +8,7 @@ import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -35,7 +36,6 @@ class ApplicationCodeAdvice() : ResponseBodyAdvice<Any> {
         val resultCode = applicationCode.code
         response.setStatusCode(resultCode.status)
 
-
         return ApiResult(
             status = resultCode.status.value(),
             code = resultCode.code,
@@ -45,6 +45,6 @@ class ApplicationCodeAdvice() : ResponseBodyAdvice<Any> {
     }
 
     override fun supports(returnType: MethodParameter, converterType: Class<out HttpMessageConverter<*>>): Boolean {
-        return returnType.hasMethodAnnotation(ApplicationCode::class.java)
+        return MappingJackson2HttpMessageConverter::class.java.isAssignableFrom(converterType) && returnType.hasMethodAnnotation(ApplicationCode::class.java)
     }
 }

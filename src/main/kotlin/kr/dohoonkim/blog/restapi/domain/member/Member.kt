@@ -29,6 +29,9 @@ class Member : UuidPrimaryKeyEntity {
     @Column(nullable = false)
     var role: Role = Role.MEMBER
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    val oauth2Info = mutableListOf<OAuth2Member>()
+
     fun updateEmail(email: String) {
         this.email = email;
     }
@@ -54,6 +57,14 @@ class Member : UuidPrimaryKeyEntity {
     }
 
     constructor(nickname: String, email: String, password: String, isActivated: Boolean?) {
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.isActivated = isActivated ?: false;
+    }
+
+    constructor(id: UUID, nickname: String, email: String, password: String, isActivated: Boolean?) {
+        this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.password = password;

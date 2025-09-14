@@ -10,12 +10,11 @@ import kr.dohoonkim.blog.restapi.application.authentication.dto.ReissueResult
  * @property type 토큰 타입
  * @property accessToken 액세스 토큰
  */
-@Schema(description = "JWT Access token 재발급 요청 응답 객체")
+@Schema(description = "JWT Access token 재발급 요청 응답 객체, 새 Access Token은 Authorization header에 포함됨")
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 class ReissueResponse(
     @Schema(description = "Token type", example = "Bearer")
     val type: String,
-    @Schema(description = "Access Token", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5cv")
     val accessToken: String
 ){
 

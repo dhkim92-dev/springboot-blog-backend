@@ -2,6 +2,7 @@ package kr.dohoonkim.blog.restapi.common.error
 
 import jakarta.validation.ConstraintViolationException
 import kr.dohoonkim.blog.restapi.common.error.exceptions.BusinessException
+import kr.dohoonkim.blog.restapi.common.error.exceptions.ExpiredTokenException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
@@ -18,7 +19,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     @ExceptionHandler(BusinessException::class)
     fun businessExceptionHandler(e: BusinessException)
@@ -47,28 +48,28 @@ class GlobalExceptionHandler {
         return ResponseEntity(response, BAD_REQUEST)
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(MissingServletRequestParameterException::class)
     fun missingServletRequestParameterException(e: MissingServletRequestParameterException)
     : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCodes.INVALID_INPUT_VALUE, "${e.parameterName} is missing.")
         return ResponseEntity(response, BAD_REQUEST)
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(MissingServletRequestPartException::class)
     fun missingServletRequestPartExceptionHandler(e: MissingServletRequestPartException)
     : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCodes.INVALID_INPUT_VALUE, "${e.requestPartName} is missing.")
         return ResponseEntity(response, BAD_REQUEST)
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(MissingRequestCookieException::class)
     fun missingRequestCookieExceptionHandler(e: MissingRequestCookieException)
             : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCodes.MISSING_COOKIE_VALUE, "${e.cookieName} is not in cookie.")
         return ResponseEntity(response, BAD_REQUEST)
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
     fun httpRequestMethodNotSupportedException(e: HttpRequestMethodNotSupportedException)
     : ResponseEntity<ErrorResponse> {
         val errors: MutableList<ErrorResponse.FieldError> = mutableListOf()
@@ -77,11 +78,17 @@ class GlobalExceptionHandler {
         return ResponseEntity(response, ErrorCodes.METHOD_NOT_ALLOWED.status)
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(HttpMessageNotReadableException::class)
     fun httpMessageNotReadableExceptionHandler(e: HttpMessageNotReadableException)
     : ResponseEntity<ErrorResponse> {
         val response = ErrorResponse.of(ErrorCodes.HTTP_MESSAGE_NOT_READABLE)
         return ResponseEntity(response, BAD_REQUEST)
+    }
+
+    @ExceptionHandler(ExpiredTokenException::class)
+    fun expiredTokenExceptionHandler(e: ExpiredTokenException): ResponseEntity<ErrorResponse> {
+        logger.debug("expired token exception occured")
+        return ResponseEntity(ErrorResponse.of(ErrorCodes.EXPIRED_ACCESS_TOKEN_EXCEPTION), UNAUTHORIZED)
     }
 
     @ExceptionHandler

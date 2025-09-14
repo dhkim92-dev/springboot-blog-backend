@@ -1,14 +1,14 @@
 package kr.dohoonkim.blog.restapi.config
 
-import kr.dohoonkim.blog.restapi.application.authentication.CustomUserDetailService
-import kr.dohoonkim.blog.restapi.application.authentication.oauth2.CustomOAuth2UserService
+import kr.dohoonkim.blog.restapi.domain.member.Role
+import kr.dohoonkim.blog.restapi.security.oauth2.CustomOAuth2UserService
+import kr.dohoonkim.blog.restapi.security.handler.*
 import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationFilter
-import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationFailureHandler
-import kr.dohoonkim.blog.restapi.security.handler.CustomOAuth2AuthenticationSuccessHandler
 import kr.dohoonkim.blog.restapi.security.jwt.JwtAuthenticationProvider
-import kr.dohoonkim.blog.restapi.security.handler.EntryPointUnauthorizedHandler
-import kr.dohoonkim.blog.restapi.security.handler.JwtAccessDeniedHandler
 import kr.dohoonkim.blog.restapi.security.jwt.JwtService
+import kr.dohoonkim.blog.restapi.security.oauth2.HttpCookieOAuth2AuthorizationRepository
+import kr.dohoonkim.blog.restapi.security.oauth2.handler.CustomOAuth2AuthenticationFailureHandler
+import kr.dohoonkim.blog.restapi.security.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
@@ -19,13 +19,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.OrRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 
 
 @Configuration
@@ -37,6 +36,7 @@ class SecurityConfig(
     private val jwtAuthenticationProvider: JwtAuthenticationProvider,
     private val jwtService: JwtService,
     private val authenticationConfiguration: AuthenticationConfiguration,
+    private val oAuth2AuthorizationRepository: HttpCookieOAuth2AuthorizationRepository,
     private val oAuth2AuthenticationSuccessHandler: CustomOAuth2AuthenticationSuccessHandler,
     private val oAuth2AuthenticationFailureHandler: CustomOAuth2AuthenticationFailureHandler,
     private val customOAuth2UserService: CustomOAuth2UserService,
@@ -52,19 +52,38 @@ class SecurityConfig(
 
 
     @Bean
+    fun jwtExceptionFilter(): JwtExceptionHandlingFilter {
+        return JwtExceptionHandlingFilter(entryPointUnauthorizedHandler)
+    }
+
+    @Bean
     fun authenticationManager(): AuthenticationManager {
         return authenticationConfiguration.authenticationManager
     }
 
     fun jwtAuthenticationFilter(): JwtAuthenticationFilter {
-        return JwtAuthenticationFilter(jwtService, jwtAuthenticationProvider)
+        val pathMatchers = listOf(
+            AntPathRequestMatcher("/api/v1/admin/**"),
+            AntPathRequestMatcher("/api/v1/members/**"),
+            AntPathRequestMatcher("/api/v1/files/**")
+        )
+        val orRequestMatcher = OrRequestMatcher(
+            *pathMatchers.toTypedArray()
+        )
+        return JwtAuthenticationFilter(orRequestMatcher, jwtService, jwtAuthenticationProvider)
     }
 
     @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer {
             it.ignoring().requestMatchers(*WHITELIST_STATIC, *WHITELIST_SWAGGER)
-            it.ignoring().requestMatchers(PathRequest.toH2Console())
+
+//            try {
+//                it.ignoring().requestMatchers(PathRequest.toH2Console())
+//            }catch(e: Exception) {
+//                e.printStackTrace()
+//            }
+            it
         }
     }
 
@@ -74,19 +93,24 @@ class SecurityConfig(
             .cors {}
             .formLogin { form -> form.disable() }
             .httpBasic { basic -> basic.disable() }
-            .httpBasic { basic -> basic.disable() }
-//            .headers{ headers -> headers.frameOptions { FrameOptionsConfig().sameOrigin } }
-            .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .exceptionHandling { customizer -> customizer.authenticationEntryPoint(entryPointUnauthorizedHandler) }
-            .exceptionHandling { customizer -> customizer.accessDeniedHandler(jwtAccessDeniedHandler) }
+            .sessionManagement {
+                sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .exceptionHandling { customizer ->
+                customizer.accessDeniedHandler(jwtAccessDeniedHandler)
+                customizer.authenticationEntryPoint(entryPointUnauthorizedHandler)
+            }
             .authorizeHttpRequests { customizer ->
-                customizer.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                customizer.requestMatchers("/api/v1/files/**").hasRole("ADMIN")
+                customizer.requestMatchers("/api/v1/members/**").hasAnyRole("MEMBER", "ADMIN")
+                customizer.requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
+                customizer.requestMatchers("/api/v1/files/**").hasAnyRole("ADMIN")
                 customizer.anyRequest().permitAll()
             }
             .oauth2Login { customizer ->
-                customizer.authorizationEndpoint { authorization ->
-                    authorization.baseUri("/api/v1/authentication/oauth2")
+                customizer.authorizationEndpoint { config->
+//                    authorization.baseUri("/api/v1/authentication/oauth2")
+                    config.baseUri("/api/v1/authentication/oauth2")
+                    config.authorizationRequestRepository(oAuth2AuthorizationRepository)
                 }
                 customizer.redirectionEndpoint { redirectEndpoint ->
                     redirectEndpoint.baseUri("/api/v1/authentication/callback/*")
@@ -97,8 +121,8 @@ class SecurityConfig(
                 customizer.successHandler(oAuth2AuthenticationSuccessHandler)
                 customizer.failureHandler(oAuth2AuthenticationFailureHandler)
             }
-
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(jwtExceptionFilter(), JwtAuthenticationFilter      ::class.java)
         return http.build();
     }
 

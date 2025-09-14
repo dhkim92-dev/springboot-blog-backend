@@ -7,14 +7,17 @@ import kr.dohoonkim.blog.restapi.security.resolver.MemberIdResolver
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
+import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.time.format.DateTimeFormatter
 
 
 @Configuration
 class ApplicationConfig(private val memberIdResolver: MemberIdResolver) : WebMvcConfigurer {
-    
+
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(memberIdResolver)
     }
@@ -30,4 +33,12 @@ class ApplicationConfig(private val memberIdResolver: MemberIdResolver) : WebMvc
 
     @Bean
     fun multipartSnake2CamelFilter() = MultiPartSnake2CamelFilter()
+
+    @Bean
+    fun webClient() = WebClient.builder().build()
+
+    @Bean
+    fun passwordEncrypt(): PasswordEncoder {
+        return BCryptPasswordEncoder(10)
+    }
 }
