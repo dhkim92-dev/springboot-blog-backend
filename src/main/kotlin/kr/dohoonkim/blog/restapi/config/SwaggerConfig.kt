@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.security.SecurityScheme
+import org.springdoc.core.models.GroupedOpenApi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -12,7 +13,7 @@ import org.springframework.http.HttpHeaders
 @Configuration
 class SwaggerConfig {
     @Bean
-    fun openAPI(): OpenAPI {
+    fun apiInfo(): OpenAPI {
         val info: Info = Info()
             .version("1.0.0")
             .title("dohoon-kim.kr API")
@@ -36,5 +37,13 @@ class SwaggerConfig {
             .info(info)
             .addSecurityItem(securityRequirement)
             .components(components)
+    }
+
+    @Bean
+    fun groupedApi(): GroupedOpenApi {
+        return GroupedOpenApi.builder()
+            .group("dohoon-kim.kr")
+            .pathsToMatch("/**")
+            .build()
     }
 }

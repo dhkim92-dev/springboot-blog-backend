@@ -2,8 +2,7 @@ package kr.dohoonkim.blog.restapi.config
 
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
-import kr.dohoonkim.blog.restapi.common.filter.MultiPartSnake2CamelFilter
-import kr.dohoonkim.blog.restapi.security.resolver.MemberIdResolver
+import kr.dohoonkim.blog.restapi.common.resolver.MemberIdResolver
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,9 +29,6 @@ class ApplicationConfig(private val memberIdResolver: MemberIdResolver) : WebMvc
             builder.serializers(LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME))
         }
     }
-
-    @Bean
-    fun multipartSnake2CamelFilter() = MultiPartSnake2CamelFilter()
 
     @Bean
     fun webClient() = WebClient.builder().build()

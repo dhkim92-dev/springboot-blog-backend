@@ -26,7 +26,9 @@ enum class ErrorCodes(
     ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT, "M002", "이미 가입된 이메일입니다."),
     ALREADY_EXIST_NICKNAME(HttpStatus.CONFLICT, "M003", "이미 존재하는 닉네임입니다."),
     UPDATE_PASSWORD_FAILED(HttpStatus.UNAUTHORIZED, "M004", "현재 패스워드가 일치하지 않습니다."),
-
+    BLOCKED_MEMBER_CAN_NOT_WITHDRAW(HttpStatus.FORBIDDEN, "M005", "차단된 회원은 탈퇴할 수 없습니다."),
+    BLOCKED_MEMBER(HttpStatus.FORBIDDEN, "M006", "차단된 회원은 해당 기능을 이용할 수 없습니다."),
+    
     // ARTICLE
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "존재하지 않는 게시물입니다."),
 

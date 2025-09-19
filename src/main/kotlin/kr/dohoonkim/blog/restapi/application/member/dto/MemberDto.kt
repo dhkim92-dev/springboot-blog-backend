@@ -3,6 +3,7 @@ package kr.dohoonkim.blog.restapi.application.member.dto
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import kr.dohoonkim.blog.restapi.domain.member.Member
+import java.time.LocalDateTime
 import java.util.UUID
 
 data class MemberDto(
@@ -10,18 +11,20 @@ data class MemberDto(
     val nickname: String,
     val email: String,
     val role: String,
-    @JsonProperty("is_activated")
+    val createdAt: LocalDateTime,
     val isActivated: Boolean
 ) {
 
     companion object {
-        fun fromEntity(member: Member): MemberDto {
+
+        fun from(member: Member): MemberDto {
             return MemberDto(
-                id = member.id,
+                id = member.id!!,
                 nickname = member.nickname,
                 email = member.email,
                 role = member.role.rolename,
-                isActivated = member.isActivated
+                createdAt = member.createdAt,
+                isActivated = !member.isBlocked
             );
         }
     }
