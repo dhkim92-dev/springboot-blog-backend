@@ -1,25 +1,19 @@
 package kr.dohoonkim.blog.restapi.application.member.dto
 
-import jakarta.validation.constraints.NotBlank
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import java.util.UUID
 
-/**
- * Member 정보 요약 객체
- * @property id 사용자 ID
- * @property nickname 사용자 닉네임
- */
 data class MemberSummaryDto(
-    val id: UUID,
-    val nickname: String
+    val id: UUID = UUID.randomUUID(),
+    val nickname: String = "탈퇴한 회원"
 ) {
-    companion object {
 
-        fun fromEntity(member: Member): MemberSummaryDto {
+    companion object {
+        fun from(entity: Member): MemberSummaryDto {
             return MemberSummaryDto(
-                id = member.id,
-                nickname = member.nickname
-            );
+                id = entity.id!!,
+                nickname = entity.nickname
+            )
         }
     }
 }

@@ -20,13 +20,16 @@ enum class ErrorCodes(
     HTTP_MESSAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, "G009", "request body가 없거나, 값이 올바르지 않습니다."),
     RESOURCE_OWNERSHIP_VIOLATION(HttpStatus.FORBIDDEN, "G010", "접근 권한이 없는 리소스입니다."),
     MISSING_COOKIE_VALUE(HttpStatus.BAD_REQUEST, "G011", "필요한 쿠키가 존재하지 않습니다."),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "G012", "잘못된 요청입니다."),
 
     // MEMBER EXCEPTION
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 사용자입니다."),
     ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT, "M002", "이미 가입된 이메일입니다."),
     ALREADY_EXIST_NICKNAME(HttpStatus.CONFLICT, "M003", "이미 존재하는 닉네임입니다."),
     UPDATE_PASSWORD_FAILED(HttpStatus.UNAUTHORIZED, "M004", "현재 패스워드가 일치하지 않습니다."),
-
+    BLOCKED_MEMBER_CAN_NOT_WITHDRAW(HttpStatus.FORBIDDEN, "M005", "차단된 회원은 탈퇴할 수 없습니다."),
+    BLOCKED_MEMBER(HttpStatus.FORBIDDEN, "M006", "차단된 회원은 해당 기능을 이용할 수 없습니다."),
+    
     // ARTICLE
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "존재하지 않는 게시물입니다."),
 

@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS article_category
+    ADD COLUMN IF NOT EXISTS count bigint DEFAULT 0;

@@ -1,6 +1,7 @@
 package kr.dohoonkim.blog.restapi.common.response
 
 import io.swagger.v3.oas.annotations.media.Schema
+import kr.dohoonkim.blog.restapi.common.error.ErrorResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
@@ -24,13 +25,10 @@ class ApiResult<T>(
     @Schema(description = "요청 응답 데이터", example = "324812357231")
     val data: T,
     @Schema(description = "처리 결과에 대한 메시지", example = "서버 인스턴스 상태를 체크하였습니다")
-    val message: String
+    val message: String,
 ) {
 
     companion object {
-//        private val _headers = hashMapOf<String, String>("Content-Type" to "application/json;charset=utf-8")
-//        private val headers = HttpHeaders(LinkedMultiValueMap<String, String>().apply { setAll(_headers) })
-
         fun <T> Ok(resultCode: ResultCode, data: T): ApiResult<T> {
             return ApiResult(resultCode.status.value(), resultCode.code, data, resultCode.message)
         }
