@@ -2,6 +2,7 @@ package kr.dohoonkim.blog.restapi.interfaces.member.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import kr.dohoonkim.blog.restapi.application.member.dto.MemberDto
+import kr.dohoonkim.blog.restapi.common.response.BaseResponse
 import kr.dohoonkim.blog.restapi.domain.member.Role
 import java.time.LocalDateTime
 import java.util.UUID
@@ -18,7 +19,7 @@ class MemberCommandResponse(
     val role: String,
     @Schema(description = "가입 일", example = "2023-10-01T12:00:00")
     val createdAt: LocalDateTime,
-) {
+): BaseResponse() {
 
     companion object {
         fun from(memberDto: MemberDto): MemberCommandResponse {

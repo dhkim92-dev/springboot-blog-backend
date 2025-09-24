@@ -155,8 +155,10 @@ class Member(
 
         if ( this.refreshTokens.size > 5 ) {
             // 가장 오래된 토큰을 삭제합니다.
-            val oldestToken = this.refreshTokens.minByOrNull { it.createdAt }!!
-            this.refreshTokens.remove(oldestToken)
+            while (this.refreshTokens.size > 4) {
+                val oldestToken = this.refreshTokens.minByOrNull { it.createdAt }!!
+                this.refreshTokens.remove(oldestToken)
+            }
         }
 
         this.refreshTokens.add(refreshToken)

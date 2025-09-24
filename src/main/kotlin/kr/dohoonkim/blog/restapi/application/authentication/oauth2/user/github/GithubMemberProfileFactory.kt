@@ -1,9 +1,10 @@
 package kr.dohoonkim.blog.restapi.application.authentication.oauth2.user.github
 
-import kr.dohoonkim.blog.restapi.security.oauth2.OAuth2Provider
-import kr.dohoonkim.blog.restapi.security.oauth2.user.github.GithubMemberProfile
-import kr.dohoonkim.blog.restapi.security.oauth2.user.MemberProfileFactory
+import kr.dohoonkim.blog.restapi.application.authentication.oauth2.user.MemberProfileFactory
+import kr.dohoonkim.blog.restapi.domain.member.OAuth2Provider
+import org.springframework.stereotype.Component
 
+@Component
 class GithubMemberProfileFactory : MemberProfileFactory {
 
     /**
@@ -66,5 +67,9 @@ class GithubMemberProfileFactory : MemberProfileFactory {
             emailVerified = true,
             customAttributes = attributes
         )
+    }
+
+    override fun supports(provider: String): Boolean {
+        return provider.equals(OAuth2Provider.GITHUB.name, ignoreCase = true)
     }
 }

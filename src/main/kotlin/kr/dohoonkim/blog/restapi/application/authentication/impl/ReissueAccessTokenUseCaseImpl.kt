@@ -1,6 +1,7 @@
 package kr.dohoonkim.blog.restapi.application.authentication.impl
 
 import com.auth0.jwt.exceptions.JWTVerificationException
+import com.auth0.jwt.exceptions.TokenExpiredException
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.transaction.Transactional
 import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
@@ -11,6 +12,7 @@ import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.common.utility.CookieUtils
 import kr.dohoonkim.blog.restapi.domain.member.RefreshToken
 import kr.dohoonkim.blog.restapi.port.persistence.member.MemberRepository
+import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import java.time.Instant
@@ -23,20 +25,28 @@ class ReissueAccessTokenUseCaseImpl(
     private val jwtService: JwtService
 ): ReissueAccessTokenUseCase {
 
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     companion object {
+
         private const val REFRESH_TOKEN_RENEWAL_THRESHOLD_DAYS = 1L
     }
 
     @Transactional
     override fun reissue(
-        response: HttpServletResponse,
+//        response: HttpServletResponse,
         refreshToken: String
     ): LoginResult {
         val decodedJWT = try {
             jwtService.validateRefreshToken(refreshToken)
-        } catch (e: JWTVerificationException) {
-            CookieUtils.delCookie(response, "refresh-token")
+        } catch (e: TokenExpiredException) {
+//            CookieUtils.delCookie(response, "refresh-token")
+            logger.error("Invalid refresh token: ${e.message}")
             throw UnauthorizedException(ErrorCodes.EXPIRED_REFRESH_TOKEN_EXCEPTION)
+        } catch (e: JWTVerificationException) {
+//            CookieUtils.delCookie(response, "refresh-token")
+            logger.error("Invalid refresh token: ${e.message}")
+            throw UnauthorizedException(ErrorCodes.INVALID_JWT_EXCEPTION)
         }
 
         val memberId = UUID.fromString(decodedJWT.subject)
@@ -56,7 +66,7 @@ class ReissueAccessTokenUseCaseImpl(
             val decoded = jwtService.validateRefreshToken(newRefreshToken)
             member.logout(refreshToken)
             member.addRefreshToken(newRefreshToken, decoded.expiresAt.toInstant())
-            CookieUtils.setCookie(response, "refresh-token", newRefreshToken, maxAge = 60 * 60 * 24 * 14)
+//            CookieUtils.setCookie(response, "refresh-token", newRefreshToken, maxAge = 60 * 60 * 24 * 14)
             return LoginResult(accessToken = accessToken, refreshToken = newRefreshToken)
         }
 

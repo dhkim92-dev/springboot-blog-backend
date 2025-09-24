@@ -5,5 +5,5 @@ import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
 
 interface ReissueAccessTokenUseCase {
 
-    fun reissue(response: HttpServletResponse, refreshToken: String): LoginResult
+    fun reissue(refreshToken: String): LoginResult
 }

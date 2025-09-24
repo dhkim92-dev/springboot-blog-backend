@@ -1,5 +1,6 @@
 package kr.dohoonkim.blog.restapi.interfaces.member
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import kr.dohoonkim.blog.restapi.application.member.MemberServiceFacade
@@ -46,6 +47,7 @@ class MemberController(private val memberService: MemberServiceFacade) {
 
     @PatchMapping("v1/members/{resourceId}/password")
     @ApplicationCode(CHANGE_PASSWORD_SUCCESS)
+    @SecurityRequirement(name = "bearer-jwt")
     fun changePassword(
         @MemberId memberId: UUID,
         @PathVariable resourceId: UUID,
@@ -57,6 +59,7 @@ class MemberController(private val memberService: MemberServiceFacade) {
 
     @PutMapping("v1/members/{resourceId}")
     @ApplicationCode(ResultCode.CHANGE_NICKNAME_SUCCESS)
+    @SecurityRequirement(name = "bearer-jwt")
     fun changeMemberInfo(
         @MemberId memberId: UUID,
         @PathVariable resourceId: UUID,
@@ -68,6 +71,7 @@ class MemberController(private val memberService: MemberServiceFacade) {
 
     @DeleteMapping("v1/members/{resourceId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "bearer-jwt")
     fun deleteMember(
         @MemberId memberId: UUID,
         @PathVariable resourceId: UUID
@@ -77,6 +81,7 @@ class MemberController(private val memberService: MemberServiceFacade) {
 
     @GetMapping("v1/members/{resourceId}")
     @ApplicationCode(ResultCode.GET_MEMBER_INFO_SUCCESS)
+    @SecurityRequirement(name = "bearer-jwt")
     fun getMember(
         @MemberId memberId: UUID,
         @PathVariable resourceId: UUID

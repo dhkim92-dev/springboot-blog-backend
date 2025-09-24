@@ -3,21 +3,20 @@ package kr.dohoonkim.blog.restapi.application.authentication.oauth2.handler
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import kr.dohoonkim.blog.restapi.security.oauth2.OAuth2MemberService
+import kr.dohoonkim.blog.restapi.application.authentication.jwt.JwtService
+import kr.dohoonkim.blog.restapi.application.authentication.oauth2.HttpCookieOAuth2AuthorizationRepository
+import kr.dohoonkim.blog.restapi.application.authentication.oauth2.OAuth2MemberService
+import kr.dohoonkim.blog.restapi.application.authentication.oauth2.OAuth2UserPrincipal
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes
 import kr.dohoonkim.blog.restapi.common.error.exceptions.UnauthorizedException
 import kr.dohoonkim.blog.restapi.common.response.ApiResult
 import kr.dohoonkim.blog.restapi.common.response.ResultCode
 import kr.dohoonkim.blog.restapi.common.utility.CookieUtils
 import kr.dohoonkim.blog.restapi.interfaces.authentication.dto.LoginResponse
-import kr.dohoonkim.blog.restapi.security.jwt.JwtService
-import kr.dohoonkim.blog.restapi.security.oauth2.HttpCookieOAuth2AuthorizationRepository
-import kr.dohoonkim.blog.restapi.security.oauth2.OAuth2UserPrincipal
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Component
-import kr.dohoonkim.blog.restapi.security.oauth2.HttpCookieOAuth2AuthorizationRepository.Companion.MODE_PARAM_COOKIE_NAME
 
 @Component
 class CustomOAuth2AuthenticationSuccessHandler(
@@ -35,13 +34,8 @@ class CustomOAuth2AuthenticationSuccessHandler(
         authentication: Authentication
     ) {
         val principal = getPrincipal(authentication)
-//        val redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)?.value ?: throw UnauthorizedException(ErrorCodes.OAUTH2_REDIRECT_URL_RESOLVE_FAILED)
-        val mode = CookieUtils.getCookie(request, MODE_PARAM_COOKIE_NAME)?.value ?: "sign-in"
-
         try {
-            if(mode == "sign-in"){
-                processSignInMode(principal, request,response)
-            }
+            processSignInMode(principal, request,response)
         } catch(e: Exception) {
             throw e
         } finally {
@@ -54,9 +48,10 @@ class CustomOAuth2AuthenticationSuccessHandler(
         val profile = principal.getProfile()
         logger.info("member ${member.nickname} login using oauth2 provider = ${profile.provider.providerName} userId: ${profile.id} token : ${principal.getToken()}")
 
-        val accessToken = jwtService.createAccessToken(member)
-        val refreshToken = jwtService.createRefreshToken(member)
-        val result = ApiResult.Ok(ResultCode.AUTHENTICATION_SUCCESS, LoginResponse(accessToken = accessToken))
+        val accessToken = jwtService.generateAccessToken(member)
+        val refreshToken = jwtService.generateRefreshToken(member)
+        val result = ApiResult.Ok(ResultCode.AUTHENTICATION_SUCCESS,
+            LoginResponse(accessToken = accessToken, refreshToken = refreshToken))
         response.contentType = "application/json; charset=utf-8"
         response.status = 201
         clearAuthenticationRequestAttributes(request, response)

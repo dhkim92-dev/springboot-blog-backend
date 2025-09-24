@@ -6,11 +6,20 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.util.AntPathMatcher
+import org.springframework.util.PathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 
 class JwtAuthenticationFilter(
     private val authenticationManager: AuthenticationManager
 ) : OncePerRequestFilter() {
+
+    private val exceptPatterns = listOf(
+        "/api/v1/auth/**",
+    )
+
+    private val pathMatcher = AntPathMatcher()
+
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -18,6 +27,13 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
         val token = extractHeader(request)
+
+        for ( pattern in exceptPatterns ) {
+            if ( pathMatcher.match(pattern, request.servletPath) ) {
+                filterChain.doFilter(request, response)
+                return
+            }
+        }
 
         if ( token == null ) {
             filterChain.doFilter(request, response)

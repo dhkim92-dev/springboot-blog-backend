@@ -18,8 +18,8 @@ class AuthenticationServiceFacade(
         return emailPasswordUseCase.login(email, password)
     }
 
-    fun reissueAccessToken(response: HttpServletResponse, refreshToken: String): LoginResult {
-        return reissueAccessTokenUseCase.reissue(response,refreshToken)
+    fun reissueAccessToken(refreshToken: String): LoginResult {
+        return reissueAccessTokenUseCase.reissue(refreshToken)
     }
 
     fun logout(refreshToken: String) {

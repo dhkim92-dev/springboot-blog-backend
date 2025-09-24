@@ -11,7 +11,7 @@ data class ChangeMemberInfoRequest(
     @field: NotBlank(message = "닉네임이 입력되어야 합니다.")
     @field: Length(min = 4, max = 32, message = "닉네임은 최소 4글자 최대 32글자 입니다.")
     @Schema(description = "사용자 닉네임", example = "my-new-nickname")
-    val nickname: String
+    val nickname: String,
 ) {
 
     fun toCommand(resourceId: UUID): UpdateMemberCommand {

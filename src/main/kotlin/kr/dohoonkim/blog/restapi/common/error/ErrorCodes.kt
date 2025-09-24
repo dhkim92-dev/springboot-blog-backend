@@ -20,6 +20,7 @@ enum class ErrorCodes(
     HTTP_MESSAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, "G009", "request body가 없거나, 값이 올바르지 않습니다."),
     RESOURCE_OWNERSHIP_VIOLATION(HttpStatus.FORBIDDEN, "G010", "접근 권한이 없는 리소스입니다."),
     MISSING_COOKIE_VALUE(HttpStatus.BAD_REQUEST, "G011", "필요한 쿠키가 존재하지 않습니다."),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "G012", "잘못된 요청입니다."),
 
     // MEMBER EXCEPTION
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 사용자입니다."),

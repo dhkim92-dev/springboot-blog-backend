@@ -22,7 +22,7 @@ allOpen {
 }
 
 group = "kr.dohoonkim"
-version = "1.1.1"
+version = "2.0.0"
 //java.sourceCompatibility = JavaVersion.VERSION_21
 
 java {
@@ -54,19 +54,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.session:spring-session-data-redis")
 
 	// Utilities
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("com.google.guava:guava:32.0.0-jre")
-	implementation("org.apache.commons:commons-lang3:3.12.0")
-	implementation("commons-io:commons-io:2.12.0")
     implementation("com.github.f4b6a3:uuid-creator:6.1.1")
+    implementation("net.coobird:thumbnailator:0.4.20")
 
+	// HTML/Markdown Sanitizer for security
+    implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1")
 	// JWT
 	implementation("com.auth0:java-jwt:4.3.0")
-
 	// Swagger - Spring Boot 3.5.3과 호환되는 버전으로 수정
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.13")

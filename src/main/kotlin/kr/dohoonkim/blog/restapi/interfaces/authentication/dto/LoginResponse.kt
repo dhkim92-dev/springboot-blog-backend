@@ -2,6 +2,7 @@ package kr.dohoonkim.blog.restapi.interfaces.authentication.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import kr.dohoonkim.blog.restapi.application.authentication.dto.LoginResult
+import kr.dohoonkim.blog.restapi.common.response.BaseResponse
 
 @Schema(description = "로그인 응답 객체", name = "LoginResponse")
 data class LoginResponse(
@@ -13,7 +14,7 @@ data class LoginResponse(
 
     @Schema(description = "액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", required = true)
     val accessToken: String
-) {
+): BaseResponse() {
     
     companion object {
 

@@ -1,7 +1,7 @@
 package kr.dohoonkim.blog.restapi.application.authentication.oauth2.user.github
 
-import kr.dohoonkim.blog.restapi.security.oauth2.OAuth2Provider
-import kr.dohoonkim.blog.restapi.security.oauth2.user.OAuth2MemberProfile
+import kr.dohoonkim.blog.restapi.application.authentication.oauth2.user.OAuth2MemberProfile
+import kr.dohoonkim.blog.restapi.domain.member.OAuth2Provider
 import org.springframework.security.core.GrantedAuthority
 
 /**

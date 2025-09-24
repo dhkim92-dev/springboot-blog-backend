@@ -4,14 +4,15 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import kr.dohoonkim.blog.restapi.common.error.ErrorCodes.*
 import kr.dohoonkim.blog.restapi.common.error.exceptions.NotFoundException
 import kr.dohoonkim.blog.restapi.domain.member.Member
+import kr.dohoonkim.blog.restapi.domain.member.OAuth2Provider
 import kr.dohoonkim.blog.restapi.domain.member.QMember.Companion.member
 import java.util.*
 
-class MemberRepositoryCustomImpl(private val queryFactory : JPAQueryFactory
+class MemberRepositoryCustomImpl(private val qf : JPAQueryFactory
 ) : MemberRepositoryCustom {
 
     override fun findByMemberId(memberId: UUID): Member {
-        return queryFactory
+        return qf
             .selectFrom(member)
             .where(member.id.eq(memberId))
             .fetchOne()
@@ -19,7 +20,7 @@ class MemberRepositoryCustomImpl(private val queryFactory : JPAQueryFactory
     }
 
     override fun existsByNickname(nickname: String): Boolean {
-        return queryFactory
+        return qf
             .selectOne()
             .from(member)
             .where(member.nickname.eq(nickname))
@@ -27,11 +28,18 @@ class MemberRepositoryCustomImpl(private val queryFactory : JPAQueryFactory
     }
 
     override fun existsByEmail(email: String): Boolean {
-        return queryFactory
+        return qf
             .selectOne()
             .from(member)
             .where(member.email.eq(email))
             .fetchFirst() != null
+    }
+
+    override fun findByOAuth2UserId(userId: String): Member? {
+        return qf
+            .selectFrom(member)
+            .where(member.oauth2Info.any().userId.eq(userId))
+            .fetchOne()
     }
 
 }

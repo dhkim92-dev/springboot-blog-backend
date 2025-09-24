@@ -25,6 +25,8 @@ class HttpCookieOAuth2AuthorizationRepository: AuthorizationRequestRepository<OA
     override fun loadAuthorizationRequest(request: HttpServletRequest): OAuth2AuthorizationRequest? {
         val cookies = request.cookies ?: arrayOf<Cookie>()
 
+        logger.debug("인증 정보 복구")
+
         return CookieUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)?.let{ cookie ->
                 CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest::class.java)
             }

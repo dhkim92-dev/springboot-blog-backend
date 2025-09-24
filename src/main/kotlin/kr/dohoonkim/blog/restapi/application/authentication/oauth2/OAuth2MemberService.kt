@@ -1,17 +1,14 @@
 package kr.dohoonkim.blog.restapi.application.authentication.oauth2
 
-import kr.dohoonkim.blog.restapi.application.authentication.oauth2.revoke.OAuth2RevokeManager
 import kr.dohoonkim.blog.restapi.application.authentication.oauth2.user.OAuth2MemberProfile
-import kr.dohoonkim.blog.restapi.application.member.usecases.CreateMemberUseCase
 import kr.dohoonkim.blog.restapi.domain.member.Member
 import kr.dohoonkim.blog.restapi.domain.member.OAuth2Member
 import kr.dohoonkim.blog.restapi.port.persistence.member.MemberRepository
-import kr.dohoonkim.blog.restapi.port.persistence.member.OAuth2MemberRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import kotlin.random.Random
 
 @Service
 class OAuth2MemberService(
@@ -31,29 +28,33 @@ class OAuth2MemberService(
             emailVerified: ${memberProfile.emailVerified}
         """.trimMargin())
 
-        //val oauth2Member = oAuth2MemberRepository.findByProviderAndUserId(memberProfile.provider, memberProfile.id)
-        val member = memberRepository.findByOAuth2Info(
-            provider = memberProfile.provider,
-            userId = memberProfile.id
-        )
+        var member = memberRepository.findByOAuth2UserId(userId = memberProfile.id)
 
+        // 검색된 회원이 없으면 회원가입 처리
         if(member == null) {
             logger.info(" current oauth2 request join to member join phase.")
-            val member = this.memberRepository.save(Member(
+            member = Member(
                 email = "${memberProfile.provider}:${memberProfile.nickname}@dohoon-kim.kr",
                 nickname = "${memberProfile.provider.providerName}:${memberProfile.nickname}",
-                password = passwordEncoder.encode(UUID.randomUUID().toString()),
+                password = passwordEncoder.encode(createRandomString(12)),
                 isBlocked = false,
-            ))
-            var newOauth2Member = OAuth2Member(
+            )
+            val newOauth2Member = OAuth2Member(
                 provider = memberProfile.provider,
                 userId = memberProfile.id,
                 email = memberProfile.email,
             )
-            newOauth2Member.member = member
-            return oAuth2MemberRepository.save(newOauth2Member).member
+            member.linkOAuth2Info(newOauth2Member)
         }
 
         return memberRepository.save(member)
+    }
+
+    private fun createRandomString(n: Int): String {
+        val charPool : List<Char> = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..n)
+            .map { Random.nextInt(0, charPool.size) }
+            .map(charPool::get)
+            .joinToString("")
     }
 }

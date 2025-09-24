@@ -2,6 +2,7 @@ package kr.dohoonkim.blog.restapi.interfaces.member.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import kr.dohoonkim.blog.restapi.application.member.dto.MemberQueryModelDto
+import kr.dohoonkim.blog.restapi.common.response.BaseResponse
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -14,7 +15,7 @@ class MemberQueryResponse(
     val role: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
-) {
+): BaseResponse() {
 
     companion object {
         fun from(dto: MemberQueryModelDto): MemberQueryResponse {

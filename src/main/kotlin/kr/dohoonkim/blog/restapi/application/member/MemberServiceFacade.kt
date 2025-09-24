@@ -7,7 +7,6 @@ import kr.dohoonkim.blog.restapi.application.member.dto.MemberQueryModelDto
 import kr.dohoonkim.blog.restapi.application.member.dto.UpdateMemberCommand
 import kr.dohoonkim.blog.restapi.application.member.dto.UpdatePasswordCommand
 import kr.dohoonkim.blog.restapi.application.member.usecases.CreateMemberUseCase
-import kr.dohoonkim.blog.restapi.application.member.usecases.CreateOAuth2MemberUseCase
 import kr.dohoonkim.blog.restapi.application.member.usecases.DeleteMemberUseCase
 import kr.dohoonkim.blog.restapi.application.member.usecases.QueryMemberUseCase
 import kr.dohoonkim.blog.restapi.application.member.usecases.UpdateMemberUseCase
@@ -18,7 +17,6 @@ import java.util.UUID
 @Service
 class MemberServiceFacade(
     private val createMemberUseCase: CreateMemberUseCase,
-    private val createOAuth2MemberUseCase: CreateOAuth2MemberUseCase,
     private val updatePasswordUseCase: UpdatePasswordUseCase,
     private val deleteMemberUseCase: DeleteMemberUseCase,
     private val updateMemberUseCase: UpdateMemberUseCase,
@@ -27,10 +25,6 @@ class MemberServiceFacade(
 
     fun createMember(command: CreateMemberCommand): MemberDto {
         return createMemberUseCase.createMember(command)
-    }
-
-    fun createOAuth2Member(command: CreateOAuth2MemberCommand): MemberDto {
-        return createOAuth2MemberUseCase.create(command)
     }
 
     fun updatePassword(memberId: UUID, command: UpdatePasswordCommand) {

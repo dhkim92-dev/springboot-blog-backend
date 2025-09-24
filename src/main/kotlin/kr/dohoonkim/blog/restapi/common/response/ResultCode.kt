@@ -41,6 +41,8 @@ enum class ResultCode(
     CREATE_COMMENT_SUCCESS(CREATED, "R001", "댓글을 생성하였습니다."),
     MODIFY_COMMENT_SUCCESS(OK, "R002", "댓글을 수정하였습니다."),
     DELETE_COMMENT_SUCCESS(NO_CONTENT, "R003", "댓글을 삭제하였습니다."),
+    GET_COMMENT_LIST_SUCCESS(OK, "R004", "댓글 목록을 조회하였습니다."),
+    GET_RELY_COMMENT_LIST_SUCCESS(OK, "R005", "대댓글 목록을 조회하였습니다."),
 
     // CATEGORY
     CREATE_CATEGORY_SUCCESS(CREATED, "AC01", "신규 게시물 카테고리를 생성하였습니다."),
